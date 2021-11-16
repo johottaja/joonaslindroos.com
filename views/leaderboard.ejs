@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Leaderboard</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="stylesheet" type="text/css" href="games/snake/comp/css/leaderboard.css">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+</head>
+<body>
+<div class="main">
+	<div class="leaderboard">
+		<div class="container-fluid">
+			<div class="row leader">
+				<div class="col-12 leaderboard-col">
+					<div class="leaderboard-item">
+						<div class="leader-score"><%= scores[0].score %></div>
+						<div class="leader-name-wrapper">
+							<div class="leader-name">
+								<%= scores[0].name %>
+							</div>
+						</div>
+						<div class="leader-message-wrapper">
+							<div class="leader-message">
+								<%= scores[0].message %>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<% if (scores.length > 1) { %>
+				<div class="row not-leader">
+				<div class="col-md-6 col-sm-12 leaderboard-col">
+					<%- include('./partials/highscore', {score: scores[1]}); %>
+				</div>
+				<% if (scores.length > 2) {%>
+				<div class="col-md-6 col-sm-12 leaderboard-col">
+					<%- include('./partials/highscore', {score: scores[2]}); %>
+				</div>
+				<% } %>
+			</div>
+			<% } %>
+			<% if (scores.length > 3) { %>
+				<div class="row not-leader">
+					<div class="col-md-6 col-sm-12 leaderboard-col">
+						<%- include('./partials/highscore', {score: scores[3]}); %>
+					</div>
+					<% if (scores.length > 4) {%>
+						<div class="col-md-6 col-sm-12 leaderboard-col">
+							<%- include('./partials/highscore', {score: scores[4]}); %>
+						</div>
+					<% } %>
+				</div>
+			<% } %>
+		</div>
+	</div>
+	<button id="play-button" class="play-button">Play</button>
+	<script type="text/javascript" nonce="<%= nonce %>" defer>
+		document.getElementById("play-button").onclick = function gotoGame() {
+			window.location.href = "../";
+		}
+	</script>
+</div>
+</body>
+</html>

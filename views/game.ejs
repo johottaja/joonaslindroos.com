@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SnakeGame</title>
+    <link rel="stylesheet" type="text/css" href="games/snake/comp/css/game.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="games/snake/comp/js/textures.js"></script>
+    <script type="text/javascript" defer src="games/snake/comp/js/sketch.js"></script>
+</head>
+<body>
+    <div class="main">
+        <div class="message-box">
+            <p>This is a message box.</p>
+        </div>
+        <div class="score-counter-container">
+            <p class="score-counter">0</p>
+        </div>
+        <div class="canvas-container">
+            <canvas id="game-canvas"></canvas>
+        </div>
+    </div>
+    <button id="leaderboard-button" class="leaderboard-button">Leaderboard</button>
+    <script type="text/javascript" nonce="<%= nonce %>" defer>
+        document.getElementById("leaderboard-button").onclick = function gotoLeaderboard() {
+            window.location.href = "/leaderboard";
+        }
+    </script>
+    <template id="instructions-template">
+        <p>Move using WASD or the arrow keys</p>
+        <p>Swipe controls are not supported yet.</p>
+    </template>
+    <template id="message-display-template">
+        <p id="message-display"></p>
+    </template>
+    <template id="game-over-template">
+        <p id="game-over-text">Game over!</p>
+        <p id="game-over-score-display">Final score: 0</p>
+        <button class="restart-button">Restart</button>
+    </template>
+    <template id="highscore-submit-template">
+        <p id="highscore-text">You hit a highscore!</p>
+        <p id="lower-highscore-text">Give us your name and a short message.</p>
+        <form method="post" action="/api/highscores" id="info-form">
+            <p id="bad-name-text">Name must be at least 3 characters long.</p>
+            <label class="form-label" for="name">Name</label><br/>
+            <input name="name" autofocus maxlength="30" class="highscore-name-input" type="text" id="name"><br/>
+
+            <p id="bad-message-text">Message must be at least 5 characters long.</p>
+            <label class="form-label" for="message">Message</label><br/>
+            <textarea name="message" maxlength="150" class="highscore-message-input" rows="4" cols="30"
+                      id="message"></textarea><br/>
+
+            <label for="score"></label>
+            <input name="score" readonly id="score" style="display:none">
+
+            <input class="submit-button" type="button" value="Submit" id="info-submit-button">
+            <script type="text/javascript" nonce="<%= nonce %>">
+                document.getElementById("info-submit-button").onclick = function submitForm(e) {
+                    e.preventDefault();
+                    submitInfo();
+                }
+            </script>
+        </form>
+    </template>
+</body>
+</html>

@@ -1,0 +1,27 @@
+[
+  {
+    "name": "example name",
+    "message": "example message",
+    "score": "20"
+  },
+  {
+    "name": "example name 2",
+    "message": "example message 2",
+    "score": "15"
+  },
+  {
+    "name": "example name 3",
+    "message": "example message 3",
+    "score": "12"
+  },
+  {
+    "name": "example name 4",
+    "message": "example message 4",
+    "score": "10"
+  },
+  {
+    "name": "example name 5",
+    "message": "example message 5",
+    "score": "8"
+  }
+]
