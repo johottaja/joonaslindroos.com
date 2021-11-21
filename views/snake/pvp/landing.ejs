@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SnakeGame</title>
+    <link rel="stylesheet" type="text/css" href="css/landing.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="main">
+        <div class="message-box">
+            <form method="post" action="/" autocomplete="off">
+                <% if (errorMessage) { %>
+                    <div class="error-box">
+                        <p class="error-message"><%= errorMessage %></p>
+                    </div>
+                <% } %>
+                <div class="form-inline">
+                    <div class="form-group">
+                        <input name="code" type="text" class="form-control code-input" id="inputCode"
+                               placeholder="code">
+                    </div>
+                    <button type="submit" formaction="/join" class="btn btn-primary">Join</button>
+                    <button type="submit" formaction="/create" class="btn btn-primary">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script type="text/javascript" src="js/landing.js"></script>
+</body>
+</html>

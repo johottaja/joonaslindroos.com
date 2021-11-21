@@ -21,9 +21,9 @@ module.exports = (params) => {
         response.set("Content-Security-Policy", csp);
 
         if (scores.length === 0) {
-            return response.render("leaderboard-empty", { nonce });
+            return response.render("snake/comp/leaderboard-empty", { nonce });
         }
-        response.render("leaderboard", { scores, nonce });
+        response.render("snake/comp/leaderboard", { scores, nonce });
     });
 
     return router;

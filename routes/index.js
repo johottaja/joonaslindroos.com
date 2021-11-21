@@ -8,7 +8,7 @@ const router = express.Router();
 module.exports = (params) => {
     const { highscoreService } = params;
 
-    router.get("/", (request, response) => {
+    router.get("/snake/comp", (request, response) => {
 
         let nonce = crypto.randomBytes(16).toString("base64");
 
@@ -21,12 +21,12 @@ module.exports = (params) => {
 
         response.set("Content-Security-Policy", csp);
 
-        response.render("game.ejs", { nonce });
+        response.render("snake/comp/game.ejs", { nonce });
     });
 
 
-    router.use("/leaderboard", leaderboardRoute({ highscoreService }));
-    router.use("/api", scoreApiRoute({ highscoreService }))
+    router.use("/snake/comp/leaderboard", leaderboardRoute({ highscoreService }));
+    router.use("/api", scoreApiRoute({ highscoreService })); //TODO: Maybe move the api route to snake/comp/
 
     return router;
 }

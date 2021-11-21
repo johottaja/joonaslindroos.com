@@ -47,7 +47,7 @@ function submitInfo() {
 
     if (!errors) {
         socket.emit("player_info", { name: name, message: message });
-        window.location = "/leaderboard"
+        window.location = "snake/comp/leaderboard"
     }
 }
 

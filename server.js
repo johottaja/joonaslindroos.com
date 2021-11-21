@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require("express"); //TODO: integrate pvp snake
 const path = require("path");
 const bodyParser = require("body-parser");
 const helmet = require("helmet");
@@ -7,8 +7,9 @@ const { Server } = require("socket.io");
 
 const HighscoreService = require("./HighscoreService");
 const routes = require("./routes/index");
-const Config = require("./games/snake/comp/config");
-const Game = require("./games/snake/comp/game");
+const Config = require("./games/snake/config");
+const CompetitiveGame = require("./games/snake/comp/game");
+const PvPGame = require("./games/snake/pvp/game");
 
 const app = express();
 const server = http.createServer(app);
@@ -32,14 +33,14 @@ const highscoreService = new HighscoreService("data/highscores.json");
 setInterval(updateGames, Config.frameTime);
 
 io.on("connection", socket => {
-    games.push(new Game(socket, highscoreService));
+    games.push(new CompetitiveGame(socket, highscoreService));
 
     socket.on("get_game_config", () => {
         socket.emit("game_config", JSON.stringify({
             tileSize: Config.tileSize,
-            tileCount: Config.tileCount,
+            tileCount: Config.compTileCount,
             snakeGap: Config.snakeGap,
-            snakeColor: Config.snakeColor,
+            snakeColor: Config.snakeColor1,
             bgColor1: Config.bgColor1,
             bgColor2: Config.bgColor2
         }));

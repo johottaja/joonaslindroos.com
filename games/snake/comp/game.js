@@ -1,6 +1,7 @@
 const Snake = require("./snake");
+const Config = require("./../config.js");
 
-module.exports = class Game {
+module.exports = class CompetitiveGame {
     constructor(socket, highscoreService) {
         this.running = false;
         this.shouldQuit = false;
@@ -13,8 +14,8 @@ module.exports = class Game {
             game: this,
             spawn: function () {
                 let positions = [];
-                for (let i = 0; i < Config.tileCount; i++) {
-                    for (let j = 0; j < Config.tileCount; j++) {
+                for (let i = 0; i < Config.compTileCount; i++) {
+                    for (let j = 0; j < Config.compTileCount; j++) {
                         if (this.game.snake.collides(i, j)) continue;
                         positions.push({ x: i, y: j });
                     }
