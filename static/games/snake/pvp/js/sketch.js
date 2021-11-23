@@ -7,7 +7,10 @@ const context = canvas.getContext("2d");
 let config = null;
 let textures = null;
 
-const socket = io();
+const socket = io(window.location.host, {
+    path: "/snake/pvp/socket/"
+});
+console.log(window.location);
 
 function gameOver() {
     setMessageBoxContents("#game-over-template");
@@ -31,6 +34,7 @@ function setMessageBoxContents(templateID) {
 
 socket.on("game_config", message => {
     config = JSON.parse(message);
+    console.log(config)
     canvas.width = config.tileCount * config.tileSize;
     canvas.height = config.tileCount * config.tileSize;
 

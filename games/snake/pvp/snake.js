@@ -126,8 +126,8 @@ module.exports = class Snake {
     collidesBorderOrSelf() {
         if (this.pos.x === -1 ||
             this.pos.y === -1 ||
-            this.pos.x === Config.tileCount ||
-            this.pos.y === Config.tileCount
+            this.pos.x === Config.pvpTileCount ||
+            this.pos.y === Config.pvpTileCount
         ) return true;
         for (let i = 0; i < this.tail.length; i++) {
             if (this.headCollides(this.tail[i].x, this.tail[i].y)) {

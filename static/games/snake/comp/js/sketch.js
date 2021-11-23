@@ -4,7 +4,9 @@ const messageBox = document.querySelector(".message-box");
 const canvas = document.getElementById("game-canvas");
 const context = canvas.getContext("2d");
 
-const socket = io();
+const socket = io("localhost:3000" ,{
+    path: "/snake/comp/socket/"
+});
 
 let Config = null;
 let textures = null;
@@ -47,7 +49,7 @@ function submitInfo() {
 
     if (!errors) {
         socket.emit("player_info", { name: name, message: message });
-        window.location = "snake/comp/leaderboard"
+        window.location = "comp/leaderboard"
     }
 }
 

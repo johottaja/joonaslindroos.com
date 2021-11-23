@@ -3,13 +3,13 @@
 <head>
 	<meta charset="UTF-8">
 	<title>SnakeGame</title>
-	<link rel="stylesheet" type="text/css" href="games/snake/pvp/css/game.css">
-	<link rel="stylesheet" type="text/css" href="/style.css">
+	<link rel="stylesheet" type="text/css" href="../../games/snake/pvp/css/game.css">
+	<link rel="stylesheet" type="text/css" href="../../games/snake/style.css">
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
-	<script type="text/javascript" src="../socket.io/socket.io.js"></script>
-	<script type="text/javascript" src="games/snake/pvp/js/textures.js"></script>
-	<script type="text/javascript" defer src="games/snake/pvp/js/sketch.js"></script>
+	<script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+	<script type="text/javascript" src="../../games/snake/pvp/js/textures.js"></script>
+	<script type="text/javascript" defer src="../../games/snake/pvp/js/sketch.js"></script>
 </head>
 <body>
 	<div class="main">
@@ -37,7 +37,7 @@
 	<template id="game-over-template">
 		<p id="game-over-text">Game over!</p>
 		<button class="restart-button" type="submit">Restart</button>
-		<script type="text/javascript">
+		<script nonce="<%= nonce %>" type="text/javascript">
 			document.querySelector(".restart-button").onclick = () => {
 				socket.disconnect();
 				window.location = "/";
