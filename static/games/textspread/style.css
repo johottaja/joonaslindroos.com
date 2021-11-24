@@ -1,0 +1,90 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    background: #ffffff;
+}
+
+.mContainer {
+    background: linear-gradient(to right, #67e9f7, #ff82df);
+    color: #828282;
+}
+
+.title {
+    width: 100%;
+    text-align: center;
+    font-size: 3vw;
+    border-top: 2px #828282 dashed;
+}
+
+#colorscheme {
+    background: #ffffff;
+    border: 1px #828282 solid;
+    color: #828282;
+    width: 90%;
+    margin-left: 2%;
+}
+
+#spreadpoints {
+    background: #ffffff;
+    border: 1px #828282 solid;
+    color: #828282;
+    width: 90%;
+    margin-left: 2%;
+}
+
+#textinput {
+    background: #ffffff;
+    border: 1px #828282 solid;
+    color: #828282;
+    width: 90%;
+    margin-left: 2%;
+}
+
+#style {
+    background: #ffffff;
+    border: 1px #828282 solid;
+    color: #828282;
+    width: 90%;
+    margin-left: 2%;
+}
+
+.start-btn {
+    width: 150px;;
+}
+
+#gotoOptions {
+    position: absolute;
+    z-index: 1;
+    color: #828282;
+    background: #ffffff;
+    margin: 0;
+    padding: 1%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    font-size: 1.5vw;
+    border-left: 1px #828282 dashed;
+    border-right: 1px #828282 dashed;
+    border-bottom: 1px #828282 dashed;
+    border-radius: 5px;
+}
+
+.btncontainer {
+    margin: 1% auto
+}
+
+label {
+    margin-left: 2%;
+}
+
+@media screen and (max-width: 500px){
+    .title {
+        font-size: 3vh;
+    }
+
+    #gotoOptions {
+        font-size: 2vh;
+    }
+}

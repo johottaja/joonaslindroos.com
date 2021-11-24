@@ -1,0 +1,121 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto Slab', serif;
+}
+
+.mContainer {
+    background: linear-gradient(to right, #67e9f7, #67f773);
+    color: #828282;
+}
+
+.title {
+    border-top: 5px #828282 dashed;
+    width: 100%;
+    text-align: center;
+    font-size: 3vw;
+}
+
+#colorscheme {
+    background: #ffffff;
+    border: 1px #828282 solid;
+    color: #828282;
+    width: 90%;
+    margin-left: 2%;
+}
+
+#gravity {
+    background: #ffffff;
+    border: 1px #828282 solid;
+    color: #828282;
+    width: 90%;
+    margin-left: 2%;
+}
+
+#origin {
+    background: #ffffff;
+    border: 1px #828282 solid;
+    color: #828282;
+    width: 90%;
+    margin-left: 2%;
+}
+
+#style {
+    background: #ffffff;
+    border: 1px #828282 solid;
+    color: #828282;
+    width: 90%;
+    margin-left: 2%;
+}
+
+#explosionAmount {
+    background: #ffffff;
+    border: 1px #828282 solid;
+    color: #828282;
+    width: 90%;
+    margin-left: 2%;
+}
+
+#shootinterval {
+    background: #ffffff;
+    border: 1px #828282 solid;
+    color: #828282;
+    width: 90%;
+    margin-left: 2%;
+}
+
+
+#gotoOptions {
+    position: absolute;
+    z-index: 1;
+    color: #828282;
+    margin: 0;
+    padding: 1%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    font-size: 1.5vw;
+    border-left: 1px #828282 dashed;
+    border-right: 1px #828282 dashed;
+    border-bottom: 1px #828282 dashed;
+    border-radius: 5px;
+}
+
+.start-btn {
+    width: 150px;;
+    background: white;
+    border: 1px #828282 solid;
+    color: #828282;
+}
+
+.start-btn:hover {
+    transform: scale(1.1);
+}
+
+.unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.btncontainer {
+    margin: 1% auto;
+}
+
+label {
+    margin-left: 2%;
+}
+
+@media screen and (max-width: 500px){
+    .title {
+        font-size: 3vh;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    #gotoOptions {
+        font-size: 2vh;
+    }
+}

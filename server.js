@@ -1,7 +1,7 @@
-const express = require("express"); //TODO: integrate pvp snake
-const path = require("path");
-const bodyParser = require("body-parser");
-const cookieSession = require('cookie-session');
+const express = require("express"); //TODO: Use bootstrap from this server in fireworks and textspread
+const path = require("path"); // TODO: set icon visible everywhere
+const bodyParser = require("body-parser"); //TODO: 404 and 500 error codes or migrate other apps here
+const cookieSession = require('cookie-session'); // TODO: take the screenshots for pvp and comp snakes and integrate it
 const helmet = require("helmet");
 const http = require("http");
 const { Server } = require("socket.io");
@@ -32,8 +32,6 @@ app.use(cookieSession({
     name: "session",
     keys: ["fdöskaflkdsavmsdakaädasdlas", "fjdlakfndsvkhsdatjsdagnfdm", "fhdsjflsdanvnsdaj"]
 }));
-
-//TODO: 404 and 500 error codes or migrate other apps here
 
 app.use(helmet());
 app.use(express.static(path.join(__dirname, "./static")));

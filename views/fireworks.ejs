@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Animations</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../games/fireworks/style.css">
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+        <script type="text/javascript" src="../p5/p5.js"></script>
+        <script type="text/javascript" src="../p5/p5.dom.js"></script>
+        <script type="text/javascript" src="../games/fireworks/particles.js"></script>
+        <script type="text/javascript" defer src="../games/fireworks/sketch.js"></script>
+    </head>
+    <body>
+        <p id="gotoOptions" class="unselectable">Press this or scroll down for options</p>
+        <div class="fluid-container mContainer">
+            <div class="row mRow">
+                <div class="col-12">
+                    <div id="cs"></div>
+                </div>
+            </div>
+            <div class="row mRow" id="options">
+                <div class="col-12">
+                    <p class="title">OPTIONS</p>
+                </div>
+            </div>
+            <div class="row mRow options">
+                <div class="col-12 mCol">
+                    <form>
+                        <div class="form-row">
+                            <div class="form-group col-md-6 mCol">
+                                <label for="colorscheme">Color Scheme</label>
+                                <select id="colorscheme" class="form-control">
+                                    <option selected>Cartoony</option>
+                                    <option>Crystal</option>
+                                    <option>Rainbow</option>
+                                    <option>Nature</option>
+                                    <option>Blue Shades</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6 mCol">
+                                <label for="gravity">Gravity</label>
+                                <select id="gravity" class="form-control">
+                                    <option>Zero</option>
+                                    <option>Low</option>
+                                    <option selected>Medium</option>
+                                    <option>High</option>
+                                    <option>Extreme</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6 mCol">
+                                <label for="origin">Starting point</label>
+                                <select id="origin" class="form-control">
+                                    <option selected>Bottom</option>
+                                    <option>Top</option>
+                                    <option>Middle</option>
+                                    <option>Left</option>
+                                    <option>Right</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6 mCol">
+                                <label for="shootinterval">Shoot gap</label>
+                                <select id="shootinterval" class="form-control">
+                                    <option>Very small</option>
+                                    <option>Small</option>
+                                    <option selected>Medium</option>
+                                    <option>Big</option>
+                                    <option>Very big</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6 mCol">
+                                <label for="style">Style</label>
+                                <select id="style" class="form-control">
+                                    <option selected>Default</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6 mCol">
+                                <label for="explosionAmount">Explosion particle Amount</label>
+                                <select id="explosionAmount" class="form-control">
+                                    <option>Few</option>
+                                    <option>Some</option>
+                                    <option selected>Default</option>
+                                    <option>Many</option>
+                                    <option>A lot</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group-12 btncontainer">
+                                <button id="refreshbutton" class="start-btn btn btn-primary">Refresh Animation</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

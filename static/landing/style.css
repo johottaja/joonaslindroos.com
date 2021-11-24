@@ -1,0 +1,58 @@
+header {
+    width: 100%;
+    font-size: 75px;
+    text-align: center;
+    padding: 2% 0;
+    color: #fff;
+    font-family: 'Pacifico', cursive;
+    border-bottom: 5px #cccdce solid;
+    background: linear-gradient(to right, #0080ff 20%, #00bfff);
+    box-shadow: 0 2px 10px 2px #000;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.mContainer {
+    font-family: 'Josefin+Sans', cursive;
+    text-align: center;
+    color: #ffffff;
+}
+
+.TA {
+    border: 5px #cccdce solid;
+    border-radius: 10px;
+    background: linear-gradient(to right, #0080ff 20%, #00bfff);
+    margin: 1%;
+}
+
+.TA img {
+    margin-top: 3%;
+    width: 80%;
+    border: 2px #ffffff solid;
+    border-radius: 10px;
+    filter: grayscale(100%);
+    transition-duration: 1000ms;
+    margin-bottom: 2%;
+}
+
+.TA a {
+    font-size: 2vw;
+    color: #ffffff;
+    transition-duration: 1000ms;
+}
+
+.TA img:hover {
+    cursor: pointer;
+    transform: scale(1.15);
+    filter: grayscale(0%);
+    box-shadow: 0 0 10px 5px #000;
+}
+
+#game-canvas {
+    top: 0;
+    position: absolute;
+    z-index: -1;
+}
