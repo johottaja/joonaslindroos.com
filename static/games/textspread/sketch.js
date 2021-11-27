@@ -11,7 +11,7 @@ const MAXFONTSIZE = 180;
 const MINFONTSIZE = 30;
 
 function preload() {
-    font = loadFont('../res/AvenirNextLTPro-Demi.otf');
+    font = loadFont('../res/fonts/AvenirNextLTPro-Demi.otf');
 }
 
 function setup() {
@@ -110,9 +110,10 @@ function updateFPS(dt) {
     }
 }
 
-document.getElementById("startbutton").addEventListener("click", e => {
+document.querySelector("#startbutton").addEventListener("click", e => {
     e.preventDefault();
     runAnim();
+    canvas.scrollIntoView(true);
 })
 
 const SpreadPoints = {

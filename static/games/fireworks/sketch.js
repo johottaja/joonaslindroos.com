@@ -96,11 +96,6 @@ function updateFPS(dt) {
     }
 }
 
-document.getElementById("refreshbutton").addEventListener("click", e => {
-    e.preventDefault();
-    createSystem();
-}) ;
-
 const ColorSchemes = {
     "Cartoony": ["#4EB691", "#F2973B", "#B0CC41", "#5955A0", "#E42B30"],
     "Crystal": ["#1D87BA", "#1AB09D", "#F8F2AB", "#F192D9", "#CC84F8"],
@@ -152,6 +147,10 @@ function removeHint() {
     });
     showHint = false;
 }
+
+document.querySelector("#options-form").onchange = function() {
+    createSystem();
+};
 
 document.querySelector("#gotoOptions").onclick = function() {
     document.getElementById('options').scrollIntoView(true);

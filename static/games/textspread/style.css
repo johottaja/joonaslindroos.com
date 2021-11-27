@@ -1,6 +1,7 @@
 * {
     margin: 0;
     padding: 0;
+    font-family: 'JosefinSans', sans-serif;
 }
 
 html, body {
@@ -52,7 +53,8 @@ html, body {
 }
 
 .start-btn {
-    width: 150px;;
+    width: 150px;
+    margin: 2%;
 }
 
 #gotoOptions {
@@ -73,6 +75,10 @@ html, body {
 
 .btncontainer {
     margin: 1% auto
+}
+
+.form-control {
+    margin-bottom: 2%;
 }
 
 label {

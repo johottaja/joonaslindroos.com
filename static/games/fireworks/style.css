@@ -1,7 +1,7 @@
 * {
     margin: 0;
     padding: 0;
-    font-family: 'Roboto Slab', serif;
+    font-family: 'JosefinSans', sans-serif;
 }
 
 .mContainer {
@@ -80,17 +80,6 @@
     border-radius: 5px;
 }
 
-.start-btn {
-    width: 150px;;
-    background: white;
-    border: 1px #828282 solid;
-    color: #828282;
-}
-
-.start-btn:hover {
-    transform: scale(1.1);
-}
-
 .unselectable {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -100,8 +89,8 @@
     user-select: none;
 }
 
-.btncontainer {
-    margin: 1% auto;
+.form-control {
+    margin-bottom: 2%;
 }
 
 label {

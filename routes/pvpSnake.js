@@ -58,26 +58,26 @@ module.exports = (params) => {
         const code = request.body.code;
         if (games.has(code)) {
             request.session.errorMessage = `Code ${code} is already in use`;
-            return response.redirect("/");
+            return response.redirect("/snake/pvp");
         }
         if (games.size >= MAX_GAMES) {
             request.session.errorMessage = "Servers are full. Try again in a few minutes."
-            return response.redirect("/");
+            return response.redirect("/snake/pvp");
         }
 
         games.set(code, new PvPGame(pvpIoServer, code));
-        return response.redirect("/");
+        return response.redirect("/snake/pvp/play");
     });
 
     router.post("/join", (request, response) => {
         const code = request.body.code;
         if (!games.has(code)) {
             request.session.errorMessage = `Game with code ${code} does not exist`;
-            return response.redirect("/");
+            return response.redirect("/snake/pvp");
         }
         if (games.get(code).isFull()) {
             request.session.errorMessage = `Game with code ${code} is already in progress`;
-            return response.redirect("/");
+            return response.redirect("/snake/pvp");
         }
         response.redirect("/snake/pvp/play");
     });

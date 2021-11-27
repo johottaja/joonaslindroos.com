@@ -1,41 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>Welcome</title>
+    <%- include("metatags")%>
+    <meta name="keywords" content="website, personal website, snake, snake game, text animation, firework animation,
+portfolio">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
     <link href="landing/style.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-    <script type="text/javascript" defer src="landing/sketch.js"></script>
+    <link rel="stylesheet" type="text/css" href="/res/fonts/Pacifico.css">
+    <link rel="stylesheet" type="text/css" href="/res/fonts/JosefinSans.css">
+    <script type="text/javascript" defer src="/landing/sketch.js"></script>
 </head>
 <body>
     <header>Joonas Lindroos</header>
     <div class="container-fluid mContainer">
         <div class="row justify-content-center mRow">
             <div class="col-md-5 col-sm-8 mCol TA">
-                <a>Snake</a>
+                <a>1 Player Snake</a>
                 <br/>
-                <img alt="Snake image" id="snake-image" src="res/Snake.png">
+                <img alt="Snake image" id="snake-comp-image" src="/res/images/SnakeComp.png">
             </div>
             <div class="col-md-5 col-sm-8 mCol TA">
-                <a>Text spread animation</a>
+                <a>2 Player Snake</a>
                 <br/>
-                <img alt="Text spread animation image" id="text-spread-image" src="res/TextAnimation.png">
+                <img alt="Snake image" id="snake-pvp-image" src="/res/images/SnakePvP.png">
             </div>
         </div>
         <div class="row justify-content-center mRow">
             <div class="col-md-5 col-sm-8 mCol TA">
                 <a>Firework animation</a>
                 <br/>
-                <img alt="Firework animation image" id="firework-image" src="res/FireworkAnimation.png">
+                <img alt="Firework animation image" id="firework-image" src="/res/images/FireworkAnimation.png">
+            </div>
+            <div class="col-md-5 col-sm-8 mCol TA">
+                <a>Text spread animation</a>
+                <br/>
+                <img alt="Text spread animation image" id="text-spread-image" src="/res/images/TextAnimation.png">
             </div>
         </div>
     </div>
     <canvas id="game-canvas"></canvas>
     <script type="text/javascript" nonce="<%= nonce %>">
-        document.querySelector("#snake-image").onclick = function() {
-            window.location = "snake/comp/"
+        document.querySelector("#snake-comp-image").onclick = function() {
+            window.location.href = "snake/comp/"
+        }
+        document.querySelector("#snake-pvp-image").onclick = function() {
+            window.location.href = "snake/pvp/"
         }
         document.querySelector("#text-spread-image").onclick = function() {
             window.location = "textspread/"

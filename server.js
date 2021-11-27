@@ -1,9 +1,9 @@
-const express = require("express"); //TODO: Use bootstrap from this server in fireworks and textspread
-const path = require("path"); // TODO: set icon visible everywhere
-const bodyParser = require("body-parser"); //TODO: 404 and 500 error codes or migrate other apps here
+const express = require("express"); //TODO: Optimize landing page loading
+const path = require("path");
+const bodyParser = require("body-parser"); //TODO: 404 and 500 error codes
 const cookieSession = require('cookie-session'); // TODO: take the screenshots for pvp and comp snakes and integrate it
-const helmet = require("helmet");
-const http = require("http");
+const helmet = require("helmet"); //TODO: Tell the player which is which in pvp snake
+const http = require("http"); //TODO: Move fonts to serverside
 const { Server } = require("socket.io");
 
 const HighscoreService = require("./HighscoreService");
