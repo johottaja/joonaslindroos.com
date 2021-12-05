@@ -1,9 +1,9 @@
-const express = require("express"); //TODO: Optimize landing page loading
+const express = require("express");
 const path = require("path");
-const bodyParser = require("body-parser"); //TODO: 404 and 500 error codes
-const cookieSession = require('cookie-session'); // TODO: take the screenshots for pvp and comp snakes and integrate it
-const helmet = require("helmet"); //TODO: Tell the player which is which in pvp snake
-const http = require("http"); //TODO: Move fonts to serverside
+const bodyParser = require("body-parser");
+const cookieSession = require('cookie-session');
+const helmet = require("helmet");
+const http = require("http");
 const { Server } = require("socket.io");
 
 const HighscoreService = require("./HighscoreService");

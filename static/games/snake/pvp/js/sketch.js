@@ -54,8 +54,13 @@ socket.on("game_state", gameStateRaw => {
 socket.on("display_message", message => {
     if (message) {
         showMessageBox();
-        if (message === "instructions") {
+        if (message === "instructionsP1") {
             setMessageBoxContents("#instructions-template");
+            document.querySelector("#instructions-sideteller").textContent = "You are purple";
+            return;
+        } else if (message === "instructionsP2") {
+            setMessageBoxContents("#instructions-template");
+            document.querySelector("#instructions-sideteller").textContent = "You are yellow";
             return;
         }
         setMessageBoxContents("#message-display-template");

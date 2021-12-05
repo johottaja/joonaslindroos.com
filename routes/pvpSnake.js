@@ -52,8 +52,9 @@ module.exports = (params) => {
     router.get("/", (request, response) => {
         const errorMessage = (request.session.errorMessage || "");
         request.session.errorMessage = "";
-        response.render("snake/pvp/landing", {errorMessage: errorMessage});
-    })
+        return response.render("snake/pvp/landing", {errorMessage: errorMessage});
+    });
+
     router.post("/create", (request, response) => {
         const code = request.body.code;
         if (games.has(code)) {
@@ -79,7 +80,7 @@ module.exports = (params) => {
             request.session.errorMessage = `Game with code ${code} is already in progress`;
             return response.redirect("/snake/pvp");
         }
-        response.redirect("/snake/pvp/play");
+        return response.redirect("/snake/pvp/play");
     });
 
     router.get("/play", (request, response) => {
@@ -97,7 +98,7 @@ module.exports = (params) => {
 
         response.set("Content-Security-Policy", csp);
 
-        response.render("snake/pvp/game", {nonce});
+        return response.render("snake/pvp/game", {nonce});
     });
 
 

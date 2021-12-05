@@ -1,5 +1,6 @@
 const express = require("express");
 const crypto = require("crypto");
+const createError = require("http-errors");
 
 const pvpSnakeRoute = require("./pvpSnake")
 const compSnakeRoute = require("./compSnake")
@@ -40,10 +41,25 @@ module.exports = (params) => {
     });
 
     //Other routes
+    router.get("/error", (request, response) => {
+        response.render("error", { code: 404, message: "the page was not found" })
+    });
+
     router.use("/snake/comp", compSnakeRoute(params));
     router.use("/snake/pvp", pvpSnakeRoute(params))
     router.use("/snake/comp/leaderboard", leaderboardRoute({ highscoreService }));
     router.use("/api", scoreApiRoute({ highscoreService })); //TODO: Maybe move the api route to snake/comp/
+
+    router.use((request, response, next) => {
+       return next(createError(404, "The page wasn't found"));
+    });
+
+    router.use((error, request, response, next) => {
+        const status = error.status || 500;
+        console.log(error);
+        response.status(status);
+        return response.render("error", { code: status, message: error.message || "An unexpected error has occurred" })
+    });
 
     return router;
 }

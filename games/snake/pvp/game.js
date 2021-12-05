@@ -139,7 +139,7 @@ module.exports = class PvPGame {
                 this.shouldQuit = true;
                 this.io.to(this.code).emit("display_message","Opponent disconnected");
             });
-            this.player1.emit("display_message", "instructions");
+            this.player1.emit("display_message", "instructionsP1");
 
         } else if (!this.player2) {
             this.player2 = socket;
@@ -167,7 +167,7 @@ module.exports = class PvPGame {
                 this.shouldQuit = true;
                 this.io.to(this.code).emit("display_message", "Opponent disconnected");
             });
-            this.player2.emit("display_message", "instructions");
+            this.player2.emit("display_message", "instructionsP2");
         } else {
             return false;
         }

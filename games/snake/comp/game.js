@@ -67,7 +67,12 @@ module.exports = class CompetitiveGame {
                 this.socket.disconnect();
                 return;
             }
-            this.highscoreService.setNewHighscore(info);
+
+            try {
+                this.highscoreService.setNewHighscore(info);
+            } catch (err) {
+                console.log("Saving to database failed");
+            }
             this.socket.disconnect();
         })
     }
