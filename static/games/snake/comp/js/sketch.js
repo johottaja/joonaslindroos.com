@@ -49,7 +49,7 @@ function submitInfo() {
 
     if (!errors) {
         socket.emit("player_info", { name: name, message: message });
-        window.location.href = "/comp/leaderboard"
+        window.location.href = "/snake/comp/leaderboard"
     }
 }
 

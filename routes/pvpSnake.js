@@ -1,12 +1,12 @@
 const express = require("express");
 const PvPGame = require("./../games/snake/pvp/game");
 const crypto = require("crypto");
+const Config = require("../games/snake/config");
 
 const router = express.Router();
 
 module.exports = (params) => {
 
-    const Config = params.Config;
     const pvpIoServer = params.pvpIoServer;
 
     pvpIoServer.on("connection", socket => {

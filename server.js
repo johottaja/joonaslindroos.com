@@ -8,7 +8,6 @@ const { Server } = require("socket.io");
 
 const HighscoreService = require("./HighscoreService");
 const routes = require("./routes/index");
-const Config = require("./games/snake/config"); //TODO: get rid of this
 
 const app = express();
 const server = http.createServer(app);
@@ -40,6 +39,6 @@ app.use(bodyParser.json());
 
 app.use("/css", express.static(path.join(__dirname, "./node_modules/bootstrap/dist/css")));
 
-app.use(routes({ highscoreService, compIoServer, pvpIoServer, Config }));
+app.use(routes({ highscoreService, compIoServer, pvpIoServer }));
 
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));

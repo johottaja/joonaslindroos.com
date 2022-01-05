@@ -1,12 +1,12 @@
 const express = require("express");
 const CompetitiveGame = require("./../games/snake/comp/game");
 const crypto = require("crypto");
+const Config = require("../games/snake/config");
 
 const router = express.Router();
 
 module.exports = (params) => {
 
-    const Config = params.Config;
     const compIoServer = params.compIoServer;
     const highscoreService = params.highscoreService;
 

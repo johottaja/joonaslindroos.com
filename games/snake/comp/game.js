@@ -71,7 +71,7 @@ module.exports = class CompetitiveGame {
             try {
                 this.highscoreService.setNewHighscore(info);
             } catch (err) {
-                console.log("Saving to database failed");
+                console.log("Saving score failed");
             }
             this.socket.disconnect();
         })

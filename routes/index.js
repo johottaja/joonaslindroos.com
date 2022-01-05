@@ -51,7 +51,7 @@ module.exports = (params) => {
     router.use("/api", scoreApiRoute({ highscoreService })); //TODO: Maybe move the api route to snake/comp/
 
     router.use((request, response, next) => {
-       return next(createError(404, "The page wasn't found"));
+       return response.render("error", { code: 404, message: "The page was not found"})
     });
 
     router.use((error, request, response, next) => {
