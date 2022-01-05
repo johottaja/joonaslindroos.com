@@ -37,11 +37,14 @@
 	</template>
 	<template id="game-over-template">
 		<p id="game-over-text">Game over!</p>
-		<button class="restart-button" type="submit">Restart</button>
+		<button class="restart-button">Restart</button>
 		<script nonce="<%= nonce %>" type="text/javascript">
-			document.querySelector(".restart-button").onclick = () => {
-				socket.disconnect();
-				window.location = "/";
+			document.querySelector(".restart-button").onclick = function() {
+				socket.emit("get_game_config");
+				socket.emit("ready");
+				setMessageBoxContents("#message-display-template");
+				document.querySelector("#message-display").innerHTML = "Waiting for opponent";
+				showMessageBox()
 			}
 		</script>
 	</template>

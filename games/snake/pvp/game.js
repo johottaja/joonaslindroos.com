@@ -1,5 +1,6 @@
 const Config = require("./../config.js");
 const Snake = require("./snake.js")
+const {init} = require("express/lib/middleware/init");
 
 module.exports = class PvPGame {
     constructor(io, code) {
@@ -12,8 +13,8 @@ module.exports = class PvPGame {
         this.player2 = null;
         this.player1Ready = false;
         this.player2Ready = false;
-        this.snake1 = new Snake(this, Math.floor(Config.pvpTileCount / 3), Config.pvpTileCount - 2);
-        this.snake2 = new Snake(this, Math.floor(Config.pvpTileCount / 3 * 2), Config.pvpTileCount - 2);
+        this.snake1 = null;
+        this.snake2 = null;
         this.apple = {
             x: 0,
             y: 0,
@@ -37,6 +38,18 @@ module.exports = class PvPGame {
                 }
             }
         }
+
+        this.initialize();
+    }
+
+    initialize() {
+        this.running = false;
+        this.shouldQuit = false;
+        this.started = false;
+        this.player1Ready = false;
+        this.player2Ready = false;
+        this.snake1 = new Snake(this, Math.floor(Config.pvpTileCount / 3), Config.pvpTileCount - 2);
+        this.snake2 = new Snake(this, Math.floor(Config.pvpTileCount / 3 * 2), Config.pvpTileCount - 2);
         this.apple.spawn();
     }
 
@@ -95,7 +108,7 @@ module.exports = class PvPGame {
                 this.player2.emit("game_over", "You lost!");
             }
             this.running = false;
-            this.shouldQuit = true;
+            this.initialize();
         }
 
         this.player1.emit("update_length", this.snake1.trueLength);
@@ -131,6 +144,11 @@ module.exports = class PvPGame {
                 }
             });
 
+            this.player1.on("ready", () => {
+                this.player1Ready = true;
+                this.tryStart();
+            });
+
             this.player1.on("disconnect", () => {
                 if (this.shouldQuit) {
                     return;
@@ -157,6 +175,11 @@ module.exports = class PvPGame {
                     }
                     this.tryStart();
                 }
+            });
+
+            this.player2.on("ready", () => {
+                this.player2Ready = true;
+                this.tryStart();
             });
 
             this.player2.on("disconnect", () => {

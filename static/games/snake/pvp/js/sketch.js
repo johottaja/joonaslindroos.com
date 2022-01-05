@@ -6,11 +6,11 @@ const context = canvas.getContext("2d");
 
 let config = null;
 let textures = null;
+let player = 1;
 
 const socket = io(window.location.host, {
     path: "/snake/pvp/socket/"
 });
-console.log(window.location);
 
 function gameOver() {
     setMessageBoxContents("#game-over-template");
@@ -34,7 +34,6 @@ function setMessageBoxContents(templateID) {
 
 socket.on("game_config", message => {
     config = JSON.parse(message);
-    console.log(config)
     canvas.width = config.tileCount * config.tileSize;
     canvas.height = config.tileCount * config.tileSize;
 
@@ -55,10 +54,12 @@ socket.on("display_message", message => {
     if (message) {
         showMessageBox();
         if (message === "instructionsP1") {
+            player = 1
             setMessageBoxContents("#instructions-template");
             document.querySelector("#instructions-sideteller").textContent = "You are purple";
             return;
         } else if (message === "instructionsP2") {
+            player = 2;
             setMessageBoxContents("#instructions-template");
             document.querySelector("#instructions-sideteller").textContent = "You are yellow";
             return;
@@ -81,17 +82,13 @@ socket.on("update_length", length => {
 });
 
 socket.on("redirect", () => {
-    window.location = "/";
-});
-
-socket.on("debug", (message) => {
-    console.log(message);
+    window.location = "/snake/pvp";
 });
 
 function start() {
     const code = document.cookie.split("=")[1];
     if (!code) {
-        window.location = "/";
+        window.location = "/snake/pvp";
     }
     socket.emit("join_game", code);
     scoreCounter.textContent = `Code: ${code}`;
