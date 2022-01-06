@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>SnakeGame</title>
+    <%- include("./../../metatags")%>
+    <link rel="stylesheet" type="text/css" href="/games/snake/pvp/local/css/game.css">
+    <link rel="stylesheet" type="text/css" href="/games/snake/style.css">
+    <link rel="stylesheet" type="text/css" href="/res/fonts/JosefinSans.css">
+    <script type="text/javascript" src="/games/snake/pvp/local/js/config.js"></script>
+    <script type="text/javascript" src="/games/snake/pvp/local/js/snake.js"></script>
+    <script type="text/javascript" src="/games/snake/pvp/local/js/game.js"></script>
+    <script type="text/javascript" defer src="/games/snake/pvp/local/js/sketch.js"></script>
+</head>
+<body>
+    <div class="main">
+        <div class="message-box">
+            <p>This is a message box.</p>
+        </div>
+        <div class="score-counter-container">
+            <p class="score-counter">5 - 5</p>
+        </div>
+        <div class="canvas-container">
+            <canvas id="game-canvas"></canvas>
+        </div>
+    </div>
+    <template id="instructions-template">
+        <div class="instructions">
+            <p>Crash the other player to win.</p>
+            <p>Ready up by pressing any of the keys.</p>
+            <br/>
+            <p style="color: red;" id="player1-ready">Purple (WASD) </p>
+            <p style="color: red;" id="player2-ready">Yellow (Arrow keys)</p>
+        </div>
+        <div class="timer" style="display: none;">
+            <span id="game-start-timer">3</span>
+        </div>
+    </template>
+    <template id="game-over-template">
+        <p id="game-over-text">Game over!</p>
+        <button class="restart-button" type="submit">Restart</button>
+        <script type="text/javascript" nonce="<%= nonce %>">
+            document.querySelector(".restart-button").onclick = () => {
+                window.location.reload();
+            }
+        </script>
+    </template>
+</body>
+</html>

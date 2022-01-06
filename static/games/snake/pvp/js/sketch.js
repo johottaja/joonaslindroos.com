@@ -77,8 +77,9 @@ socket.on("game_over", message => {
     showMessageBox();
 });
 
-socket.on("update_length", length => {
-    scoreCounter.textContent = length;
+socket.on("update_length", lengths => {
+    lengths = JSON.parse(lengths);
+    scoreCounter.textContent = `${lengths.me} - ${lengths.other}`;
 });
 
 socket.on("redirect", () => {

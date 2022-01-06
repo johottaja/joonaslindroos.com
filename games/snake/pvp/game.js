@@ -107,13 +107,16 @@ module.exports = class PvPGame {
                 this.player1.emit("game_over", "You won!");
                 this.player2.emit("game_over", "You lost!");
             }
+        }
+
+        this.player1.emit("update_length", JSON.stringify({me: this.snake1.trueLength, other: this.snake2.trueLength }));
+        this.player2.emit("update_length", JSON.stringify({me: this.snake2.trueLength, other: this.snake1.trueLength }));
+        this.io.to(this.code).emit("game_state", JSON.stringify(this.toString()));
+
+        if (p1died || p2died) {
             this.running = false;
             this.initialize();
         }
-
-        this.player1.emit("update_length", this.snake1.trueLength);
-        this.player2.emit("update_length", this.snake2.trueLength);
-        this.io.to(this.code).emit("game_state", JSON.stringify(this.toString()));
     }
 
     toString() {
