@@ -1,6 +1,7 @@
 #game-canvas {
     border: 4px var(--border-color) solid;
     border-radius: 10px;
+    overflow: hidden;
 }
 
 .canvas-container {

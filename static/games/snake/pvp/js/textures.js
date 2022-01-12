@@ -1,28 +1,28 @@
 function createCornerBuffer(color) {
     const temp = document.createElement("canvas");
-    temp.width = config.tileSize;
-    temp.height = config.tileSize;
+    temp.width = Config.tileSize;
+    temp.height = Config.tileSize;
     const ctx = temp.getContext("2d");
     ctx.fillStyle = color;
     ctx.beginPath();
-    const middlePoint = config.tileSize - config.snakeGap
-    ctx.arc(middlePoint, middlePoint, middlePoint - config.snakeGap, Math.PI, Math.PI * 1.5);
+    const middlePoint = Config.tileSize - Config.snakeGap
+    ctx.arc(middlePoint, middlePoint, middlePoint - Config.snakeGap, Math.PI, Math.PI * 1.5);
     ctx.lineTo(middlePoint, middlePoint);
     ctx.lineTo(0, middlePoint);
-    ctx.fillRect(middlePoint, config.snakeGap, config.snakeGap, middlePoint - config.snakeGap);
-    ctx.fillRect(config.snakeGap, middlePoint, middlePoint - config.snakeGap, config.snakeGap);
+    ctx.fillRect(middlePoint, Config.snakeGap, Config.snakeGap, middlePoint - Config.snakeGap);
+    ctx.fillRect(Config.snakeGap, middlePoint, middlePoint - Config.snakeGap, Config.snakeGap);
     ctx.fill();
     return temp;
 }
 
 function createRotatedContext(base, times = 1) {
     const temp = document.createElement("canvas");
-    temp.width = config.tileSize;
-    temp.height = config.tileSize;
+    temp.width = Config.tileSize;
+    temp.height = Config.tileSize;
     const ctx = temp.getContext("2d");
     ctx.save();
     for (let i = 0; i < times; i++) {
-        ctx.translate(config.tileSize, 0);
+        ctx.translate(Config.tileSize, 0);
         ctx.rotate(90 * Math.PI / 180);
     }
     ctx.drawImage(base, 0, 0);
@@ -30,23 +30,23 @@ function createRotatedContext(base, times = 1) {
     return temp;
 }
 
-function createHeadTextures(color, errorSquare, config) {
+function createHeadTextures(color, errorSquare, Config) {
     const head = document.createElement("canvas");
-    head.width = config.tileSize;
-    head.height = config.tileSize;
+    head.width = Config.tileSize;
+    head.height = Config.tileSize;
     const ctx = head.getContext("2d");
     ctx.fillStyle = color;
     ctx.fillRect(
-        config.snakeGap,
-        config.tileSize / 2,
-        config.tileSize - config.snakeGap * 2,
-        config.tileSize / 2
+        Config.snakeGap,
+        Config.tileSize / 2,
+        Config.tileSize - Config.snakeGap * 2,
+        Config.tileSize / 2
     );
     ctx.beginPath();
     ctx.arc(
-        config.tileSize / 2,
-        config.tileSize / 2,
-        (config.tileSize - config.snakeGap * 2) / 2,
+        Config.tileSize / 2,
+        Config.tileSize / 2,
+        (Config.tileSize - Config.snakeGap * 2) / 2,
         Math.PI, 0
     );
     ctx.fill();
@@ -60,20 +60,20 @@ function createHeadTextures(color, errorSquare, config) {
     ];
 }
 
-function createTailTextures(color, errorSquare, config) {
+function createTailTextures(color, errorSquare, Config) {
     const verticalStraight = document.createElement("canvas");
-    verticalStraight.width = config.tileSize;
-    verticalStraight.height = config.tileSize;
+    verticalStraight.width = Config.tileSize;
+    verticalStraight.height = Config.tileSize;
     let ctx = verticalStraight.getContext("2d");
     ctx.fillStyle = color;
-    ctx.fillRect(config.snakeGap, 0, config.tileSize - 2 * config.snakeGap, config.tileSize);
+    ctx.fillRect(Config.snakeGap, 0, Config.tileSize - 2 * Config.snakeGap, Config.tileSize);
 
     const horizontalStraight = document.createElement("canvas");
-    horizontalStraight.width = config.tileSize;
-    horizontalStraight.height = config.tileSize;
+    horizontalStraight.width = Config.tileSize;
+    horizontalStraight.height = Config.tileSize;
     ctx = horizontalStraight.getContext("2d");
     ctx.fillStyle = color;
-    ctx.fillRect(0, config.snakeGap, config.tileSize, config.tileSize - 2 * config.snakeGap);
+    ctx.fillRect(0, Config.snakeGap, Config.tileSize, Config.tileSize - 2 * Config.snakeGap);
 
     const corner = createCornerBuffer(color);
     return [
@@ -87,57 +87,57 @@ function createTailTextures(color, errorSquare, config) {
     ];
 }
 
-function createTextures(config) {
+function createTextures(Config) {
     const errorSquare = document.createElement("canvas");
-    errorSquare.width = config.tileSize;
-    errorSquare.height = config.tileSize;
+    errorSquare.width = Config.tileSize;
+    errorSquare.height = Config.tileSize;
     let ctx = errorSquare.getContext("2d");
     ctx.fillStyle = "#FF0000";
-    ctx.fillRect(0, 0, config.tileSize, config.tileSize);
+    ctx.fillRect(0, 0, Config.tileSize, Config.tileSize);
 
-    const tailTextures1 = createTailTextures(config.snakeColor1, errorSquare, config);
-    const tailTextures2 = createTailTextures(config.snakeColor2, errorSquare, config);
+    const tailTextures1 = createTailTextures(Config.snakeColor1, errorSquare, Config);
+    const tailTextures2 = createTailTextures(Config.snakeColor2, errorSquare, Config);
 
-    const headTextures1 = createHeadTextures(config.snakeColor1, errorSquare, config);
-    const headTextures2 = createHeadTextures(config.snakeColor2, errorSquare, config);
+    const headTextures1 = createHeadTextures(Config.snakeColor1, errorSquare, Config);
+    const headTextures2 = createHeadTextures(Config.snakeColor2, errorSquare, Config);
 
     const backgroundTexture = document.createElement("canvas");
     backgroundTexture.width = canvas.width;
     backgroundTexture.height = canvas.height;
     ctx = backgroundTexture.getContext("2d");
-    let color = config.bgColor1;
-    for (let i = 0; i < config.tileCount; i++) {
-        if (config.tileCount % 2 === 0) {
-            color = color === config.bgColor1 ? config.bgColor2 : config.bgColor1;
+    let color = Config.bgColor1;
+    for (let i = 0; i < Config.tileCount; i++) {
+        if (Config.tileCount % 2 === 0) {
+            color = color === Config.bgColor1 ? Config.bgColor2 : Config.bgColor1;
         }
-        for (let j = 0; j < config.tileCount; j++) {
-            color = color === config.bgColor1 ? config.bgColor2 : config.bgColor1;
+        for (let j = 0; j < Config.tileCount; j++) {
+            color = color === Config.bgColor1 ? Config.bgColor2 : Config.bgColor1;
             ctx.fillStyle = color;
             ctx.fillRect(
-                i * config.tileSize,
-                j * config.tileSize,
-                config.tileSize,
-                config.tileSize
+                i * Config.tileSize,
+                j * Config.tileSize,
+                Config.tileSize,
+                Config.tileSize
             );
         }
     }
 
     const appleTexture = document.createElement("canvas");
-    appleTexture.width = config.tileSize;
-    appleTexture.height = config.tileSize;
+    appleTexture.width = Config.tileSize;
+    appleTexture.height = Config.tileSize;
     ctx = appleTexture.getContext("2d");
     ctx.fillStyle = "#DB8979";
     ctx.beginPath();
     ctx.arc(
-        config.tileSize / 2,
-        config.tileSize / 2,
-        config.tileSize / 2 - config.snakeGap / 2,
+        Config.tileSize / 2,
+        Config.tileSize / 2,
+        Config.tileSize / 2 - Config.snakeGap / 2,
         0, Math.PI * 2
     )
     ctx.fill();
 
     return {
-        config: config,
+        Config: Config,
         headTextures1: headTextures1,
         headTextures2: headTextures2,
         tailTextures1: tailTextures1,
@@ -148,14 +148,14 @@ function createTextures(config) {
         setContext: function(ctx) {
             this.context = ctx;
         },
-        drawArena() {
+        drawBackground() {
             this.context.drawImage(backgroundTexture, 0, 0);
         },
         drawApple(apple) {
             this.context.drawImage(
                 appleTexture,
-                apple.x * this.config.tileSize,
-                apple.y * this.config.tileSize
+                apple.x * this.Config.tileSize,
+                apple.y * this.Config.tileSize
             );
         },
         drawSnake(snake, headTextures, tailTextures) {
@@ -174,15 +174,15 @@ function createTextures(config) {
 
             this.context.drawImage(
                 headTextures[headTexture],
-                snake.pos.x * config.tileSize,
-                snake.pos.y * config.tileSize
+                snake.pos.x * Config.tileSize,
+                snake.pos.y * Config.tileSize
             );
 
             snake.tail.forEach(tailPiece => {
                 this.context.drawImage(
                     tailTextures[tailPiece.textureID],
-                    tailPiece.x * config.tileSize,
-                    tailPiece.y * config.tileSize
+                    tailPiece.x * Config.tileSize,
+                    tailPiece.y * Config.tileSize
                 );
             });
         },

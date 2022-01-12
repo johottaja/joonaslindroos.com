@@ -1,16 +1,16 @@
-function createCornerBuffer(config) {
+function createCornerBuffer(Config) {
     const temp = document.createElement("canvas");
-    temp.width = config.tileSize;
-    temp.height = config.tileSize;
+    temp.width = Config.tileSize;
+    temp.height = Config.tileSize;
     const ctx = temp.getContext("2d");
-    ctx.fillStyle = config.snakeColor;
+    ctx.fillStyle = Config.snakeColor;
     ctx.beginPath();
-    const middlePoint = config.tileSize - config.snakeGap
-    ctx.arc(middlePoint, middlePoint, middlePoint - config.snakeGap, Math.PI, Math.PI * 1.5);
+    const middlePoint = Config.tileSize - Config.snakeGap
+    ctx.arc(middlePoint, middlePoint, middlePoint - Config.snakeGap, Math.PI, Math.PI * 1.5);
     ctx.lineTo(middlePoint, middlePoint);
     ctx.lineTo(0, middlePoint);
-    ctx.fillRect(middlePoint, config.snakeGap, config.snakeGap, middlePoint - config.snakeGap);
-    ctx.fillRect(config.snakeGap, middlePoint, middlePoint - config.snakeGap, config.snakeGap);
+    ctx.fillRect(middlePoint, Config.snakeGap, Config.snakeGap, middlePoint - Config.snakeGap);
+    ctx.fillRect(Config.snakeGap, middlePoint, middlePoint - Config.snakeGap, Config.snakeGap);
     ctx.fill();
     return temp;
 }
@@ -30,29 +30,29 @@ function createRotatedContext(reference, times = 1) {
     return temp;
 }
 
-function createTextures(config) {
+function createTextures(Config) {
     const verticalStraight = document.createElement("canvas");
-    verticalStraight.width = config.tileSize;
-    verticalStraight.height = config.tileSize;
+    verticalStraight.width = Config.tileSize;
+    verticalStraight.height = Config.tileSize;
     let ctx = verticalStraight.getContext("2d");
-    ctx.fillStyle = config.snakeColor;
-    ctx.fillRect(config.snakeGap, 0, config.tileSize - 2 * config.snakeGap, config.tileSize);
+    ctx.fillStyle = Config.snakeColor;
+    ctx.fillRect(Config.snakeGap, 0, Config.tileSize - 2 * Config.snakeGap, Config.tileSize);
 
     const horizontalStraight = document.createElement("canvas");
-    horizontalStraight.width = config.tileSize;
-    horizontalStraight.height = config.tileSize;
+    horizontalStraight.width = Config.tileSize;
+    horizontalStraight.height = Config.tileSize;
     ctx = horizontalStraight.getContext("2d");
-    ctx.fillStyle = config.snakeColor;
-    ctx.fillRect(0, config.snakeGap, config.tileSize, config.tileSize - 2 * config.snakeGap);
+    ctx.fillStyle = Config.snakeColor;
+    ctx.fillRect(0, Config.snakeGap, Config.tileSize, Config.tileSize - 2 * Config.snakeGap);
 
     const errorSquare = document.createElement("canvas");
-    errorSquare.width = config.tileSize;
-    errorSquare.height = config.tileSize;
+    errorSquare.width = Config.tileSize;
+    errorSquare.height = Config.tileSize;
     ctx = errorSquare.getContext("2d");
     ctx.fillStyle = "#FF0000";
-    ctx.fillRect(0, 0, config.tileSize, config.tileSize);
+    ctx.fillRect(0, 0, Config.tileSize, Config.tileSize);
 
-    const corner = createCornerBuffer(config);
+    const corner = createCornerBuffer(Config);
     const tailTextures = [
         corner,
         createRotatedContext(corner, 1),
@@ -64,21 +64,21 @@ function createTextures(config) {
     ];
 
     const head = document.createElement("canvas");
-    head.width = config.tileSize;
-    head.height = config.tileSize;
+    head.width = Config.tileSize;
+    head.height = Config.tileSize;
     ctx = head.getContext("2d");
-    ctx.fillStyle = config.snakeColor;
+    ctx.fillStyle = Config.snakeColor;
     ctx.fillRect(
-        config.snakeGap,
-        config.tileSize / 2,
-        config.tileSize - config.snakeGap * 2,
-        config.tileSize / 2
+        Config.snakeGap,
+        Config.tileSize / 2,
+        Config.tileSize - Config.snakeGap * 2,
+        Config.tileSize / 2
     );
     ctx.beginPath();
     ctx.arc(
-        config.tileSize / 2,
-        config.tileSize / 2,
-        (config.tileSize - config.snakeGap * 2) / 2,
+        Config.tileSize / 2,
+        Config.tileSize / 2,
+        (Config.tileSize - Config.snakeGap * 2) / 2,
         Math.PI, 0
     );
     ctx.fill();
@@ -92,42 +92,42 @@ function createTextures(config) {
     ];
 
     const backgroundTexture = document.createElement("canvas");
-    backgroundTexture.width = config.tileSize * config.tileCount;
-    backgroundTexture.height = config.tileSize * config.tileCount;
+    backgroundTexture.width = Config.tileSize * Config.tileCount;
+    backgroundTexture.height = Config.tileSize * Config.tileCount;
     ctx = backgroundTexture.getContext("2d");
-    let color = config.bgColor1;
-    for (let i = 0; i < config.tileCount; i++) {
-        if (config.tileCount % 2 === 0) {
-            color = color === config.bgColor1 ? config.bgColor2 : config.bgColor1;
+    let color = Config.bgColor1;
+    for (let i = 0; i < Config.tileCount; i++) {
+        if (Config.tileCount % 2 === 0) {
+            color = color === Config.bgColor1 ? Config.bgColor2 : Config.bgColor1;
         }
-        for (let j = 0; j < config.tileCount; j++) {
-            color = color === config.bgColor1 ? config.bgColor2 : config.bgColor1;
+        for (let j = 0; j < Config.tileCount; j++) {
+            color = color === Config.bgColor1 ? Config.bgColor2 : Config.bgColor1;
             ctx.fillStyle = color;
             ctx.fillRect(
-                i * config.tileSize,
-                j * config.tileSize,
-                config.tileSize,
-                config.tileSize
+                i * Config.tileSize,
+                j * Config.tileSize,
+                Config.tileSize,
+                Config.tileSize
             );
         }
     }
 
     const appleTexture = document.createElement("canvas");
-    appleTexture.width = config.tileSize;
-    appleTexture.height = config.tileSize;
+    appleTexture.width = Config.tileSize;
+    appleTexture.height = Config.tileSize;
     ctx = appleTexture.getContext("2d");
     ctx.fillStyle = "#DB8979";
     ctx.beginPath();
     ctx.arc(
-        config.tileSize / 2,
-        config.tileSize / 2,
-        config.tileSize / 2 - config.snakeGap / 2,
+        Config.tileSize / 2,
+        Config.tileSize / 2,
+        Config.tileSize / 2 - Config.snakeGap / 2,
         0, Math.PI * 2
     )
     ctx.fill();
 
     return {
-        config: config,
+        Config: Config,
         verticalStraight: verticalStraight,
         horizontalStraight: horizontalStraight,
         tailTextures: tailTextures,
@@ -143,8 +143,8 @@ function createTextures(config) {
         drawApple(apple) {
             this.context.drawImage(
                 this.appleTexture,
-                apple.x * this.config.tileSize,
-                apple.y * this.config.tileSize
+                apple.x * this.Config.tileSize,
+                apple.y * this.Config.tileSize
             );
         },
         drawSnake(snake) {

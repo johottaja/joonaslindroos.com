@@ -4,7 +4,7 @@ const messageBox = document.querySelector(".message-box");
 const canvas = document.getElementById("game-canvas");
 const context = canvas.getContext("2d");
 
-let config = null;
+let Config = null;
 let textures = null;
 let player = 1;
 
@@ -33,18 +33,27 @@ function setMessageBoxContents(templateID) {
 }
 
 socket.on("game_config", message => {
-    config = JSON.parse(message);
-    canvas.width = config.tileCount * config.tileSize;
-    canvas.height = config.tileCount * config.tileSize;
+    Config = JSON.parse(message);
 
-    textures = createTextures(config);
+    let tileSize = Math.floor(window.innerHeight / 5 * 3 / 20);
+    Config.tileSize = tileSize % 2 === 0 ? tileSize : tileSize + 1;
+
+    if (Config.tileSize * Config.tileCount >= window.innerWidth - window.innerWidth / 10) {
+        tileSize = Math.floor(window.innerWidth / 10 * 9 / 20);
+        Config.tileSize = tileSize % 2 === 0 ? tileSize : tileSize + 1;
+    }
+
+    canvas.width = Config.tileCount * Config.tileSize;
+    canvas.height = Config.tileCount * Config.tileSize;
+
+    textures = createTextures(Config);
     textures.setContext(context);
     socket.emit("get_game_state");
 });
 
 socket.on("game_state", gameStateRaw => {
     const gameState = JSON.parse(gameStateRaw);
-    textures.drawArena();
+    textures.drawBackground();
     textures.drawApple(gameState.apple);
     textures.drawSnake1(gameState.snake1);
     textures.drawSnake2(gameState.snake2);
@@ -100,3 +109,21 @@ function start() {
 }
 
 window.onload = start;
+window.onresize = function() {
+    let tileSize = Math.floor(window.innerHeight / 5 * 3 / 20);
+    Config.tileSize = tileSize % 2 === 0 ? tileSize : tileSize + 1;
+
+    if (Config.tileSize * Config.tileCount >= window.innerWidth - window.innerWidth / 10) {
+        tileSize = Math.floor(window.innerWidth / 10 * 9 / 20);
+        Config.tileSize = tileSize % 2 === 0 ? tileSize : tileSize + 1;
+    }
+
+    canvas.width = Config.tileCount * Config.tileSize;
+    canvas.height = Config.tileCount * Config.tileSize;
+
+    textures = createTextures(Config);
+    textures.setContext(context);
+
+    textures.drawBackground();
+    socket.emit("get_game_state");
+}

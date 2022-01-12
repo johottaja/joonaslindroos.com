@@ -164,6 +164,14 @@ class Game {
 
 
     initialize() {
+        let tileSize = Math.floor(window.innerHeight / 5 * 3 / 20);
+        Config.tileSize = tileSize % 2 === 0 ? tileSize : tileSize + 1;
+
+        if (Config.tileSize * Config.tileCount >= window.innerWidth - window.innerWidth / 10) {
+            tileSize = Math.floor(window.innerWidth / 10 * 9 / 20);
+            Config.tileSize = tileSize % 2 === 0 ? tileSize : tileSize + 1;
+        }
+
         this.canvas.width = Config.tileCount * Config.tileSize
         this.canvas.height = Config.tileCount * Config.tileSize
         this.canvas.focus();

@@ -109,3 +109,18 @@ function start() {
 }
 
 window.onload = start;
+window.onresize = function() {
+    let tileSize = Math.floor(window.innerHeight / 5 * 3 / 20);
+    Config.tileSize = tileSize % 2 === 0 ? tileSize : tileSize + 1;
+
+    if (Config.tileSize * Config.tileCount >= window.innerWidth - window.innerWidth / 10) {
+        tileSize = Math.floor(window.innerWidth / 10 * 9 / 20);
+        Config.tileSize = tileSize % 2 === 0 ? tileSize : tileSize + 1;
+    }
+
+    game.canvas.width = Config.tileCount * Config.tileSize;
+    game.canvas.height = Config.tileCount * Config.tileSize;
+
+    game.initializeTextures();
+    game.draw();
+}
