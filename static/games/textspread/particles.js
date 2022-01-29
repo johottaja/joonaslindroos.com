@@ -1,10 +1,10 @@
 class Particle {
-    constructor(x, y, tX, tY, radius, color, fill, maxS, maxF) {
+    constructor(x, y, vx, vy, tX, tY, radius, color, fill, maxS, maxF) {
         this.pos = createVector(x, y);
         this.radius = radius;
         this.fill = fill;
         this.color = color;
-        this.vel = createVector();
+        this.vel = createVector(vx, vy);
         this.acc = createVector();
         this.target = createVector(tX, tY);
         this.maxspeed = maxS;
@@ -12,7 +12,7 @@ class Particle {
     }
 
     update() {
-        var arrive = this.arrive(this.target);
+        let arrive = this.arrive(this.target);
 
         this.applyForce(arrive);
         this.vel.add(this.acc);
@@ -37,14 +37,14 @@ class Particle {
     }
 
     arrive(target) {
-        var desired = p5.Vector.sub(target, this.pos);
-        var d = desired.mag();
-        var speed = this.maxspeed;
+        let desired = p5.Vector.sub(target, this.pos);
+        let d = desired.mag();
+        let speed = this.maxspeed;
         if (d < 100) {
             speed = map(d, 0, 100, 0, this.maxspeed);
         }
         desired.setMag(speed);
-        var steer = p5.Vector.sub(desired, this.vel);
+        let steer = p5.Vector.sub(desired, this.vel);
         steer.limit(this.maxforce);
         return steer;
     }
@@ -77,7 +77,8 @@ class PointSpreadParticleText {
         this.text = config.text;
         this.fontSize = config.fontSize;
         this.colors = config.colors;
-        this.spreadPoints = config.spreadPoints;
+        this.randomize = config.randomize;
+        this.spreadFunction = config.spreadFunction;
         this.unAParticles = [];
         this.AParticles = [];
         this.bufferParticles = [];
@@ -96,21 +97,38 @@ class PointSpreadParticleText {
     }
 
     init(x, y) {
-        var posses = font.textToPoints(this.text, x, y, this.fontSize, {sampleFactor: 0.1});
+        let posses = font.textToPoints(this.text, x, y, this.fontSize, {sampleFactor: 0.1});
 
-        var config = {
+        let config = {
             radius: this.particleConfig.radius,
             fill: this.particleConfig.fill,
             maxS: this.particleConfig.maxspeed,
             maxF: this.particleConfig.maxforce
         }
 
-        for (var i = 0; i < posses.length; i++) {
-            var pos = posses[i];
-            var color = this.colors[Math.floor(Math.random() * this.colors.length)];
-            var SP = this.spreadPoints[Math.floor(Math.random() * this.spreadPoints.length)];
+        if (this.randomize) {
+            while (posses.length > 0) {
+                let index = Math.floor(Math.random() * posses.length);
+                let pos = posses[index];
+                let color = this.colors[Math.floor(Math.random() * this.colors.length)];
+                let SP = this.spreadFunction.next().value;
+                let v = SP.vel;
+                let p = SP.pos;
 
-            this.unAParticles.push(new Particle(SP.x, SP.y, pos.x, pos.y, config.radius, color, config.fill, config.maxS, config.maxF));
+                posses.splice(index, 1);
+
+                this.unAParticles.push(new Particle(p.x, p.y, v.x, v.y, pos.x, pos.y, config.radius, color, config.fill, config.maxS, config.maxF));
+            }
+        } else {
+            for (let i = 0; i < posses.length; i++) {
+                let pos = posses[i];
+                let color = this.colors[Math.floor(Math.random() * this.colors.length)];
+                let SP = this.spreadFunction.next().value;
+                let v = SP.vel;
+                let p = SP.pos;
+
+                this.unAParticles.push(new Particle(p.x, p.y, v.x, v.y, pos.x, pos.y, config.radius, color, config.fill, config.maxS, config.maxF));
+            }
         }
 
         this.particleAmount = this.unAParticles.length;
@@ -129,7 +147,7 @@ class PointSpreadParticleText {
             return;
         }
 
-        for (var i = this.AParticles.length - 1; i >= 0; i--) {
+        for (let i = this.AParticles.length - 1; i >= 0; i--) {
             this.AParticles[i].draw();
         }
 
@@ -141,7 +159,7 @@ class PointSpreadParticleText {
             return;
         }
 
-        for (var i = this.AParticles.length - 1; i >= 0; i--) {
+        for (let i = this.AParticles.length - 1; i >= 0; i--) {
             this.AParticles[i].update();
             if (this.AParticles[i].isInPlace()){
                 this.AParticles[i].drawToBuffer(this.buffer);
@@ -151,15 +169,13 @@ class PointSpreadParticleText {
         }
 
         if (this.unAParticles.length != 0) {
-            var index = Math.floor(Math.random() * this.unAParticles.length);
-            this.AParticles.push(this.unAParticles[index]);
-            this.unAParticles.splice(index, 1);
+            this.AParticles.push(this.unAParticles[0]);
+            this.unAParticles.splice(0, 1);
         }
 
         if (this.unAParticles.length != 0) {
-            var index = Math.floor(Math.random() * this.unAParticles.length);
-            this.AParticles.push(this.unAParticles[index]);
-            this.unAParticles.splice(index, 1);
+            this.AParticles.push(this.unAParticles[0]);
+            this.unAParticles.splice(0, 1);
         }
 
         if (this.running) {

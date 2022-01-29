@@ -28,7 +28,7 @@ function setup() {
 
 function runAnim() {
 
-    let spreadpoints = SpreadPoints[document.getElementById("spreadpoints").value];
+    let spreadFunction = SpreadFunctions[document.getElementById("spreadfunction").value];
     let colors = ColorSchemes[document.getElementById("colorscheme").value];
 
     let text = document.getElementById("textinput").value;
@@ -45,17 +45,18 @@ function runAnim() {
     }
 
     let radius = map(fontsize, MINFONTSIZE, MAXFONTSIZE, 2, 6);
-    let particlePhysics = Styles[document.getElementById("style").value];
+    let style = Styles[document.getElementById("style").value];
 
     const config = {
         font: font,
         fontSize: fontsize,
         text: text,
         colors: colors,
-        spreadPoints: spreadpoints,
+        spreadFunction: spreadFunction(),
+        randomize: style.randomized,
         particles: {
-            maxspeed: particlePhysics.maxspeed,
-            maxforce: particlePhysics.maxforce,
+            maxspeed: style.maxspeed,
+            maxforce: style.maxforce,
             radius: radius,
             fill: true
         },
@@ -116,25 +117,11 @@ document.querySelector("#startbutton").addEventListener("click", e => {
     canvas.scrollIntoView(true);
 })
 
-const SpreadPoints = {
-    "Four Corners": [
-    { x: 0, y: 0 },
-    { x: 0, y: window.innerHeight },
-    { x: window.innerWidth, y: 0 },
-    { x: window.innerWidth, y: window.innerHeight },
-    ],
-
-    "Left Top": [
-    { x: 0, y: 0 }
-    ],
-
-    "Right Top": [
-    { x: window.innerWidth, y: 0 }
-    ],
-
-    "Middle": [
-    { x: window.innerWidth / 2, y: window.innerHeight / 2 }
-    ]
+const SpreadFunctions = {
+    "Sides": sideSpreadFunction,
+    "Spiral": spiralSpreadFunction,
+    "Double Spiral": doubleSpiralSpreadFunction,
+    "Bottom": bottomSpreadFunction,
 }
 
 const ColorSchemes = {
@@ -147,15 +134,12 @@ const ColorSchemes = {
 };
 
 const Styles = {
-    "Normal": { maxspeed: 15, maxforce: 0.5 },
-    "Wavey": { maxspeed: 15, maxforce: 0.2 },
-    "Straight": { maxspeed: 15, maxforce: 2 },
-}
-
-const Styless = {
-    "Normal": { maxspeed: 10, maxforce: 0.2 },
-    "Wavey": { maxspeed: 10, maxforce: 0.1 },
-    "Straight": { maxspeed: 5, maxforce: 1 },
+    "Normal": { maxspeed: 15, maxforce: 0.5, randomized: true },
+    "Straight": { maxspeed: 15, maxforce: 2, randomized: true },
+    "Wavey": { maxspeed: 15, maxforce: 0.2, randomized: true },
+    "Orderly": { maxspeed: 15, maxforce: 2, randomized: false },
+    "Smooth": { maxspeed: 15, maxforce: 0.5, randomized: false },
+    "Smooth Waves": { maxspeed: 15, maxforce: 0.2, randomized: true },
 }
 
 window.addEventListener("keydown", e => {
@@ -169,6 +153,140 @@ window.addEventListener("keydown", e => {
         runAnim();
     }
 })
+
+function* spiralSpreadFunction() {
+    let angle = -0.05;
+    while (true) {
+        angle += 0.05;
+        yield {
+            pos: {
+                x: window.innerWidth / 2,
+                y: window.innerHeight / 2
+            },
+            vel: {
+                x: Math.cos(angle) * 15,
+                y: Math.sin(angle) * 15,
+            }
+        }
+
+    }
+}
+
+function* doubleSpiralSpreadFunction() {
+    let angle = -0.05;
+    let bit = true;
+    while (true) {
+        angle += 0.05;
+        if (bit) {
+            bit = !bit;
+            yield {
+                pos: {
+                    x: window.innerWidth / 2,
+                    y: window.innerHeight / 2
+                },
+                vel: {
+                    x: Math.cos(angle) * 15,
+                    y: Math.sin(angle) * 15,
+                }
+            }
+        } else {
+            bit = !bit;
+            yield {
+                pos: {
+                    x: window.innerWidth / 2,
+                    y: window.innerHeight / 2
+                },
+                vel: {
+                    x: -Math.cos(angle) * 15,
+                    y: -Math.sin(angle) * 15,
+                }
+            }
+        }
+
+    }
+}
+
+function* sideSpreadFunction() {
+    let angle = 0;
+    let increment = -0.05;
+    let bit = true;
+    while (true) {
+        angle += increment;
+        if (angle >= 0.25*Math.PI){
+            angle =  0.25*Math.PI
+            increment = -increment;
+        } else if (angle <= -0.25*Math.PI) {
+            increment = -increment;
+            angle = - 0.25*Math.PI
+        }
+        if (bit) {
+            bit = !bit;
+            yield {
+                pos: {
+                    x: 0,
+                    y: window.innerHeight / 2,
+                },
+                vel: {
+                    x: Math.cos(angle) * 20,
+                    y: Math.sin(angle) * 15,
+                }
+            }
+        } else {
+            bit = !bit;
+            yield {
+                pos: {
+                    x: window.innerWidth,
+                    y: window.innerHeight / 2,
+                },
+                vel: {
+                    x: -Math.cos(angle) * 20,
+                    y: Math.sin(angle) * 15,
+                }
+            }
+        }
+    }
+}
+
+function* bottomSpreadFunction() {
+    let position = 0;
+    let increment = window.innerWidth / 100;
+    let bit = true;
+    while (true) {
+        position += increment;
+        if (position >= window.innerWidth) {
+            position = window.innerWidth;
+            increment = - increment;
+        } else if (position <= 0) {
+            position = 0;
+            increment = -increment;
+        }
+        if (bit) {
+            bit = !bit;
+            yield {
+                pos: {
+                    x: position,
+                    y: window.innerHeight,
+                },
+                vel: {
+                    x: Math.random() * 20 - 10,
+                    y: -10,
+                }
+            }
+        } else {
+            bit = !bit
+            yield {
+                pos: {
+                    x: window.innerWidth - position,
+                    y: window.innerHeight,
+                },
+                vel: {
+                    x: Math.random() * 20 - 10,
+                    y: -10,
+                }
+            }
+        }
+    }
+}
 
 document.querySelector("#gotoOptions").onclick = function() {
     document.getElementById('options').scrollIntoView(true);
