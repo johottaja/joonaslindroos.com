@@ -57,6 +57,7 @@ module.exports = (params) => {
 
     router.post("/create", (request, response) => {
         const code = request.body.code;
+        if (!code) return response.redirect("/snake/pvp");
         if (games.has(code)) {
             request.session.errorMessage = `Code ${code} is already in use`;
             return response.redirect("/snake/pvp");

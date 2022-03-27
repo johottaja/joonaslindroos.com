@@ -1,27 +1,27 @@
 [
     {
-        "name": "Lessgooo",
-        "message": "ööö toimiiks?",
-        "score": "8"
+        "name": "yes",
+        "message": "first maybe\n",
+        "score": "11"
     },
     {
-        "name": "sgfdfgg",
-        "message": "hhhhhhhhg",
+        "name": "example name 2",
+        "message": "example message 2",
+        "score": "10"
+    },
+    {
+        "name": "hgfghghg",
+        "message": "hgfhgfhg",
         "score": "7"
     },
     {
-        "name": "gfhhhg",
-        "message": "ghghghgh",
-        "score": "6"
-    },
-    {
-        "name": "kkj",
-        "message": "hhjkhkj",
+        "name": "cvxzcx",
+        "message": "xvcxvcvcx",
         "score": "5"
     },
     {
-        "name": "ghf",
-        "message": "hgfhgfhgfhg",
+        "name": "gbbb",
+        "message": "bvbvcbvc",
         "score": "5"
     }
 ]

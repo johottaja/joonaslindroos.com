@@ -6,8 +6,9 @@
         <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
         <link rel="stylesheet" href="/games/textspread/style.css">
         <link rel="stylesheet" type="text/css" href="/res/fonts/JosefinSans.css">
-        <script type="text/javascript" src="/p5/p5.js"></script>
-        <script type="text/javascript" src="/p5/p5.dom.js"></script>
+        <link rel="stylesheet" type="text/css" href="/res/fonts/Avenir.css">
+        <script type="text/javascript" src="/opentype/opentype.js"></script>
+        <script type="text/javascript" src="/games/textSpread/algorithms.js"></script>
         <script type="text/javascript" src="/games/textspread/particles.js"></script>
         <script type="text/javascript" defer src="/games/textspread/sketch.js"></script>
     </head>
@@ -16,7 +17,9 @@
     <div class="fluid-container mContainer">
             <div class="row mRow">
                 <div class="col-12">
-                    <div id="cs"></div>
+                    <div id="cs">
+                        <canvas id="canvas"></canvas>
+                    </div>
                 </div>
             </div>
             <div class="row mRow" id="options">

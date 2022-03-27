@@ -70,13 +70,15 @@ function setMessageBoxContents(templateID) {
 socket.on("game_config", config => {
     Config = JSON.parse(config);
 
-    let tileSize = window.innerHeight / 2 / 15;
+    let tileSize = Math.floor(window.innerHeight / 2 / 15);
     Config.tileSize = tileSize % 2 === 0 ? tileSize : tileSize + 1;
 
     if (Config.tileSize * Config.tileCount >= window.innerWidth - window.innerWidth / 10) {
         tileSize = Math.floor(window.innerWidth / 10 * 9 / 15);
         Config.tileSize = tileSize % 2 === 0 ? tileSize : tileSize + 1;
     }
+
+    console.log(Config.tileSize);
 
     canvas.width = Config.tileCount * Config.tileSize;
     canvas.height = Config.tileCount * Config.tileSize;
@@ -124,7 +126,7 @@ function start() {
 
 window.onload = start;
 window.onresize = function() {
-    let tileSize = window.innerHeight / 2 / 15;
+    let tileSize = Math.floor(window.innerHeight / 2 / 15);
     Config.tileSize = tileSize % 2 === 0 ? tileSize : tileSize + 1;
 
     if (Config.tileSize * Config.tileCount >= window.innerWidth - window.innerWidth / 10) {

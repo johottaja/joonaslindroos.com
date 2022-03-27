@@ -25,7 +25,7 @@ class HighscoreService {
             data.splice(0, 0, highscore);
         } else {
             for (let i = 0; i < 5; i++) {
-                if (data.length === i || highscore.score > data[i].score) {
+                if (data.length === i || parseInt(highscore.score) > parseInt(data[i].score)) {
                     data.splice(i, 0, highscore);
                     break;
                 }

@@ -6,11 +6,22 @@
 
 html, body {
     background: #ffffff;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.cs {
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 .mContainer {
     background: linear-gradient(to right, #67e9f7, #ff82df);
     color: #828282;
+    width: 100%;
+    overflow: hidden;
 }
 
 .title {

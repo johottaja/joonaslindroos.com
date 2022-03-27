@@ -1,8 +1,5 @@
-let lastTime = 0;
-let frames = 0;
-let frameCounter = 0;
-let fpsList = [];
-let fps = 0;
+const canvas = document.querySelector("#canvas");
+const context = canvas.getContext("2d");
 
 let font;
 let animatedText;
@@ -10,46 +7,47 @@ let animatedText;
 const MAXFONTSIZE = 180;
 const MINFONTSIZE = 30;
 
-function preload() {
-    font = loadFont('../res/fonts/AvenirNextLTPro-Demi.otf');
+let lastTime = 0;
+
+window.onload = function() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    opentype.load("../res/fonts/Avenir.otf", function(err, f) {
+        if (err) {
+            console.log("error");
+        } else {
+            font = f;
+            initializeAnimation();
+            lastTime = performance.now();
+            updateLoop();
+        }
+    });
 }
 
-function setup() {
-    let canvas = createCanvas(windowWidth, windowHeight);
-    canvas.canvas.id = "canvas";
-    canvas.parent("cs");
-
-    pixelDensity(1);
-
-    runAnim();
-
-    frameRate(60);
-}
-
-function runAnim() {
-
+function initializeAnimation() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     let spreadFunction = SpreadFunctions[document.getElementById("spreadfunction").value];
     let colors = ColorSchemes[document.getElementById("colorscheme").value];
 
     let text = document.getElementById("textinput").value;
     text = text !== "" ? text : "TEXT HERE";
-    let fontsize = MAXFONTSIZE;
+    let fontSize = MAXFONTSIZE;
 
+    let textWidth = font.getAdvanceWidth(text, fontSize);
 
-    textFont(font);
-    textSize(fontsize);
-
-    while(textWidth(text) > windowWidth - windowWidth / 8 && fontsize > MINFONTSIZE) {
-        fontsize -= 5;
-        textSize(fontsize);
+    while(textWidth > window.innerWidth - window.innerHeight / 8 && fontSize > MINFONTSIZE) {
+        fontSize -= 5;
+        textWidth = font.getAdvanceWidth(text, fontSize);
     }
+    console.log(fontSize);
 
-    let radius = map(fontsize, MINFONTSIZE, MAXFONTSIZE, 2, 6);
+    let radius = map(fontSize, MINFONTSIZE, MAXFONTSIZE, 2, 6);
     let style = Styles[document.getElementById("style").value];
 
     const config = {
         font: font,
-        fontSize: fontsize,
+        fontSize: fontSize,
         text: text,
         colors: colors,
         spreadFunction: spreadFunction(),
@@ -58,62 +56,46 @@ function runAnim() {
             maxspeed: style.maxspeed,
             maxforce: style.maxforce,
             radius: radius,
-            fill: true
         },
     };
 
     animatedText = new PointSpreadParticleText(config);
 
-    let x = windowWidth / 2 - animatedText.w / 2;
-    let y = windowHeight / 2;
+    let x = window.innerWidth / 2 - textWidth / 2;
+    let y = window.innerHeight / 2;
 
     animatedText.init(x, y);
     animatedText.activate();
 }
 
-function draw() {
-    let time = performance.now();
-    let deltaTime = time - lastTime;
-
-    background(255, 255, 255);
-
-    animatedText.update();
-    animatedText.draw();
-
-    updateFPS(deltaTime);
-
+let accumulatedTime = 0;
+let frameTime = 1000 / 60;
+function updateLoop(time = 0) {
+    const deltaTime = time - lastTime;
     lastTime = time;
+    accumulatedTime += deltaTime;
+    if (accumulatedTime >= frameTime) {
+        while (accumulatedTime >= frameTime) {
+            animatedText.update(frameTime);
+            accumulatedTime -= frameTime;
+        }
+        context.fillStyle = "#fff";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        animatedText.draw();
+    }
+
+    window.requestAnimationFrame(updateLoop);
 }
 
 // LOGIC
 //---------------------------------------------
 // OTHER CRAP
 
-function windowResized() {
-    resizeCanvas(windowWidth, windowHeight);
-}
-
-function updateFPS(dt) {
-
-    frameCounter += dt;
-    fpsList.push(Math.floor(frameRate()));
-
-    textSize(10);
-    fill(255);
-    textAlign(LEFT, TOP);
-    text("FPS: " + fps, 10, 10);
-
-    if (frameCounter > 1000) {
-        frameCounter = 0;
-        let sum = fpsList.reduce((a, b) => a + b, 0);
-        fps = Math.floor(sum / fpsList.length);
-        fpsList = [];
-    }
-}
-
 document.querySelector("#startbutton").addEventListener("click", e => {
     e.preventDefault();
-    runAnim();
+    lastTime = performance.now();
+    initializeAnimation();
+    lastTime = performance.now();
     canvas.scrollIntoView(true);
 })
 
@@ -134,12 +116,12 @@ const ColorSchemes = {
 };
 
 const Styles = {
-    "Normal": { maxspeed: 15, maxforce: 0.5, randomized: true },
+    "Normal": { maxspeed: 15, maxforce: 0.4, randomized: true },
     "Straight": { maxspeed: 15, maxforce: 2, randomized: true },
-    "Wavey": { maxspeed: 15, maxforce: 0.2, randomized: true },
+    "Wavey": { maxspeed: 15, maxforce: 0.25, randomized: true },
     "Orderly": { maxspeed: 15, maxforce: 2, randomized: false },
-    "Smooth": { maxspeed: 15, maxforce: 0.5, randomized: false },
-    "Smooth Waves": { maxspeed: 15, maxforce: 0.2, randomized: true },
+    "Smooth": { maxspeed: 15, maxforce: 0.4, randomized: false },
+    "Smooth Waves": { maxspeed: 15, maxforce: 0.25, randomized: false },
 }
 
 window.addEventListener("keydown", e => {
@@ -150,7 +132,9 @@ window.addEventListener("keydown", e => {
         }
 
         e.preventDefault();
-        runAnim();
+        lastTime = performance.now();
+        initializeAnimation();
+        lastTime = performance.now();
     }
 })
 
@@ -291,3 +275,9 @@ function* bottomSpreadFunction() {
 document.querySelector("#gotoOptions").onclick = function() {
     document.getElementById('options').scrollIntoView(true);
 }
+
+window.addEventListener("keydown", e => {
+    if (e.code === "ArrowUp") {
+        updateLoop();
+    }
+});

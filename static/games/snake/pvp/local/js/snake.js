@@ -1,5 +1,5 @@
 class Snake {
-    constructor(game, x, y, headTextures, tailTextures) {
+    constructor(game, x, y) {
         this.game = game;
         this.vel = {x: 0, y: -1};
         this.velQueue = [];
@@ -7,8 +7,8 @@ class Snake {
         this.trueLength = 5;
         this.tail = [];
 
-        this.headTextures = headTextures;
-        this.tailTextures = tailTextures;
+        this.headTextures = null;
+        this.tailTextures = null;
 
         this.velToTexID = {
             "-10-10": 5,

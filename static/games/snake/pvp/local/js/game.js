@@ -126,6 +126,11 @@ class Game {
         this.headTextures1 = this.createHeadTextures(Config.snakeColor1, errorSquare);
         this.headTextures2 = this.createHeadTextures(Config.snakeColor2, errorSquare);
 
+        this.snakes[0].tailTextures = this.tailTextures1;
+        this.snakes[0].headTextures = this.headTextures1;
+        this.snakes[1].tailTextures = this.tailTextures2;
+        this.snakes[1].headTextures = this.headTextures2;
+
         this.backgroundTexture = document.createElement("canvas");
         this.backgroundTexture.width = this.canvas.width;
         this.backgroundTexture.height = this.canvas.height;
@@ -176,12 +181,12 @@ class Game {
         this.canvas.height = Config.tileCount * Config.tileSize
         this.canvas.focus();
 
-        this.initializeTextures();
-
         this.snakes = [
-            new Snake(this, Math.floor(Config.tileCount / 3), Config.tileCount - 2, this.headTextures1, this.tailTextures1),
-            new Snake(this, Math.floor(Config.tileCount / 3 * 2), Config.tileCount - 2, this.headTextures2, this.tailTextures2)
+            new Snake(this, Math.floor(Config.tileCount / 3), Config.tileCount - 2),
+            new Snake(this, Math.floor(Config.tileCount / 3 * 2), Config.tileCount - 2)
         ];
+
+        this.initializeTextures();
 
         this.apple = {
             x: 0,
