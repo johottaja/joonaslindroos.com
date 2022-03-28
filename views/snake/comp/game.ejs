@@ -23,7 +23,7 @@
         </div>
     </div>
     <button id="leaderboard-button" class="leaderboard-button">Leaderboard</button>
-    <script type="text/javascript" nonce="<%= nonce %>" defer>
+    <script type="text/javascript" defer>
         document.getElementById("leaderboard-button").onclick = function gotoLeaderboard() {
             window.location.href = "/snake/comp/leaderboard";
         }
@@ -57,7 +57,7 @@
             <input name="score" readonly id="score" style="display:none">
 
             <input class="submit-button" type="button" value="Submit" id="info-submit-button">
-            <script type="text/javascript" nonce="<%= nonce %>">
+            <script type="text/javascript">
                 document.getElementById("info-submit-button").onclick = function submitForm(e) {
                     e.preventDefault();
                     submitInfo();

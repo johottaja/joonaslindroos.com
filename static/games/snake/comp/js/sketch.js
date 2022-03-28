@@ -4,7 +4,7 @@ const messageBox = document.querySelector(".message-box");
 const canvas = document.getElementById("game-canvas");
 const context = canvas.getContext("2d");
 
-const socket = io("localhost:3000" ,{
+const socket = io(window.location.host ,{
     path: "/snake/comp/socket/"
 });
 

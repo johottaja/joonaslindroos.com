@@ -9,22 +9,10 @@ module.exports = (params) => {
     router.get("/", async (request, response, next) => {
         try {
             const scores = await highscoreService.getData();
-
-            let nonce = crypto.randomBytes(16).toString("base64");
-
-            //Ugly code to remove old 'script-src' policy and add new one with a nonce
-            let csp = response.get("Content-Security-Policy");
-            let policies = csp.split(";")
-            policies = policies.filter(policy => { return !policy.startsWith("script-src"); });
-            csp = policies.join(";");
-            csp = `script-src 'nonce-${nonce}'; ` + csp
-
-            response.set("Content-Security-Policy", csp);
-
             if (scores.length === 0) {
-                return response.render("snake/comp/leaderboard-empty", { nonce });
+                return response.render("snake/comp/leaderboard-empty");
             }
-            return response.render("snake/comp/leaderboard", { scores, nonce });
+            return response.render("snake/comp/leaderboard", { scores } );
 
         } catch (err) {
             next(err);

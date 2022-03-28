@@ -32,7 +32,7 @@ app.use(cookieSession({
     keys: ["fdöskaflkdsavmsdakaädasdlas", "fjdlakfndsvkhsdatjsdagnfdm", "fhdsjflsdanvnsdaj"]
 }));
 
-app.use(helmet());
+//app.use(helmet());
 app.use(express.static(path.join(__dirname, "./static")));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

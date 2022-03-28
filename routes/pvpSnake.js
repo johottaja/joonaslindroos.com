@@ -88,34 +88,12 @@ module.exports = (params) => {
 
         request.session.errorMessage = "";
 
-        let nonce = crypto.randomBytes(16).toString("base64");
-
-        //Ugly code to remove old 'script-src' policy and add new one with a nonce
-        let csp = response.get("Content-Security-Policy");
-        let policies = csp.split(";")
-        policies = policies.filter(policy => { return !policy.startsWith("script-src"); });
-        csp = policies.join(";");
-        csp = `script-src 'self' 'nonce-${nonce}'; ` + csp
-
-        response.set("Content-Security-Policy", csp);
-
-        return response.render("snake/pvp/game", {nonce});
+        return response.render("snake/pvp/game");
     });
 
     router.get("/local", (request, response) => {
 
-        let nonce = crypto.randomBytes(16).toString("base64");
-
-        //Ugly code to remove old 'script-src' policy and add new one with a nonce
-        let csp = response.get("Content-Security-Policy");
-        let policies = csp.split(";")
-        policies = policies.filter(policy => { return !policy.startsWith("script-src"); });
-        csp = policies.join(";");
-        csp = `script-src 'self' 'nonce-${nonce}'; ` + csp
-
-        response.set("Content-Security-Policy", csp);
-
-        return response.render("snake/pvp/local", {nonce});
+        return response.render("snake/pvp/local");
     });
 
     return router;

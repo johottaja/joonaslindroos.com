@@ -38,7 +38,7 @@
 	<template id="game-over-template">
 		<p id="game-over-text">Game over!</p>
 		<button class="restart-button">Restart</button>
-		<script nonce="<%= nonce %>" type="text/javascript">
+		<script type="text/javascript">
 			document.querySelector(".restart-button").onclick = function() {
 				socket.emit("get_game_config");
 				socket.emit("ready");
