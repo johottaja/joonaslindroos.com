@@ -45,6 +45,9 @@ module.exports = (params) => {
     router.use((error, request, response, next) => {
         const status = error.status || 500;
         console.log(error);
+        if (error.code !== 404) {
+            return response.render("error", { code: status, message: "An unexpected error has occurred" })
+        }
         response.status(status);
         return response.render("error", { code: status, message: error.message || "An unexpected error has occurred" })
     });
