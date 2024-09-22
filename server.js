@@ -19,7 +19,7 @@ const pvpIoServer = new Server(server, {
     "path": "/snake/pvp/socket/"
 });
 
-const highscoreService = new HighscoreService("/data/highscores.json");
+const highscoreService = new HighscoreService("./data/highscores.json");
 
 const PORT = 3000;
 
