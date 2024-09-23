@@ -4,7 +4,10 @@
   "description": "my website",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon server.js --ignore highscores.json"
+    "dev": "nodemon server.js --ignore highscores.json",
+    "start": "node server.js",
+    "production": "node server.js &",
+    "lint": "eslint ."
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +17,7 @@
     "cookie-session": "^1.4.0",
     "crypto": "^1.0.1",
     "ejs": "^3.1.6",
+    "eslint": "^9.11.1",
     "express": "^4.17.1",
     "express-validator": "^6.11.1",
     "helmet": "^4.4.1",

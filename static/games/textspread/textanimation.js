@@ -6,17 +6,11 @@ class PointSpreadParticleText {
         this.colors = config.colors;
         this.randomize = config.randomize;
         this.spreadFunction = config.spreadFunction;
-        this.unAParticles = [];
-        this.AParticles = [];
-        this.bufferParticles = [];
+        this.unActiveParticles = [];
+        this.activeParticles = [];
         this.activated = false;
         this.particleConfig = config.particles;
-        this.buffer = document.createElement("canvas");
-        this.bufferContext = this.buffer.getContext("2d");
         this.particleAmount = 0;
-
-        this.buffer.width = canvas.width;
-        this.buffer.height = canvas.height;
 
         this.particleBuffers = [];
 
@@ -27,7 +21,7 @@ class PointSpreadParticleText {
     }
 
     init(x, y) {
-        let points = getPointsFromText(this.font, this.fontSize, this.text, x, y);
+        let targets = getPointsFromText(this.font, this.fontSize, this.text, x, y);
 
         let config = {
             radius: this.particleConfig.radius,
@@ -38,31 +32,31 @@ class PointSpreadParticleText {
         this.initParticleBuffers();
 
         if (this.randomize) {
-            while (points.length > 0) {
-                let index = Math.floor(Math.random() * points.length);
-                let pos = points[index];
+            while (targets.length > 0) {
+                let index = Math.floor(Math.random() * targets.length);
+                let pos = targets[index];
                 let texture = this.particleBuffers[Math.floor(Math.random() * this.particleBuffers.length)];
                 let SP = this.spreadFunction.next().value;
                 let v = SP.vel;
                 let p = SP.pos;
 
-                points.splice(index, 1);
+                targets.splice(index, 1);
 
-                this.unAParticles.push(new Particle(p.x, p.y, v.x, v.y, pos.x, pos.y, config.radius, texture, config.maxS, config.maxF));
+                this.unActiveParticles.push(new Particle(p.x, p.y, v.x, v.y, pos.x, pos.y, config.radius, texture, config.maxS, config.maxF));
             }
         } else {
-            for (let i = 0; i < points.length; i++) {
-                let pos = points[i];
+            for (let i = 0; i < targets.length; i++) {
+                let pos = targets[i];
                 let texture = this.particleBuffers[Math.floor(Math.random() * this.particleBuffers.length)];
                 let SP = this.spreadFunction.next().value;
                 let v = SP.vel;
                 let p = SP.pos;
 
-                this.unAParticles.push(new Particle(p.x, p.y, v.x, v.y, pos.x, pos.y, config.radius, texture, config.maxS, config.maxF));
+                this.unActiveParticles.push(new Particle(p.x, p.y, v.x, v.y, pos.x, pos.y, config.radius, texture, config.maxS, config.maxF));
             }
         }
 
-        this.particleAmount = this.unAParticles.length;
+        this.particleAmount = this.unActiveParticles.length;
     }
 
     initParticleBuffers() {
@@ -81,6 +75,23 @@ class PointSpreadParticleText {
         }
     }
 
+    resize(x, y) {
+        let targets = getPointsFromText(this.font, this.fontSize, this.text, x, y);
+
+        let config = {
+            radius: this.particleConfig.radius,
+            maxS: this.particleConfig.maxspeed,
+            maxF: this.particleConfig.maxforce
+        }
+
+        for (let i = 0; i < this.activeParticles.length; i++) {
+
+            let index = Math.floor(Math.random() * targets.length);
+            this.activeParticles[i].target = targets[index];
+            targets.splice(index, 1);
+        }
+    }
+
     activate() {
         this.activated = true;
     }
@@ -90,11 +101,9 @@ class PointSpreadParticleText {
             return;
         }
 
-        for (let i = this.AParticles.length - 1; i >= 0; i--) {
-            this.AParticles[i].draw();
+        for (let i = this.activeParticles.length - 1; i >= 0; i--) {
+            this.activeParticles[i].draw();
         }
-
-        context.drawImage(this.buffer, 0, 0);
     }
 
     update(deltaTime) {
@@ -102,20 +111,15 @@ class PointSpreadParticleText {
             return;
         }
 
-        for (let i = this.AParticles.length - 1; i >= 0; i--) {
-            this.AParticles[i].update(deltaTime, this.mouseDown, this.mousePos);
-            /*if (this.AParticles[i].isInPlace()){
-                this.AParticles[i].drawToBuffer(this.bufferContext);
-                this.bufferParticles.push(this.AParticles[i]);
-                this.AParticles.splice(i, 1);
-            }*/
+        for (let i = this.activeParticles.length - 1; i >= 0; i--) {
+            this.activeParticles[i].update(deltaTime, this.mouseDown, this.mousePos);
         }
 
         this.accumulatedTime += deltaTime;
         while (this.accumulatedTime >= this.particleSendInterval) {
-            if (this.unAParticles.length !== 0) {
-                this.AParticles.push(this.unAParticles[0]);
-                this.unAParticles.splice(0, 1);
+            if (this.unActiveParticles.length !== 0) {
+                this.activeParticles.push(this.unActiveParticles[0]);
+                this.unActiveParticles.splice(0, 1);
             }
             this.accumulatedTime -= this.particleSendInterval;
         }

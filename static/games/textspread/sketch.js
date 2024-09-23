@@ -149,16 +149,34 @@ window.addEventListener("keydown", e => {
     }
 });
 
-window.addEventListener("mousedown", e => {
+canvas.addEventListener("mousedown", e => {
+    e.preventDefault();
     animatedText.updateMouseDown(true);
-    animatedText.updateMousePos(e.clientX, e.clientY);
-})
-
-window.addEventListener("mouseup", e => {
-    animatedText.updateMouseDown(false);
     animatedText.updateMousePos(e.clientX, e.clientY);
 });
 
-window.addEventListener("mousemove", e => {
+canvas.addEventListener("mouseup", e => {
+    e.preventDefault();
+    animatedText.updateMouseDown(false);
+});
+
+canvas.addEventListener("mousemove", e => {
+    e.preventDefault();
     animatedText.updateMousePos(e.clientX, e.clientY);
-})
+});
+
+canvas.addEventListener("touchstart", e => {
+    e.preventDefault();
+    animatedText.updateMouseDown(true);
+    animatedText.updateMousePos(e.touches[0].clientX, e.touches[0].clientY);
+});
+
+canvas.addEventListener("touchend", e => {
+    e.preventDefault();
+    animatedText.updateMouseDown(false);
+});
+
+canvas.addEventListener("touchmove", e => {
+    e.preventDefault();
+    animatedText.updateMousePos(e.touches[0].clientX, e.touches[0].clientY);
+});
