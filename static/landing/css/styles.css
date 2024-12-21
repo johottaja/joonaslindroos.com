@@ -1,0 +1,32 @@
+#header-text {
+  padding-top: 2rem;
+  padding-left: 1rem;
+  font-size: 10vw;
+}
+
+.header-text {
+  background: url("/res/images/sysiphus/Sysiphus.webp") center / cover no-repeat, transparent;
+  background-size: cover, auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  filter: brightness(200%) contrast(100%) grayscale(0%);
+}
+
+#bg {
+  filter: saturate(20%);
+}
+
+#secondary-heading {
+  font-size: 3vw;
+  padding-left: 1rem;
+}
+
+#cold-text {
+  letter-spacing: 0.3rem;
+}
+
+.fit-cover {
+  object-fit: cover;
+}
+

@@ -1,0 +1,8 @@
+.message-box {
+
+}
+
+canvas {
+    position: absolute;
+    z-index: -10;
+}
