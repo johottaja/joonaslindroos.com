@@ -27,6 +27,7 @@ module.exports = (params) => {
     ], async (request, response, next) => {
         try {
             const errors = validationResult(request);
+            console.log(errors)
 
             if (errors.isEmpty()) {
                 if (recentSubmissions.has(request.ip)) {
@@ -42,7 +43,8 @@ module.exports = (params) => {
                             " message was not sent"});
                 }
             } else {
-                return response.send("lol no hacking");
+                return response.status(400).render("message", {heading: "Invalid request", message: "Your" +
+                    " message was not sent"});
             }
         } catch (err) {
             next(err);
