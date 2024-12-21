@@ -27,7 +27,6 @@ module.exports = (params) => {
     ], async (request, response, next) => {
         try {
             const errors = validationResult(request);
-            console.log(errors)
 
             if (errors.isEmpty()) {
                 if (recentSubmissions.has(request.ip)) {
