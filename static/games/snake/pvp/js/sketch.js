@@ -96,7 +96,7 @@ socket.on("redirect", () => {
 });
 
 function start() {
-    const code = document.cookie.split("=")[1];
+    const code = CookieUtil.get("code");
     if (!code) {
         window.location = "/snake/pvp";
     }

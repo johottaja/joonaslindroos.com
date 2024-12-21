@@ -5,9 +5,10 @@
 }
 
 :root {
-    --color-primary: rgba(206,164,219,1);
-    --color-secondary: rgba(219,121,86,1);
+    --color-primary: /*rgba(206,164,219,1)*/ #2D3250;
+    --color-secondary: /*rgba(219,121,86,1)*/ #2D3250;
     --border-color: #666;
+    --text-color: #fff;
 }
 
 .main {

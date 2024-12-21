@@ -6,6 +6,8 @@ const helmet = require("helmet");
 const http = require("http");
 const { Server } = require("socket.io");
 
+require('dotenv').config();
+
 const HighscoreService = require("./HighscoreService");
 const routes = require("./routes/index");
 
@@ -38,6 +40,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use("/css", express.static(path.join(__dirname, "./node_modules/bootstrap/dist/css")));
+app.use("/js", express.static(path.join(__dirname, "./node_modules/bootstrap/dist/js")));
 
 app.use(routes({ highscoreService, compIoServer, pvpIoServer }));
 
