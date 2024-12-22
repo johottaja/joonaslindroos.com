@@ -20,6 +20,9 @@ class HighscoreService {
     }
 
     async setNewHighscore(highscore) {
+        highscore.name = highscore.name.replace(/\p{M}/gu, '');
+        highscore.message = highscore.message.replace(/\p{M}/gu, '');
+
         const data = await this.getData();
         if (data.length === 0) {
             data.splice(0, 0, highscore);
