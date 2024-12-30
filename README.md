@@ -14,7 +14,6 @@ Also a few other projects that are no longer included visibly on the website, bu
 
 #### Navigating the repo might be difficult. Here's a quick guide to help you out.
 
-***
 ## 🐍🐍 Versus Snake Game
 
 - A two-player snake game where the players battle against each other.
@@ -33,7 +32,6 @@ Also a few other projects that are no longer included visibly on the website, bu
 
 Try it out [here](https://joonaslindroos.com/snake/pvp/)!
 
-***
 ## 🐍 Snake Game with Leaderboard
 
 - The Classical snake game experience, mixed with a global leaderboard to track the best scores.
@@ -52,7 +50,6 @@ Try it out [here](https://joonaslindroos.com/snake/pvp/)!
 
 Try it out [here](https://joonaslindroos.com/snake/comp/)!
 
-***
 ## 🧢❌ Fax or Cap
 - Allows users to make posts, which then other users will be able to rate as either a true or false.
 - Posts are saved into a MySQL database, and authentication is done through Google.
@@ -63,7 +60,7 @@ Try it out [here](https://joonaslindroos.com/snake/comp/)!
 
 Try it out [here](https://test.joonaslindroos.com/).
 
-***
+
 ## ✨ Text Spread Animation
 - A particle based animation that spreads the particles flying around the screen, eventually forming a 
   user-requested text.
