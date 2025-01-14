@@ -39,8 +39,6 @@ window.onscroll = (e) => {
     } else {
         headerWrapper.style.display = "block";
     }
-
-    updateParallaxes();
 }
 
 window.onload = (event) => {
@@ -62,5 +60,14 @@ window.onresize = (event) => {
 
 window.onmousemove = (event) => {
 	mousePos = {x: event.clientX, y: event.clientY};
-    updateParallaxes();
+    parallaxes.forEach(parallax => {
+        parallax.updateMousePos(mousePos)
+    });
 }
+
+function updateLoop() {
+    updateParallaxes();
+    requestAnimationFrame(updateLoop);
+}
+
+updateLoop();
