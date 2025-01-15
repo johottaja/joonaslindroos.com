@@ -7,7 +7,7 @@ class Parallax {
         this.offset = offset;
         this.units = units;
         this.current = { x: 0, y: 0 };
-        this.smoothingFactor = 0.05;
+        this.smoothingFactor = 0.1;
     }
     
     update() {

@@ -24,9 +24,12 @@
 
 #cold-text {
   letter-spacing: 0.3rem;
+  background: linear-gradient(45deg, #ff6600 0%, #502201 80%);
+  background-size: cover, auto;
+  background-clip: text;
+  -webkit-background-clip: text;
 }
 
 .fit-cover {
   object-fit: cover;
 }
-

@@ -31,14 +31,13 @@ function calculateOpacity() {
 }
 
 window.onscroll = (e) => {
-    opacity = calculateOpacity();
-    header.style.opacity = opacity;
+    updateBgOpactity();
+}
 
-    if (window.scrollY > scrollAnimLen) {
-        headerWrapper.style.display = "none";
-    } else {
-        headerWrapper.style.display = "block";
-    }
+header.onload = (e) => {
+    console.log("bruh")
+    updateBgOpactity();
+    console.log(window.scrollY);
 }
 
 window.onload = (event) => {
@@ -70,4 +69,15 @@ function updateLoop() {
     requestAnimationFrame(updateLoop);
 }
 
+function updateBgOpactity() {
+    opacity = calculateOpacity();
+    header.style.opacity = opacity;
+
+    if (window.scrollY > scrollAnimLen) {
+        headerWrapper.style.display = "none";
+    } else {
+        headerWrapper.style.display = "block";
+    }
+}
+updateBgOpactity();
 updateLoop();
