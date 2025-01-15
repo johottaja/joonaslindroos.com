@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon server.js --ignore highscores.json",
     "start": "node server.js",
-    "production": "node server.js &",
+    "production": "pm2 start server.js --name main-joonaslindroos",
+    "restart": "pm2 restart main-joonaslindroos",
     "lint": "eslint ."
   },
   "author": "",
