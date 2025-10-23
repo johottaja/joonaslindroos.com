@@ -1,0 +1,120 @@
+.text-on-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4vw;
+    background: #ccc;
+    border: 5px solid var(--border-color);
+    border-radius: 10px;
+    padding: 2%;
+    color: var(--border-color);
+}
+
+.leaderboard {
+    width: 80%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--border-color);
+
+    position: absolute;
+}
+
+.leader {
+    height: 40vh;
+}
+
+.not-leader {
+    height: 20vh;
+}
+
+.leaderboard-item {
+    width: 95%;
+    height: 95%;
+    margin: auto;
+    border: var(--border-color) 2px solid;
+    border-radius: 5px;
+    box-shadow: 5px 5px 5px #555;
+    background: #ccc;
+}
+
+
+.leader-name-wrapper {
+    width: 100%;
+    height: 50%;
+    display: flex;
+    align-items: center;
+}
+
+.leader-name {
+    font-family: 'Pacifico', cursive;
+    font-size: 4vw;
+    margin: auto;
+}
+
+.leader-message-wrapper {
+    width: 100%;
+    height: 50%;
+    display: flex;
+    align-items: center;
+}
+
+.leader-message {
+    font-size: 2vw;
+    margin: auto;
+    width: 90%;
+    overflow: hidden;
+    /*word-break: break-all;*/
+
+}
+
+.not-leader-name-wrapper {
+    width: 100%;
+    height: 50%;
+    display: flex;
+    align-items: center;
+}
+
+.not-leader-name {
+    font-size: 2vw;
+    margin: auto;
+}
+
+.not-leader-message-wrapper {
+    width: 100%;
+    height: 50%;
+    display: flex;
+    align-items: center;
+}
+
+.not-leader-message {
+    font-size: 1vw;
+    word-break: break-all;
+    margin: auto;
+    width: 90%;
+    overflow: hidden;
+}
+
+.leader-score {
+    position: absolute;
+    font-size: 3vw;
+}
+
+.not-leader-score {
+    position: absolute;
+    font-size: 1.5vw;
+}
+
+.play-button {
+    position: absolute;
+    bottom: 0;
+    padding: 1vw 3vw;
+    margin-bottom: 1vh;
+    transform: translateX(-50%);
+    border: var(--border-color) 2px solid;
+    border-radius: 5px;
+    box-shadow: 5px 5px 5px #555;
+    background: #ccc;
+    color: var(--border-color);
+}

@@ -1,0 +1,91 @@
+@import 'tailwindcss';
+
+/* Custom styles for the website */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: 'Fjalla One', sans-serif;
+  }
+}
+
+@theme {
+  --font-bartle: 'bartle', sans-serif;
+  --font-newamsterdam: 'newamsterdam', sans-serif;
+}
+
+@font-face {
+  font-family: 'bartle';
+  src: url('/fonts/BBH_Sans_Bartle/BBHSansBartle-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'newamsterdam';
+  src: url('/fonts/New_Amsterdam/NewAmsterdam-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@layer components {
+  .header-text {
+    @apply text-6xl md:text-8xl font-bold text-white;
+  }
+  
+  .desc-text {
+    @apply text-gray-300 leading-relaxed;
+  }
+  
+  .tech {
+    @apply px-3 py-1 text-sm font-medium rounded-full;
+  }
+  
+  .tech-node {
+    @apply bg-green-600 text-white;
+  }
+  
+  .tech-mysql {
+    @apply bg-blue-600 text-white;
+  }
+  
+  .tech-ejs {
+    @apply bg-yellow-600 text-white;
+  }
+  
+  .tech-express {
+    @apply bg-gray-600 text-white;
+  }
+  
+  .tech-websockets {
+    @apply bg-purple-600 text-white;
+  }
+  
+  .tech-javascript {
+    @apply bg-yellow-500 text-black;
+  }
+  
+  .bs-icon {
+    @apply w-16 h-16 rounded-full bg-purple-600 flex items-center justify-center;
+  }
+  
+  .bs-icon-xl {
+    @apply w-20 h-20;
+  }
+  
+  .bs-icon-circle {
+    @apply rounded-full;
+  }
+  
+  .bs-icon-primary {
+    @apply bg-purple-600;
+  }
+}
+
+@layer utilities {
+  .fit-cover {
+    object-fit: cover;
+  }
+}

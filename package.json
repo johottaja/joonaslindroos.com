@@ -1,36 +1,31 @@
 {
   "name": "joonaslindroos.com",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "my website",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "dev": "nodemon server.js --ignore highscores.json",
-    "start": "node server.js",
-    "production": "pm2 start server.js --name main-joonaslindroos",
-    "restart": "pm2 restart main-joonaslindroos",
-    "lint": "eslint ."
+    "dev": "next dev",
+    "build": "next build",
+    "export": "next build && next export",
+    "start": "next start",
+    "lint": "next lint"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@uidotdev/usehooks": "^2.4.1",
     "axios": "^1.7.9",
-    "body-parser": "^1.19.0",
     "bootstrap": "^5.0.0-beta2",
-    "cookie-session": "^1.4.0",
-    "crypto": "^1.0.1",
-    "dotenv": "^16.4.7",
-    "ejs": "^3.1.6",
-    "eslint": "^9.11.1",
-    "express": "^4.17.1",
-    "express-validator": "^6.11.1",
-    "helmet": "^4.4.1",
-    "http-errors": "^1.8.1",
-    "node": "^15.10.0",
+    "motion": "^12.23.24",
+    "next": "^16.0.0",
     "nodemailer": "^6.9.16",
-    "path": "^0.12.7",
-    "socket.io": "^4.1.3"
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.7"
+    "@tailwindcss/postcss": "^4.1.15",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^14.0.0",
+    "tailwindcss": "^4.1.15"
   }
 }
