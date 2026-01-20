@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import Hero from '@/components/Hero.jsx'
+import ModelViewer from '@/components/ModelViewer.jsx'
 
 export default function Home() {
   useEffect(() => {
@@ -21,7 +22,9 @@ export default function Home() {
 
     const loadScripts = async () => {
       try {
-        await loadScript('https://www.google.com/recaptcha/api.js')
+        if (process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY) {
+          await loadScript('https://www.google.com/recaptcha/api.js')
+        }
       } catch (error) {
         console.error('Error loading scripts:', error)
       }
@@ -33,7 +36,11 @@ export default function Home() {
   return (
     <>
       <Hero />
-      
+
+      <section className="w-full bg-black">
+          <h2 className="text-center tracking-widest text-5xl font-bold pt-36 pb-10">Always pushing the boundaries</h2>
+          <ModelViewer />
+      </section>
 
       <main className="container mx-auto px-4">
         <section id="projects">
@@ -210,10 +217,12 @@ export default function Home() {
                                   minLength="1" required></textarea>
                       </div>
                       <div>
-                        <div className="flex justify-center mb-4">
-                          <div className="g-recaptcha" data-theme="dark"
-                               data-sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}></div>
-                        </div>
+                        {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
+                          <div className="flex justify-center mb-4">
+                            <div className="g-recaptcha" data-theme="dark"
+                                 data-sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}></div>
+                          </div>
+                        )}
                         <button className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200" type="submit">Send</button>
                       </div>
                     </form>
