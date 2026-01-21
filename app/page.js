@@ -5,6 +5,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import Hero from '@/components/Hero.jsx'
 import ModelViewer from '@/components/ModelViewer.jsx'
+import GroundDivider from '@/components/GroundDivider.jsx'
+import TechSection from '@/components/sections/TechSection.jsx'
 
 export default function Home() {
   useEffect(() => {
@@ -36,12 +38,9 @@ export default function Home() {
   return (
     <>
       <Hero />
-
-      <section className="w-full bg-black">
-          <h2 className="text-center tracking-widest text-5xl font-bold pt-36 pb-10">Always pushing the boundaries</h2>
-          <ModelViewer />
-      </section>
-
+      <GroundDivider />
+      <TechSection />
+      <GroundDivider />
       <main className="container mx-auto px-4">
         <section id="projects">
           <div className="container mx-auto py-4 xl:py-5">

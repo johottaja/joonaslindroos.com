@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 import { MeshoptDecoder } from 'meshoptimizer'
+import Technologies from './Technologies.jsx'
 
 export default function ModelViewer() {
   const containerRef = useRef(null)
@@ -14,6 +15,9 @@ export default function ModelViewer() {
   const animationFrameRef = useRef(null)
   const modelRef = useRef(null)
   const lightRef = useRef(null)
+  const technologiesRef = useRef(null)
+  const [sceneReady, setSceneReady] = useState(false)
+  const [cameraReady, setCameraReady] = useState(false)
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -21,6 +25,7 @@ export default function ModelViewer() {
     // Scene setup
     const scene = new THREE.Scene()
     sceneRef.current = scene
+    setSceneReady(true)
 
     // Camera setup
     const camera = new THREE.PerspectiveCamera(
@@ -32,6 +37,7 @@ export default function ModelViewer() {
     camera.position.set(0.1, 0.5, 5)
     camera.lookAt(0, 0, 0)
     cameraRef.current = camera
+    setCameraReady(true)
 
     // Renderer setup
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
@@ -53,8 +59,7 @@ export default function ModelViewer() {
       envMap.mapping = THREE.EquirectangularReflectionMapping
       scene.environment = envMap
       scene.environmentIntensity = 0.28 // Reduce environment intensity
-      scene.background = envMap
-      scene.backgroundIntensity = 0 // Darken background
+      scene.background = new THREE.Color(0x0a0a0a) // Dark gray background
       texture.dispose()
       pmremGenerator.dispose()
     }, undefined, (error) => {
@@ -121,6 +126,11 @@ export default function ModelViewer() {
         lightRef.current.lookAt(0, 0, 0)
       }
       
+      // Animate technologies
+      if (technologiesRef.current) {
+        technologiesRef.current.animate()
+      }
+      
       renderer.render(scene, camera)
     }
     animate()
@@ -144,12 +154,17 @@ export default function ModelViewer() {
         containerRef.current.removeChild(rendererRef.current.domElement)
       }
       renderer.dispose()
+      setSceneReady(false)
+      setCameraReady(false)
     }
   }, [])
 
   return (
-    <div className="w-full h-[100vh] relative bg-black">
+    <div className="w-full h-[100vh] relative bg-neutral-950">
       <div ref={containerRef} className="w-full h-full" />
+      {sceneReady && cameraReady && (
+        <Technologies ref={technologiesRef} scene={sceneRef.current} camera={cameraRef.current} />
+      )}
     </div>
   )
 }
