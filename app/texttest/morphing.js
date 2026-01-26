@@ -120,19 +120,20 @@ class ShapeMorph {
       targetOffsetX + targetShapePos.x,
       targetOffsetY + targetShapePos.y
     )
-    this.maxSpeed = 1000
-    this.maxForce = 50
-    this.velocity = Vector.fromAngle(Math.random() * 2 * Math.PI, 1000)
+    this.maxSpeed = 800
+    this.maxForce = 30
+    this.velocity = Vector.fromAngle(Math.random() * 2 * Math.PI, 800)
   }
   
   arrive(target) {
     // Calculate desired velocity
     const desired = target.subtract(this.position)
-    const d = desired.magnitude()
+    const dSquared = desired.magnitudeSquared()
+    const d = Math.sqrt(dSquared)
     let speed = this.maxSpeed
     
-    // Reduce speed when close to target
-    if (d < 100) {
+    // Reduce speed when close to target (using squared distance for comparison)
+    if (dSquared < 10000) { // 100^2 = 10000
       speed = map(d, 0, 100, 0, this.maxSpeed)
     }
     
@@ -143,9 +144,9 @@ class ShapeMorph {
     // Calculate steering force
     let steer = desiredVel.subtract(this.velocity)
     
-    // Limit steering force
-    const steerMag = steer.magnitude()
-    if (steerMag > this.maxForce) {
+    // Limit steering force (using squared magnitude for comparison)
+    const steerMagSquared = steer.magnitudeSquared()
+    if (steerMagSquared > this.maxForce * this.maxForce) {
       steer = steer.normalize().multiply(this.maxForce)
     }
     
@@ -159,9 +160,9 @@ class ShapeMorph {
     // Apply steering to velocity
     this.velocity = this.velocity.add(steer)
     
-    // Limit max speed
-    const speed = this.velocity.magnitude()
-    if (speed > this.maxSpeed) {
+    // Limit max speed (using squared magnitude for comparison)
+    const speedSquared = this.velocity.magnitudeSquared()
+    if (speedSquared > this.maxSpeed * this.maxSpeed) {
       this.velocity = this.velocity.normalize().multiply(this.maxSpeed)
     }
     
@@ -169,8 +170,8 @@ class ShapeMorph {
     this.position = this.position.add(this.velocity.multiply(deltaTime))
   }
 
-  draw(ctx, progress) {
-    const easedProgress = easeInOutCubic(progress)
+  draw(ctx, easedProgress) {
+    // easedProgress is now pre-calculated in MorphingSystem.draw()
     
     if (this.sourceType === this.targetType) {
       // Same type - direct interpolation
@@ -400,9 +401,9 @@ class MorphingSystem {
   
   update(currentTime, deltaTime) {
     // Update physics for all morphs (always, even after morphing completes)
-    this.morphs.forEach(morph => {
-      morph.update(deltaTime)
-    })
+    for (let i = 0; i < this.morphs.length; i++) {
+      this.morphs[i].update(deltaTime)
+    }
     
     // Update morphing progress
     if (!this.active) return
@@ -427,8 +428,11 @@ class MorphingSystem {
     // Draw all morphs (even after morphing completes, use progress = 1.0)
     const morphProgress = this.active ? this.progress : 1.0
     
+    // Calculate eased progress once for all morphs (performance optimization)
+    const easedProgress = easeInOutCubic(morphProgress)
+    
     this.morphs.forEach(morph => {
-      morph.draw(ctx, morphProgress)
+      morph.draw(ctx, easedProgress)
     })
   }
   

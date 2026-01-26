@@ -32,18 +32,19 @@ export default function TextTest() {
 
     let lastTime = performance.now()
     
+    // Set canvas context properties once (they don't change)
+    ctx.fillStyle = '#111'
+    ctx.strokeStyle = '#fff'
+    ctx.lineCap = 'square'
+    ctx.lineWidth = 5
+    
+    const spacing = 10
+    const centerX = canvas.width / 2
+    const centerY = canvas.height / 2
+    
     const draw = (currentTime) => {
-      ctx.fillStyle = '#111'
+      // Clear canvas
       ctx.fillRect(0, 0, canvas.width, canvas.height)
-      
-      ctx.fillStyle = '#eee'
-      ctx.strokeStyle = '#fff'
-      ctx.lineCap = 'square'
-      ctx.lineWidth = 5
-      
-      const spacing = 10
-      const centerX = canvas.width / 2
-      const centerY = canvas.height / 2
       
       // Calculate deltaTime in seconds
       const deltaTime = (currentTime - lastTime) / 1000
