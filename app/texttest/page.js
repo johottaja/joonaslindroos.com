@@ -30,6 +30,8 @@ export default function TextTest() {
     }
     const morphingSystem = morphingSystemRef.current
 
+    let lastTime = performance.now()
+    
     const draw = (currentTime) => {
       ctx.fillStyle = '#111'
       ctx.fillRect(0, 0, canvas.width, canvas.height)
@@ -43,15 +45,26 @@ export default function TextTest() {
       const centerX = canvas.width / 2
       const centerY = canvas.height / 2
       
-      // Update morphing system
-      if (morphingSystem.isActive()) {
-        morphingSystem.update(currentTime)
+      // Calculate deltaTime in seconds
+      const deltaTime = (currentTime - lastTime) / 1000
+      lastTime = currentTime
+      
+      // Always update morphing system (physics continues even after morphing completes)
+      if (morphingSystem.morphs && morphingSystem.morphs.length > 0) {
+        morphingSystem.update(currentTime, deltaTime)
         morphingSystem.draw(ctx)
-        setMorphingActive(true)
+        
+        if (morphingSystem.isActive()) {
+          setMorphingActive(true)
+        } else {
+          setMorphingActive(false)
+          const word = morphingSystem.getCurrentWord() || initialWord
+          setCurrentWord(word)
+        }
       } else {
         setMorphingActive(false)
         
-        // Draw static word
+        // Draw static word only if no morphs exist
         const word = morphingSystem.getCurrentWord() || initialWord
         setCurrentWord(word)
         const wordWidth = wordLength(word, spacing)

@@ -1,4 +1,4 @@
-import { letterDefinitions, letterWidths, Line, Curve, wordLength } from './letters'
+import { letterDefinitions, letterWidths, Line, Curve, wordLength, Vector } from './letters'
 
 // Easing function for smooth animation
 function easeInOutCubic(t) {
@@ -81,10 +81,14 @@ function lerp(a, b, t) {
   return a + (b - a) * t
 }
 
-// Interpolate angle (handles wrapping)
+// Interpolate angle (handles wrapping) - now using Vector method
 function lerpAngle(a, b, t) {
-  const diff = ((b - a + Math.PI) % (2 * Math.PI)) - Math.PI
-  return a + diff * t
+  return Vector.lerpAngle(a, b, t)
+}
+
+// Map function for value remapping
+function map(value, x1, y1, x2, y2) {
+  return (value - x1) * (y2 - x2) / (y1 - x1) + x2
 }
 
 class ShapeMorph {
@@ -97,8 +101,74 @@ class ShapeMorph {
     this.targetOffsetY = targetOffsetY
     this.sourceType = sourceShape.shape instanceof Line ? 'Line' : 'Curve'
     this.targetType = targetShape.shape instanceof Line ? 'Line' : 'Curve'
+    
+    // Position represents the shape's anchor point (start for Line, p1 for Curve)
+    // Initialize to source shape's world position
+    const sourceShapePos = this.sourceType === 'Line' 
+      ? this.sourceShape.position 
+      : this.sourceShape.p1
+    this.position = new Vector(
+      sourceOffsetX + sourceShapePos.x,
+      sourceOffsetY + sourceShapePos.y
+    )
+    
+    // Target position is target shape's anchor point world position
+    const targetShapePos = this.targetType === 'Line'
+      ? this.targetShape.position
+      : this.targetShape.p1
+    this.targetPos = new Vector(
+      targetOffsetX + targetShapePos.x,
+      targetOffsetY + targetShapePos.y
+    )
+    this.maxSpeed = 1000
+    this.maxForce = 50
+    this.velocity = Vector.fromAngle(Math.random() * 2 * Math.PI, 1000)
   }
   
+  arrive(target) {
+    // Calculate desired velocity
+    const desired = target.subtract(this.position)
+    const d = desired.magnitude()
+    let speed = this.maxSpeed
+    
+    // Reduce speed when close to target
+    if (d < 100) {
+      speed = map(d, 0, 100, 0, this.maxSpeed)
+    }
+    
+    // Normalize and scale desired velocity
+    const norm = d > 0 ? desired.normalize() : new Vector(0, 0)
+    const desiredVel = norm.multiply(speed)
+    
+    // Calculate steering force
+    let steer = desiredVel.subtract(this.velocity)
+    
+    // Limit steering force
+    const steerMag = steer.magnitude()
+    if (steerMag > this.maxForce) {
+      steer = steer.normalize().multiply(this.maxForce)
+    }
+    
+    return steer
+  }
+
+  update(deltaTime) {
+    // Calculate steering force using arrive behavior
+    const steer = this.arrive(this.targetPos)
+    
+    // Apply steering to velocity
+    this.velocity = this.velocity.add(steer)
+    
+    // Limit max speed
+    const speed = this.velocity.magnitude()
+    if (speed > this.maxSpeed) {
+      this.velocity = this.velocity.normalize().multiply(this.maxSpeed)
+    }
+    
+    // Update position (velocity is in pixels per second, deltaTime is in seconds)
+    this.position = this.position.add(this.velocity.multiply(deltaTime))
+  }
+
   draw(ctx, progress) {
     const easedProgress = easeInOutCubic(progress)
     
@@ -135,24 +205,19 @@ class ShapeMorph {
     const source = this.sourceShape
     const target = this.targetShape
     
-    const sourceX = source.x + this.sourceOffsetX
-    const sourceY = source.y + this.sourceOffsetY
-    const sourceEndX = sourceX + source.length * Math.cos(source.dir)
-    const sourceEndY = sourceY + source.length * Math.sin(source.dir)
+    // this.position is the shape's start point (moved by physics)
+    const start = this.position
     
-    const targetX = target.x + this.targetOffsetX
-    const targetY = target.y + this.targetOffsetY
-    const targetEndX = targetX + target.length * Math.cos(target.dir)
-    const targetEndY = targetY + target.length * Math.sin(target.dir)
+    // Interpolate shape properties: length and direction
+    const length = lerp(source.length, target.length, t)
+    const dir = lerpAngle(source.dir, target.dir, t)
     
-    const x1 = lerp(sourceX, targetX, t)
-    const y1 = lerp(sourceY, targetY, t)
-    const x2 = lerp(sourceEndX, targetEndX, t)
-    const y2 = lerp(sourceEndY, targetEndY, t)
+    const direction = Vector.fromAngle(dir, length)
+    const end = start.add(direction)
     
     ctx.beginPath()
-    ctx.moveTo(x1, y1)
-    ctx.lineTo(x2, y2)
+    ctx.moveTo(start.x, start.y)
+    ctx.lineTo(end.x, end.y)
     ctx.stroke()
   }
   
@@ -160,16 +225,26 @@ class ShapeMorph {
     const source = this.sourceShape
     const target = this.targetShape
     
-    const x1 = lerp(source.x1 + this.sourceOffsetX, target.x1 + this.targetOffsetX, t)
-    const y1 = lerp(source.y1 + this.sourceOffsetY, target.y1 + this.targetOffsetY, t)
-    const x2 = lerp(source.x2 + this.sourceOffsetX, target.x2 + this.targetOffsetX, t)
-    const y2 = lerp(source.y2 + this.sourceOffsetY, target.y2 + this.targetOffsetY, t)
-    const x3 = lerp(source.x3 + this.sourceOffsetX, target.x3 + this.targetOffsetX, t)
-    const y3 = lerp(source.y3 + this.sourceOffsetY, target.y3 + this.targetOffsetY, t)
+    // this.position is the shape's p1 (moved by physics)
+    const p1 = this.position
+    
+    // Calculate control and end points relative to p1
+    const sourceRelP2 = source.p2.subtract(source.p1)
+    const sourceRelP3 = source.p3.subtract(source.p1)
+    
+    const targetRelP2 = target.p2.subtract(target.p1)
+    const targetRelP3 = target.p3.subtract(target.p1)
+    
+    // Interpolate relative positions
+    const p2Rel = Vector.lerp(sourceRelP2, targetRelP2, t)
+    const p3Rel = Vector.lerp(sourceRelP3, targetRelP3, t)
+    
+    const p2 = p1.add(p2Rel)
+    const p3 = p1.add(p3Rel)
     
     ctx.beginPath()
-    ctx.moveTo(x1, y1)
-    ctx.quadraticCurveTo(x2, y2, x3, y3)
+    ctx.moveTo(p1.x, p1.y)
+    ctx.quadraticCurveTo(p2.x, p2.y, p3.x, p3.y)
     ctx.stroke()
   }
   
@@ -178,26 +253,19 @@ class ShapeMorph {
     const source = this.sourceShape
     const target = this.targetShape
     
-    const sourceX = source.x + this.sourceOffsetX
-    const sourceY = source.y + this.sourceOffsetY
-    const sourceEndX = sourceX + source.length * Math.cos(source.dir)
-    const sourceEndY = sourceY + source.length * Math.sin(source.dir)
+    // this.position is the shape's start point (moved by physics)
+    const start = this.position
     
-    // Convert target curve to line-like representation for interpolation
-    const targetX1 = target.x1 + this.targetOffsetX
-    const targetY1 = target.y1 + this.targetOffsetY
-    const targetX3 = target.x3 + this.targetOffsetX
-    const targetY3 = target.y3 + this.targetOffsetY
+    // Interpolate end point direction
+    const sourceEnd = Vector.fromAngle(source.dir, source.length)
+    const targetEndRel = target.p3.subtract(target.p1)
     
-    // Interpolate line endpoints toward curve endpoints
-    const x1 = lerp(sourceX, targetX1, t)
-    const y1 = lerp(sourceY, targetY1, t)
-    const x2 = lerp(sourceEndX, targetX3, t)
-    const y2 = lerp(sourceEndY, targetY3, t)
+    const endRel = Vector.lerp(sourceEnd, targetEndRel, t)
+    const end = start.add(endRel)
     
     ctx.beginPath()
-    ctx.moveTo(x1, y1)
-    ctx.lineTo(x2, y2)
+    ctx.moveTo(start.x, start.y)
+    ctx.lineTo(end.x, end.y)
     ctx.stroke()
   }
   
@@ -206,32 +274,30 @@ class ShapeMorph {
     const source = this.sourceShape
     const target = this.targetShape
     
-    // At the midpoint (t=0), we need to match where the first half ended (t=1)
-    // First half ended at: line from (targetX1, targetY1) to (targetX3, targetY3)
-    // So we start the curve from that same line position (as a curve with midpoint control)
-    const targetX1 = target.x1 + this.targetOffsetX
-    const targetY1 = target.y1 + this.targetOffsetY
-    const targetX2 = target.x2 + this.targetOffsetX
-    const targetY2 = target.y2 + this.targetOffsetY
-    const targetX3 = target.x3 + this.targetOffsetX
-    const targetY3 = target.y3 + this.targetOffsetY
+    // this.position is the shape's p1 (moved by physics, should be near target p1 by now)
+    const p1 = this.position
     
-    // At t=0, draw a curve that matches the line from (targetX1, targetY1) to (targetX3, targetY3)
-    // The curve endpoints match, and control point is at the midpoint
-    // At t=1, draw the target curve with its actual control point
-    const midX = (targetX1 + targetX3) / 2
-    const midY = (targetY1 + targetY3) / 2
+    // At t=0, we want a curve that matches the line from first half
+    // The line goes from p1 to some end point
+    // Calculate approximate line end based on source line direction
+    const sourceEnd = Vector.fromAngle(source.dir, source.length)
     
-    const x1 = targetX1 // Start stays at targetX1 (matches first half end)
-    const y1 = targetY1 // Start stays at targetY1 (matches first half end)
-    const x2 = lerp(midX, targetX2, t) // Control point morphs from midpoint to target control
-    const y2 = lerp(midY, targetY2, t)
-    const x3 = targetX3 // End stays at targetX3 (matches first half end)
-    const y3 = targetY3 // End stays at targetY3 (matches first half end)
+    // Target curve points relative to target p1
+    const targetRelP2 = target.p2.subtract(target.p1)
+    const targetRelP3 = target.p3.subtract(target.p1)
+    
+    // At t=0: control at midpoint, end at line end
+    // At t=1: control and end at target positions
+    const lineMidRel = sourceEnd.multiply(0.5)
+    const p2Rel = Vector.lerp(lineMidRel, targetRelP2, t)
+    const p3Rel = Vector.lerp(sourceEnd, targetRelP3, t)
+    
+    const p2 = p1.add(p2Rel)
+    const p3 = p1.add(p3Rel)
     
     ctx.beginPath()
-    ctx.moveTo(x1, y1)
-    ctx.quadraticCurveTo(x2, y2, x3, y3)
+    ctx.moveTo(p1.x, p1.y)
+    ctx.quadraticCurveTo(p2.x, p2.y, p3.x, p3.y)
     ctx.stroke()
   }
   
@@ -240,32 +306,26 @@ class ShapeMorph {
     const source = this.sourceShape
     const target = this.targetShape
     
-    const sourceX1 = source.x1 + this.sourceOffsetX
-    const sourceY1 = source.y1 + this.sourceOffsetY
-    const sourceX2 = source.x2 + this.sourceOffsetX
-    const sourceY2 = source.y2 + this.sourceOffsetY
-    const sourceX3 = source.x3 + this.sourceOffsetX
-    const sourceY3 = source.y3 + this.sourceOffsetY
+    // this.position is the shape's p1 (moved by physics)
+    const p1 = this.position
     
-    // Convert target line to curve-like representation
-    const targetX = target.x + this.targetOffsetX
-    const targetY = target.y + this.targetOffsetY
-    const targetEndX = targetX + target.length * Math.cos(target.dir)
-    const targetEndY = targetY + target.length * Math.sin(target.dir)
-    const targetMidX = (targetX + targetEndX) / 2
-    const targetMidY = (targetY + targetEndY) / 2
+    // Calculate control and end points relative to p1
+    const sourceRelP2 = source.p2.subtract(source.p1)
+    const sourceRelP3 = source.p3.subtract(source.p1)
     
-    // Interpolate curve toward line
-    const x1 = lerp(sourceX1, targetX, t)
-    const y1 = lerp(sourceY1, targetY, t)
-    const x2 = lerp(sourceX2, targetMidX, t)
-    const y2 = lerp(sourceY2, targetMidY, t)
-    const x3 = lerp(sourceX3, targetEndX, t)
-    const y3 = lerp(sourceY3, targetEndY, t)
+    // Target line end relative to target start
+    const targetEnd = Vector.fromAngle(target.dir, target.length)
+    
+    // Interpolate: curve morphs toward line
+    const p2Rel = Vector.lerp(sourceRelP2, targetEnd.multiply(0.5), t)
+    const p3Rel = Vector.lerp(sourceRelP3, targetEnd, t)
+    
+    const p2 = p1.add(p2Rel)
+    const p3 = p1.add(p3Rel)
     
     ctx.beginPath()
-    ctx.moveTo(x1, y1)
-    ctx.quadraticCurveTo(x2, y2, x3, y3)
+    ctx.moveTo(p1.x, p1.y)
+    ctx.quadraticCurveTo(p2.x, p2.y, p3.x, p3.y)
     ctx.stroke()
   }
   
@@ -274,25 +334,20 @@ class ShapeMorph {
     const source = this.sourceShape
     const target = this.targetShape
     
-    // At the midpoint (t=0), we need to match where the first half ended (t=1)
-    // First half ended at: curve from (targetX, targetY) to (targetEndX, targetEndY) with midpoint control
-    // So we start the line from that same position (curve endpoints)
-    const targetX = target.x + this.targetOffsetX
-    const targetY = target.y + this.targetOffsetY
-    const targetEndX = targetX + target.length * Math.cos(target.dir)
-    const targetEndY = targetY + target.length * Math.sin(target.dir)
+    // this.position is the shape's start point (moved by physics, should be near target start by now)
+    const start = this.position
     
-    // At t=0, draw a line that matches the curve endpoints from first half end
-    // At t=1, draw the target line (which is the same endpoints, so no change)
-    // This ensures continuity - the line is already at the target position
-    const x1 = targetX // Start stays at targetX (matches first half end)
-    const y1 = targetY // Start stays at targetY (matches first half end)
-    const x2 = targetEndX // End stays at targetEndX (matches first half end)
-    const y2 = targetEndY // End stays at targetEndY (matches first half end)
+    // At t=0, end point is source curve end (p3) relative to current start
+    // At t=1, end point is target line end
+    const sourceEndRel = source.p3.subtract(source.p1)
+    const targetEnd = Vector.fromAngle(target.dir, target.length)
+    
+    const endRel = Vector.lerp(sourceEndRel, targetEnd, t)
+    const end = start.add(endRel)
     
     ctx.beginPath()
-    ctx.moveTo(x1, y1)
-    ctx.lineTo(x2, y2)
+    ctx.moveTo(start.x, start.y)
+    ctx.lineTo(end.x, end.y)
     ctx.stroke()
   }
 }
@@ -343,7 +398,13 @@ class MorphingSystem {
     })
   }
   
-  update(currentTime) {
+  update(currentTime, deltaTime) {
+    // Update physics for all morphs (always, even after morphing completes)
+    this.morphs.forEach(morph => {
+      morph.update(deltaTime)
+    })
+    
+    // Update morphing progress
     if (!this.active) return
     
     if (this.startTime === null) {
@@ -363,10 +424,11 @@ class MorphingSystem {
   }
   
   draw(ctx) {
-    if (!this.active) return
+    // Draw all morphs (even after morphing completes, use progress = 1.0)
+    const morphProgress = this.active ? this.progress : 1.0
     
     this.morphs.forEach(morph => {
-      morph.draw(ctx, this.progress)
+      morph.draw(ctx, morphProgress)
     })
   }
   

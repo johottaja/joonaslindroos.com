@@ -1,3 +1,68 @@
+class Vector {
+  constructor(x = 0, y = 0) {
+    this.x = x
+    this.y = y
+  }
+  
+  // Create vector from angle and magnitude
+  static fromAngle(angle, magnitude = 1) {
+    return new Vector(magnitude * Math.cos(angle), magnitude * Math.sin(angle))
+  }
+  
+  copy() {
+    return new Vector(this.x, this.y)
+  }
+  
+  add(v) {
+    return new Vector(this.x + v.x, this.y + v.y)
+  }
+  
+  subtract(v) {
+    return new Vector(this.x - v.x, this.y - v.y)
+  }
+  
+  multiply(scalar) {
+    return new Vector(this.x * scalar, this.y * scalar)
+  }
+  
+  divide(scalar) {
+    return new Vector(this.x / scalar, this.y / scalar)
+  }
+  
+  magnitude() {
+    return Math.sqrt(this.x * this.x + this.y * this.y)
+  }
+  
+  magnitudeSquared() {
+    return this.x * this.x + this.y * this.y
+  }
+  
+  normalize() {
+    const mag = this.magnitude()
+    if (mag === 0) return new Vector(0, 0)
+    return this.divide(mag)
+  }
+  
+  angle() {
+    return Math.atan2(this.y, this.x)
+  }
+  
+  dot(v) {
+    return this.x * v.x + this.y * v.y
+  }
+  
+  static lerp(v1, v2, t) {
+    return new Vector(
+      v1.x + (v2.x - v1.x) * t,
+      v1.y + (v2.y - v1.y) * t
+    )
+  }
+  
+  static lerpAngle(a1, a2, t) {
+    const diff = ((a2 - a1 + Math.PI) % (2 * Math.PI)) - Math.PI
+    return a1 + diff * t
+  }
+}
 
 const letterWidths = {
     'A': 60, 'B': 50, 'C': 60, 'D': 60, 'E': 50, 'F': 50, 'G': 60,
@@ -22,34 +87,71 @@ const letterWidths = {
   
   class Line {
     constructor(x1, y1, dir, length) {
-      this.x = x1
-      this.y = y1
+      this.position = new Vector(x1, y1)
       this.dir = dir
       this.length = length
     }
   
+    get x() {
+      return this.position.x
+    }
+    
+    get y() {
+      return this.position.y
+    }
+  
     draw(ctx, offsetX, offsetY) {
+      const start = this.position.add(new Vector(offsetX, offsetY))
+      const direction = Vector.fromAngle(this.dir, this.length)
+      const end = start.add(direction)
+      
       ctx.beginPath()
-      ctx.moveTo(this.x + offsetX, this.y + offsetY)
-      ctx.lineTo(this.x + offsetX + this.length * Math.cos(this.dir), this.y + offsetY + this.length * Math.sin(this.dir))
+      ctx.moveTo(start.x, start.y)
+      ctx.lineTo(end.x, end.y)
       ctx.stroke()
     }
   }
   
   class Curve {
     constructor(x1, y1, x2, y2, x3, y3) {
-      this.x1 = x1
-      this.y1 = y1
-      this.x2 = x2
-      this.y2 = y2
-      this.x3 = x3
-      this.y3 = y3
+      this.p1 = new Vector(x1, y1)
+      this.p2 = new Vector(x2, y2)
+      this.p3 = new Vector(x3, y3)
+    }
+  
+    get x1() {
+      return this.p1.x
+    }
+    
+    get y1() {
+      return this.p1.y
+    }
+    
+    get x2() {
+      return this.p2.x
+    }
+    
+    get y2() {
+      return this.p2.y
+    }
+    
+    get x3() {
+      return this.p3.x
+    }
+    
+    get y3() {
+      return this.p3.y
     }
   
     draw(ctx, offsetX, offsetY) {
+      const offset = new Vector(offsetX, offsetY)
+      const start = this.p1.add(offset)
+      const control = this.p2.add(offset)
+      const end = this.p3.add(offset)
+      
       ctx.beginPath()
-      ctx.moveTo(this.x1 + offsetX, this.y1 + offsetY)
-      ctx.quadraticCurveTo(this.x2 + offsetX, this.y2 + offsetY, this.x3 + offsetX, this.y3 + offsetY)
+      ctx.moveTo(start.x, start.y)
+      ctx.quadraticCurveTo(control.x, control.y, end.x, end.y)
       ctx.stroke()
     }
   }
@@ -202,4 +304,4 @@ function wordLength(word, spacing) {
     }, 0) - spacing // Remove last spacing
 }
 
-export { letterWidths, letterDefinitions, Letter, Line, Curve, wordLength }
+export { letterWidths, letterDefinitions, Letter, Line, Curve, wordLength, Vector }
