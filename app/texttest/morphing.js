@@ -1,4 +1,5 @@
 import { letterDefinitions, letterWidths, Line, Curve, wordLength, Vector } from './letters'
+import { animationConfig } from '../components/LetterAnimation.config'
 
 // Easing function for smooth animation
 function easeInOutCubic(t) {
@@ -6,13 +7,14 @@ function easeInOutCubic(t) {
 }
 
 // Extract all shapes from a word with their positions
-function extractAllShapes(word, startX, startY, spacing) {
+function extractAllShapes(word, startX, startY, spacing, scale = 1.0) {
   const shapes = []
   let currentX = startX
+  const scaledSpacing = spacing * scale
   
   for (const letter of word) {
     const letterShapes = letterDefinitions[letter] || []
-    const letterWidth = letterWidths[letter] || 50
+    const letterWidth = (letterWidths[letter] || animationConfig.defaultLetterWidth) * scale
     
     letterShapes.forEach(shape => {
       // Create a copy of the shape with position info
@@ -24,7 +26,7 @@ function extractAllShapes(word, startX, startY, spacing) {
       })
     })
     
-    currentX += letterWidth + spacing
+    currentX += letterWidth + scaledSpacing
   }
   
   return shapes
@@ -92,7 +94,8 @@ function map(value, x1, y1, x2, y2) {
 }
 
 class ShapeMorph {
-  constructor(sourceShape, sourceOffsetX, sourceOffsetY, targetShape, targetOffsetX, targetOffsetY) {
+  constructor(sourceShape, sourceOffsetX, sourceOffsetY, targetShape, targetOffsetX, targetOffsetY, scale = 1.0) {
+    this.scale = scale
     this.sourceShape = sourceShape.shape
     this.sourceOffsetX = sourceOffsetX
     this.sourceOffsetY = sourceOffsetY
@@ -103,26 +106,26 @@ class ShapeMorph {
     this.targetType = targetShape.shape instanceof Line ? 'Line' : 'Curve'
     
     // Position represents the shape's anchor point (start for Line, p1 for Curve)
-    // Initialize to source shape's world position
+    // Initialize to source shape's world position (scaled)
     const sourceShapePos = this.sourceType === 'Line' 
       ? this.sourceShape.position 
       : this.sourceShape.p1
     this.position = new Vector(
-      sourceOffsetX + sourceShapePos.x,
-      sourceOffsetY + sourceShapePos.y
+      sourceOffsetX + sourceShapePos.x * scale,
+      sourceOffsetY + sourceShapePos.y * scale
     )
     
-    // Target position is target shape's anchor point world position
+    // Target position is target shape's anchor point world position (scaled)
     const targetShapePos = this.targetType === 'Line'
       ? this.targetShape.position
       : this.targetShape.p1
     this.targetPos = new Vector(
-      targetOffsetX + targetShapePos.x,
-      targetOffsetY + targetShapePos.y
+      targetOffsetX + targetShapePos.x * scale,
+      targetOffsetY + targetShapePos.y * scale
     )
-    this.maxSpeed = 800
-    this.maxForce = 30
-    this.velocity = Vector.fromAngle(Math.random() * 2 * Math.PI, 800)
+    this.maxSpeed = animationConfig.physics.maxSpeedMultiplier * scale
+    this.maxForce = animationConfig.physics.maxForceMultiplier * scale
+    this.velocity = Vector.fromAngle(Math.random() * 2 * Math.PI, animationConfig.physics.maxSpeedMultiplier * scale)
   }
   
   arrive(target) {
@@ -133,8 +136,8 @@ class ShapeMorph {
     let speed = this.maxSpeed
     
     // Reduce speed when close to target (using squared distance for comparison)
-    if (dSquared < 10000) { // 100^2 = 10000
-      speed = map(d, 0, 100, 0, this.maxSpeed)
+    if (dSquared < animationConfig.physics.slowDownDistanceSquared) {
+      speed = map(d, 0, animationConfig.physics.slowDownDistance, 0, this.maxSpeed)
     }
     
     // Normalize and scale desired velocity
@@ -182,9 +185,9 @@ class ShapeMorph {
       }
     } else {
       // Different types - switch at midpoint
-      if (easedProgress < 0.5) {
+      if (easedProgress < animationConfig.transition.typeTransitionMidpoint) {
         // First half: draw as source type, interpolate toward target
-        const t = easedProgress * 2 // 0 to 1
+        const t = easedProgress * animationConfig.transition.transitionProgressMultiplier // 0 to 1
         if (this.sourceType === 'Line') {
           this.drawLineTransitionFirstHalf(ctx, t)
         } else {
@@ -192,7 +195,7 @@ class ShapeMorph {
         }
       } else {
         // Second half: draw as target type, interpolate from source to target
-        const t = (easedProgress - 0.5) * 2 // 0 to 1
+        const t = (easedProgress - animationConfig.transition.typeTransitionMidpoint) * animationConfig.transition.transitionProgressMultiplier // 0 to 1
         if (this.targetType === 'Line') {
           this.drawLineTransitionSecondHalf(ctx, t)
         } else {
@@ -209,8 +212,8 @@ class ShapeMorph {
     // this.position is the shape's start point (moved by physics)
     const start = this.position
     
-    // Interpolate shape properties: length and direction
-    const length = lerp(source.length, target.length, t)
+    // Interpolate shape properties: length and direction (scaled)
+    const length = lerp(source.length, target.length, t) * this.scale
     const dir = lerpAngle(source.dir, target.dir, t)
     
     const direction = Vector.fromAngle(dir, length)
@@ -229,12 +232,12 @@ class ShapeMorph {
     // this.position is the shape's p1 (moved by physics)
     const p1 = this.position
     
-    // Calculate control and end points relative to p1
-    const sourceRelP2 = source.p2.subtract(source.p1)
-    const sourceRelP3 = source.p3.subtract(source.p1)
+    // Calculate control and end points relative to p1 (scaled)
+    const sourceRelP2 = source.p2.subtract(source.p1).multiply(this.scale)
+    const sourceRelP3 = source.p3.subtract(source.p1).multiply(this.scale)
     
-    const targetRelP2 = target.p2.subtract(target.p1)
-    const targetRelP3 = target.p3.subtract(target.p1)
+    const targetRelP2 = target.p2.subtract(target.p1).multiply(this.scale)
+    const targetRelP3 = target.p3.subtract(target.p1).multiply(this.scale)
     
     // Interpolate relative positions
     const p2Rel = Vector.lerp(sourceRelP2, targetRelP2, t)
@@ -257,9 +260,9 @@ class ShapeMorph {
     // this.position is the shape's start point (moved by physics)
     const start = this.position
     
-    // Interpolate end point direction
-    const sourceEnd = Vector.fromAngle(source.dir, source.length)
-    const targetEndRel = target.p3.subtract(target.p1)
+    // Interpolate end point direction (scaled)
+    const sourceEnd = Vector.fromAngle(source.dir, source.length * this.scale)
+    const targetEndRel = target.p3.subtract(target.p1).multiply(this.scale)
     
     const endRel = Vector.lerp(sourceEnd, targetEndRel, t)
     const end = start.add(endRel)
@@ -280,16 +283,16 @@ class ShapeMorph {
     
     // At t=0, we want a curve that matches the line from first half
     // The line goes from p1 to some end point
-    // Calculate approximate line end based on source line direction
-    const sourceEnd = Vector.fromAngle(source.dir, source.length)
+    // Calculate approximate line end based on source line direction (scaled)
+    const sourceEnd = Vector.fromAngle(source.dir, source.length * this.scale)
     
-    // Target curve points relative to target p1
-    const targetRelP2 = target.p2.subtract(target.p1)
-    const targetRelP3 = target.p3.subtract(target.p1)
+    // Target curve points relative to target p1 (scaled)
+    const targetRelP2 = target.p2.subtract(target.p1).multiply(this.scale)
+    const targetRelP3 = target.p3.subtract(target.p1).multiply(this.scale)
     
     // At t=0: control at midpoint, end at line end
     // At t=1: control and end at target positions
-    const lineMidRel = sourceEnd.multiply(0.5)
+    const lineMidRel = sourceEnd.multiply(animationConfig.transition.typeTransitionMidpoint)
     const p2Rel = Vector.lerp(lineMidRel, targetRelP2, t)
     const p3Rel = Vector.lerp(sourceEnd, targetRelP3, t)
     
@@ -310,15 +313,15 @@ class ShapeMorph {
     // this.position is the shape's p1 (moved by physics)
     const p1 = this.position
     
-    // Calculate control and end points relative to p1
-    const sourceRelP2 = source.p2.subtract(source.p1)
-    const sourceRelP3 = source.p3.subtract(source.p1)
+    // Calculate control and end points relative to p1 (scaled)
+    const sourceRelP2 = source.p2.subtract(source.p1).multiply(this.scale)
+    const sourceRelP3 = source.p3.subtract(source.p1).multiply(this.scale)
     
-    // Target line end relative to target start
-    const targetEnd = Vector.fromAngle(target.dir, target.length)
+    // Target line end relative to target start (scaled)
+    const targetEnd = Vector.fromAngle(target.dir, target.length * this.scale)
     
     // Interpolate: curve morphs toward line
-    const p2Rel = Vector.lerp(sourceRelP2, targetEnd.multiply(0.5), t)
+    const p2Rel = Vector.lerp(sourceRelP2, targetEnd.multiply(animationConfig.transition.typeTransitionMidpoint), t)
     const p3Rel = Vector.lerp(sourceRelP3, targetEnd, t)
     
     const p2 = p1.add(p2Rel)
@@ -338,10 +341,10 @@ class ShapeMorph {
     // this.position is the shape's start point (moved by physics, should be near target start by now)
     const start = this.position
     
-    // At t=0, end point is source curve end (p3) relative to current start
-    // At t=1, end point is target line end
-    const sourceEndRel = source.p3.subtract(source.p1)
-    const targetEnd = Vector.fromAngle(target.dir, target.length)
+    // At t=0, end point is source curve end (p3) relative to current start (scaled)
+    // At t=1, end point is target line end (scaled)
+    const sourceEndRel = source.p3.subtract(source.p1).multiply(this.scale)
+    const targetEnd = Vector.fromAngle(target.dir, target.length * this.scale)
     
     const endRel = Vector.lerp(sourceEndRel, targetEnd, t)
     const end = start.add(endRel)
@@ -357,36 +360,38 @@ class MorphingSystem {
   constructor() {
     this.active = false
     this.progress = 0
-    this.duration = 2000 // 2 seconds in milliseconds
+    this.duration = animationConfig.morphDuration
     this.startTime = null
     this.morphs = []
     this.sourceWord = ''
     this.targetWord = ''
-    this.spacing = 10
+    this.spacing = animationConfig.spacing
+    this.scale = animationConfig.scale
   }
   
-  startMorph(sourceWord, targetWord, startX, startY, spacing = 10) {
+  startMorph(sourceWord, targetWord, startX, startY, spacing = animationConfig.spacing, scale = animationConfig.scale) {
     this.sourceWord = sourceWord.toUpperCase()
     this.targetWord = targetWord.toUpperCase()
     this.spacing = spacing
+    this.scale = scale
     this.active = true
     this.progress = 0
     this.startTime = null
     
-    // Extract shapes from both words
-    const sourceShapes = extractAllShapes(this.sourceWord, 0, 0, spacing)
-    const targetShapes = extractAllShapes(this.targetWord, 0, 0, spacing)
+    // Extract shapes from both words (with scaling)
+    const sourceShapes = extractAllShapes(this.sourceWord, 0, 0, spacing, scale)
+    const targetShapes = extractAllShapes(this.targetWord, 0, 0, spacing, scale)
     
-    // Calculate positions for both words (centered)
-    const sourceWidth = wordLength(this.sourceWord, spacing)
-    const targetWidth = wordLength(this.targetWord, spacing)
+    // Calculate positions for both words (centered, with scaling)
+    const sourceWidth = wordLength(this.sourceWord, spacing) * scale
+    const targetWidth = wordLength(this.targetWord, spacing) * scale
     const sourceStartX = startX - sourceWidth / 2
     const targetStartX = startX - targetWidth / 2
     
     // Create shape mappings
     const mapping = createShapeMapping(sourceShapes, targetShapes)
     
-    // Create morph objects
+    // Create morph objects (with scaling)
     this.morphs = mapping.map(({ source, target }) => {
       return new ShapeMorph(
         source,
@@ -394,7 +399,8 @@ class MorphingSystem {
         source.letterY + startY,
         target,
         target.letterX + targetStartX,
-        target.letterY + startY
+        target.letterY + startY,
+        scale
       )
     })
   }
@@ -430,6 +436,9 @@ class MorphingSystem {
     
     // Calculate eased progress once for all morphs (performance optimization)
     const easedProgress = easeInOutCubic(morphProgress)
+    
+    // Set line width from config
+    ctx.lineWidth = animationConfig.canvas.lineWidth
     
     this.morphs.forEach(morph => {
       morph.draw(ctx, easedProgress)

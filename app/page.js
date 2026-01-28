@@ -8,6 +8,7 @@ import ModelViewer from '@/components/ModelViewer.jsx'
 import GroundDivider from '@/components/GroundDivider.jsx'
 import TechSection from '@/components/sections/TechSection.jsx'
 import ProjectsSection from '@/components/sections/ProjectsSection.jsx'
+import LetterAnimation from '@/components/LetterAnimation.jsx'
 
 export default function Home() {
   useEffect(() => {
@@ -41,6 +42,8 @@ export default function Home() {
       <Hero />
       <GroundDivider />
       <TechSection />
+      <GroundDivider />
+      <LetterAnimation />
       <GroundDivider />
       <ProjectsSection />
       <main className="container mx-auto px-4">
