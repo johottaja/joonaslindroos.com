@@ -1,8 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { Send } from 'lucide-react'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
 
 export default function AgentSection() {
   const [messages, setMessages] = useState([
@@ -55,6 +59,66 @@ export default function AgentSection() {
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
+  
+  const scrollContainerRef = useRef(null)
+  const messageRefs = useRef([])
+  const messageWrapperRef = useRef(null)
+
+  // Update message scaling based on scroll position
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (!container) return
+
+    const updateScale = () => {
+      const containerRect = container.getBoundingClientRect()
+      const containerTop = containerRect.top
+      const containerBottom = containerRect.bottom
+      const containerHeight = containerRect.height
+
+      messageRefs.current.forEach((messageEl, idx) => {
+        if (!messageEl) return
+
+        const messageRect = messageEl.getBoundingClientRect()
+
+        // Calculate position relative to container (0 at top, 1 at bottom)
+        let relativePosition = (messageRect.top - containerTop + 150) / containerHeight
+        if (relativePosition > 1) relativePosition = 1
+
+        // Scale from 0.3 at the top to 1.0 at the bottom
+        const scale = Math.max(0.3, Math.min(1, 0.3 + relativePosition * 0.7))
+        
+        // Alternate rotation direction based on index
+        // Even index: rotate right (positive), Odd index: rotate left (negative)
+        const direction = idx % 2 === 0 ? 1 : -1
+        const rotateY = (1 - relativePosition) * 20 * -direction
+        const translateX = (1 - relativePosition) * 350 * -direction
+        
+        gsap.to(messageEl, {
+          scale: scale,
+          opacity: scale,
+          rotateZ: rotateY,
+          translateX: translateX,
+          transformOrigin: 'center center',
+          duration: 0.2,
+          ease: 'expoScale(0.5, 7, none)'
+        })
+      })
+    }
+
+    // Initial update
+    updateScale()
+
+    // Update on scroll
+    container.addEventListener('scroll', updateScale)
+    
+    // Update on window resize
+    window.addEventListener('resize', updateScale)
+
+    return () => {
+      container.removeEventListener('scroll', updateScale)
+      window.removeEventListener('resize', updateScale)
+    }
+  }, [messages])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -120,7 +184,7 @@ export default function AgentSection() {
             <textarea
               id="agent-input"
               rows={3}
-              className="flex-1 bg-transparent border-none overscroll-y-contain outline-none resize-none text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-0"
+              className="flex-1 z-30 bg-transparent border-none overscroll-y-contain outline-none resize-none text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-0"
               placeholder="Ask about my public projects and their contents..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -139,24 +203,35 @@ export default function AgentSection() {
           {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
         </form>
         </div>
-        <div className="relative w-1/2 h-64">
-        <div className="absolute top-0 left-0  mb-4 h-128 w-[80rem]
-        overflow-y-auto  p-3 space-y-3 text-sm
-        -translate-x-1/4 -translate-y-1/2"
+        <div ref={messageWrapperRef} className="relative w-1/2 h-64 border-b border-white" 
+        style={{ perspective: '1000px', 
+          background: 'linear-gradient(0deg, #333, #0a0a0a0 100%)',
+         }}>
+        <div 
+          ref={scrollContainerRef}
+          className="absolute top-0 left-0 h-128 w-[200%]
+          overflow-y-auto space-y-3 text-sm
+          -translate-x-1/4 -translate-y-1/2 -z-20 overflow-x-hidden overscroll-y-contain"
+          style={{ transformStyle: 'preserve-3d' }}
         >
-          <div className="h-64"></div>
+          <div className="h-80"></div>
           {messages.map((message, idx) => (
-            <div key={idx} className="w-1/2 mx-auto">
+            <div 
+              key={idx} 
+              ref={(el) => (messageRefs.current[idx] = el)}
+              className="w-1/2 mx-auto"
+              style={{ transformStyle: 'preserve-3d' }}
+            >
             <div
               className={`flex ${
                 message.role === 'user' ? 'justify-end' : 'justify-start'
               }`}
             >
               <div
-                className={`max-w-[85%] rounded-md px-3 py-2 ${
+                className={`max-w-[85%] rounded-md px-3 py-2 shadow-xl ${
                   message.role === 'user'
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-gray-700 text-gray-100'
+                    ? 'bg-neutral-900 text-white'
+                    : 'bg-neutral-700 text-gray-100'
                 }`}
               >
                 {message.role === 'assistant' ? (
@@ -178,6 +253,7 @@ export default function AgentSection() {
             </div>
             
           )}
+          <div className="h-1"></div>
         </div>
         </div>
       </div>
