@@ -104,7 +104,7 @@ export default function AgentSection() {
   }
 
   return (
-    <section className=" py-50 bg-neutral-950 w-screen tracking-wide font-sans min-h-screen">
+    <section className=" py-50 bg-neutral-950 w-screen tracking-wide font-sans min-h-screen overflow-x-hidden">
       <div className="max-w-5xl mx-auto rounded-lg shadow-lg p-3 sm:p-4 flex flex-row">
         <div className="flex flex-col w-1/2 justify-center p-4 relative">
         
@@ -139,11 +139,15 @@ export default function AgentSection() {
           {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
         </form>
         </div>
-        <div className="relative">
-        <div className="border border-gray-700 rounded-md mb-4 h-64 overflow-y-auto overscroll-y-contain bg-gray-900/40 p-3 space-y-3 text-sm w-1/2">
+        <div className="relative w-1/2 h-64">
+        <div className="absolute top-0 left-0  mb-4 h-128 w-[80rem]
+        overflow-y-auto  p-3 space-y-3 text-sm
+        -translate-x-1/4 -translate-y-1/2"
+        >
+          <div className="h-64"></div>
           {messages.map((message, idx) => (
+            <div key={idx} className="w-1/2 mx-auto">
             <div
-              key={idx}
               className={`flex ${
                 message.role === 'user' ? 'justify-end' : 'justify-start'
               }`}
@@ -163,6 +167,7 @@ export default function AgentSection() {
                   <p className="whitespace-pre-wrap break-words">{message.content}</p>
                 )}
               </div>
+            </div>
             </div>
           ))}
           {isLoading && (
