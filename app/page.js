@@ -8,6 +8,7 @@ import ModelViewer from '@/components/ModelViewer.jsx'
 import GroundDivider from '@/components/GroundDivider.jsx'
 import TechSection from '@/components/sections/TechSection.jsx'
 import ProjectsSection from '@/components/sections/ProjectsSection.jsx'
+import AgentSection from '@/components/sections/AgentSection.jsx'
 import LetterAnimation from '@/components/LetterAnimation.jsx'
 
 export default function Home() {
@@ -46,6 +47,9 @@ export default function Home() {
       <LetterAnimation />
       <GroundDivider />
       <ProjectsSection />
+      <GroundDivider />
+      <AgentSection />
+      <GroundDivider />
       <main className="container mx-auto px-4">
         <section id="projects">
           <div className="container mx-auto py-4 xl:py-5">

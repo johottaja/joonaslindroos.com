@@ -13,10 +13,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@openai/agents": "^0.4.4",
     "@uidotdev/usehooks": "^2.4.1",
     "axios": "^1.7.9",
     "bootstrap": "^5.0.0-beta2",
     "gsap": "^3.14.2",
+    "lucide-react": "^0.563.0",
     "matter-js": "^0.20.0",
     "meshoptimizer": "^1.0.1",
     "motion": "^12.23.24",
@@ -24,7 +26,9 @@
     "nodemailer": "^7.0.12",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "three": "^0.182.0"
+    "react-markdown": "^9.0.1",
+    "three": "^0.182.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.15",
