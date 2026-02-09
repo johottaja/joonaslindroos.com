@@ -193,7 +193,7 @@ export default function AgentSection() {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-shrink-0 inline-flex items-center justify-center rounded-full p-2 
+              className="flex-shrink-0 z-30 inline-flex items-center justify-center rounded-full p-2 
               disabled:bg-gray-600 disabled:cursor-not-allowed text-white transition-all duration-500 cursor-pointer
               hover:bg-neutral-800"
             >
@@ -211,7 +211,7 @@ export default function AgentSection() {
           ref={scrollContainerRef}
           className="absolute top-0 left-0 h-128 w-[200%]
           overflow-y-auto space-y-3 text-sm
-          -translate-x-1/4 -translate-y-1/2 -z-20 overflow-x-hidden overscroll-y-contain"
+          -translate-x-1/4 -translate-y-1/2 -z-20 overflow-x-hidden"
           style={{ transformStyle: 'preserve-3d' }}
         >
           <div className="h-80"></div>
