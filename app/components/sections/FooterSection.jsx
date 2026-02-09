@@ -18,7 +18,7 @@ export default function FooterSection() {
   const textY = useTransform(scrollYProgress, [0, 1], [0, -100])
 
   return (
-    <section ref={sectionRef} className="w-screen h-[300vh]">
+    <section ref={sectionRef} className="w-screen h-[300vh] relative">
         <div className="w-screen h-screen sticky top-0">
           <img 
             src="/images/sysiphus_footer/sky.png" 
@@ -57,6 +57,14 @@ export default function FooterSection() {
                 No obstacle too large
             </h2>
           </motion.div>
+        </div>
+        <div className="w-screen absolute bottom-4 left-0 font-sans flex items-center justify-center gap-4">
+          <h2 className="text-blue-500 text-lg font-bold text-shadow-lg py-1.5 px-4 border-1 border-white rounded-full backdrop-blur-xs cursor-pointer hover:scale-110 transition-all duration-300">
+            Linked<span className="text-white bg-blue-500 p-0.5 ml-0.5 rounded-sm">In</span>
+          </h2>
+          <h2 className="text-blue-500 text-lg font-bold text-shadow-lg py-1.5 px-4 border-1 border-white rounded-full backdrop-blur-xs cursor-pointer hover:scale-110 transition-all duration-300">
+            <img src="/images/github.svg" alt="Github" className="h-7" />
+          </h2>
         </div>
     </section>
   )
