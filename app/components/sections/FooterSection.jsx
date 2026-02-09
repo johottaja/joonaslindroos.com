@@ -1,8 +1,8 @@
 'use client'
 
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { useWindowSize, useDebounce } from "@uidotdev/usehooks"
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import gsap from 'gsap'
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin'
 
@@ -13,6 +13,7 @@ const NAME = "Joonas Lindroos"
 export default function FooterSection() {
   const sectionRef = useRef(null)
   const lettersRef = useRef([])
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false)
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"]
@@ -23,6 +24,38 @@ export default function FooterSection() {
   const mountains1Y = useTransform(scrollYProgress, [0, 1], [200, 0])
   const groundY = useTransform(scrollYProgress, [0, 1], [450, 0])
   const textY = useTransform(scrollYProgress, [0, 1], [0, -100])
+
+  // Load reCAPTCHA script when modal opens
+  useEffect(() => {
+    if (!isContactModalOpen) return
+    
+    const loadScript = (src) => {
+      return new Promise((resolve, reject) => {
+        if (document.querySelector(`script[src="${src}"]`)) {
+          resolve()
+          return
+        }
+        const script = document.createElement('script')
+        script.src = src
+        script.async = true
+        script.onload = resolve
+        script.onerror = reject
+        document.head.appendChild(script)
+      })
+    }
+
+    const loadScripts = async () => {
+      try {
+        if (process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY) {
+          await loadScript('https://www.google.com/recaptcha/api.js')
+        }
+      } catch (error) {
+        console.error('Error loading scripts:', error)
+      }
+    }
+
+    loadScripts()
+  }, [isContactModalOpen])
 
   useEffect(() => {
     const letters = lettersRef.current.filter(Boolean)
@@ -199,10 +232,115 @@ export default function FooterSection() {
           <h2 className="text-blue-500 text-lg font-bold text-shadow-lg py-1.5 px-4 border-1 border-neutral-500 rounded-full backdrop-blur-xs cursor-pointer hover:scale-110 transition-all duration-300">
             Linked<span className="text-white bg-blue-500 p-0.5 ml-0.5 rounded-sm">In</span>
           </h2>
+          <h2 
+            className="text-white font-newamsterdam tracking-widest text-lg text-shadow-lg py-1.5 px-4 border-1 border-neutral-500 rounded-full backdrop-blur-xs cursor-pointer hover:scale-110 transition-all duration-300"
+            onClick={() => setIsContactModalOpen(true)}
+          >
+            Contact Me
+          </h2>
           <h2 className="text-blue-500 text-lg font-bold text-shadow-lg py-1.5 px-4 border-1 border-neutral-500 rounded-full backdrop-blur-xs cursor-pointer hover:scale-110 transition-all duration-300">
             <img src="/images/github.svg" alt="Github" className="h-7" />
           </h2>
         </div>
+
+        {/* Contact Modal */}
+        <AnimatePresence>
+          {isContactModalOpen && (
+            <motion.div
+              className="fixed inset-0 z-50 flex items-center justify-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              {/* Backdrop */}
+              <motion.div
+                className="absolute inset-0 bg-black/70 backdrop-blur-xs"
+                onClick={() => setIsContactModalOpen(false)}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.4 }}
+                exit={{ opacity: 0 }}
+              />
+              
+              {/* Modal Content */}
+              <motion.div
+                className="relative bg-transparent rounded-lg shadow-lg w-full max-w-md mx-4 backdrop-blur-sm border-2 border-white shadow-lg"
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              >
+                {/* Close Button */}
+                <button
+                  className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                  onClick={() => setIsContactModalOpen(false)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+
+                <div className="p-6 sm:p-8 tracking-widest">
+                  <h2 className="text-center text-2xl mb-6 text-white tracking-widest">Contact me</h2>
+                  <form method="post" action="/api/contact">
+                    <div className="mb-4">
+                      <input 
+                        className="w-full px-3 py-2 bg-neutral-700/40 border border-neutral-300 rounded-md text-white placeholder-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
+                        type="text" 
+                        id="footer-name"
+                        name="name" 
+                        placeholder="Name" 
+                        maxLength="30"
+                        minLength="1" 
+                        required 
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <input 
+                        className="w-full px-3 py-2 bg-neutral-700/40 border border-neutral-300 rounded-md text-white placeholder-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
+                        type="email"
+                        id="footer-email" 
+                        name="email" 
+                        placeholder="Email"
+                        maxLength="150" 
+                        minLength="1" 
+                        required 
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <textarea 
+                        className="w-full px-3 py-2 bg-neutral-700/40 border border-neutral-300 rounded-md text-white placeholder-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
+                        id="footer-message"
+                        name="message" 
+                        rows="6"
+                        placeholder="Message" 
+                        maxLength="300"
+                        minLength="1" 
+                        required
+                      ></textarea>
+                    </div>
+                    <div>
+                      {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
+                        <div className="flex justify-center mb-4">
+                          <div 
+                            className="g-recaptcha" 
+                            data-theme="dark"
+                            data-sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+                          ></div>
+                        </div>
+                      )}
+                      <button 
+                        className="w-full bg-neutral-600 hover:bg-neutral-700 border-1 border-neutral-300 text-white font-medium py-2 px-4 cursor-pointer rounded-md transition-colors duration-200" 
+                        type="submit"
+                      >
+                        Send
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
     </section>
   )
 }
