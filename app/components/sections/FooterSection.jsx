@@ -64,7 +64,7 @@ export default function FooterSection() {
     const duration = 3
     const width = window.innerWidth * 0.45
     const height = window.innerHeight * 0.35
-    const staggerDelay = 0.10
+    const staggerDelay = 0.05
 
     // Forward path: right to left (lower arc)
     const forwardPath = `M ${-width} ${height} Q 0 ${-height} ${width} ${height}`
@@ -77,7 +77,7 @@ export default function FooterSection() {
     const veryHighPeak = height * 3
     const thirdPath = `M ${width} ${returnHeight} Q 0 ${-veryHighPeak} ${-farWidth} ${height * 0.8}`
     // Fourth path: top left, goes very high, then down to bottom right
-    const fourthPath = `M ${-farWidth} ${height * 0.8} Q 0 ${-veryHighPeak} ${farWidth / 2} ${height * 2}`
+    const fourthPath = `M ${-farWidth} ${height * 0.8} Q ${-farWidth / 3} ${-veryHighPeak} ${farWidth / 2} ${height * 2}`
 
     letters.forEach((letter, index) => {
       const tl = gsap.timeline({ repeat: -1, repeatDelay: 2, delay: index * staggerDelay })
@@ -92,9 +92,9 @@ export default function FooterSection() {
           start: 1,
           end: 0.5
         },
-        duration: duration / 4,
+        duration: duration / 6,
         ease: "none",
-        scale: 2.2
+        scale: 2
       })
       // Snap z-index at center, then center to left
       .call(() => { letter.style.zIndex = -70 })
@@ -105,7 +105,7 @@ export default function FooterSection() {
           start: 0.5,
           end: 0
         },
-        duration: duration / 4,
+        duration: duration / 6,
         ease: "none",
         scale: 1
       })
@@ -118,7 +118,7 @@ export default function FooterSection() {
           start: 0,
           end: 0.5
         },
-        duration: duration / 2,
+        duration: duration / 3,
         ease: "none",
         scale: 0.5
       })
@@ -131,7 +131,7 @@ export default function FooterSection() {
           start: 0.5,
           end: 1
         },
-        duration: duration / 2,
+        duration: duration / 3,
         ease: "none",
         scale: 0.3
       })
@@ -167,7 +167,7 @@ export default function FooterSection() {
           start: 0.5,
           end: 1
         },
-        duration: duration / 2,
+        duration: duration / 4,
         ease: "none",
         scale: 4
       })
