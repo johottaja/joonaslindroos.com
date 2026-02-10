@@ -46,34 +46,34 @@ export default function Hero() {
   const coldTextX = useTransform(smoothMouseX, [-1, 1], [-15, 15])
 
   return (
-    <header className="h-[200lvh] relative -z-30 w-screen">
-      <div className="sticky top-0 w-screen h-screen -z-50 saturate-60 overflow-hidden">
+    <header className="h-[200lvh] relative -z-30 w-full">
+      <div className="sticky top-0 w-full h-screen -z-50 saturate-60 overflow-hidden">
         <motion.img src="/images/sysiphus/sysiphus_far_mountains.webp" alt="Sysiphus Far Mountains" 
-          className="absolute h-screen w-screen object-cover object-center -z-40 translate-y-[10px]"
+          className="absolute h-screen w-full object-cover object-center -z-40 translate-y-[10px]"
           initial={{ opacity: 0, y: 100 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.5, ease: [0, 0.71, 0.2, 1.01], }}
           style={{ y: mountainsY, x: mountainsX }}
         />
         <motion.img src="/images/sysiphus/sysiphus_parallax_2.webp" alt="Sysiphus Parallax 2" 
-          className="absolute w-screen top-0 right-0 h-screen min-w-xl translate-x-1/5 md:translate-x-0 object-contain object-bottom-right -z-30 translate-y-[50px]"
+          className="absolute w-full top-0 right-0 h-screen min-w-xl translate-x-1/5 md:translate-x-0 object-contain object-bottom-right -z-30 translate-y-[50px]"
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1.5, ease: [0, 0.71, 0.2, 1.01], }}
           style={{ y: parallax1Y, x: parallax1X }}
         />
         <motion.img src="/images/sysiphus/sysiphus_parallax_1.webp" alt="Sysiphus Parallax 1" 
-          className="absolute bottom-0 right-0 -z-20 h-screen translate-x-1/5 md:translate-x-0 min-w-xl w-screen object-contain object-bottom-right translate-y-[30px]"
+          className="absolute bottom-0 right-0 -z-20 h-screen translate-x-1/5 md:translate-x-0 min-w-xl w-full object-contain object-bottom-right translate-y-[30px]"
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1.5, ease: [0, 0.71, 0.2, 1.01], }}
           style={{ y: parallax2Y, x: parallax2X }}
         />
         <img src="/images/sysiphus/Sysiphus_sky.webp" alt="Sysiphus Sky" 
-          className="absolute object-cover w-screen h-screen -z-50" />
-        <div className="absolute w-screen h-screen z-20">
+          className="absolute object-cover w-full h-screen -z-50" />
+        <div className="absolute w-full h-screen z-20">
           <motion.div 
-            className="absolute top-0 left-0 w-screen h-screen z-20 md:ml-10 ml-0 mt-10 flex flex-col items-center md:items-start"
+            className="absolute top-0 left-0 w-full h-screen z-20 md:ml-10 ml-0 mt-10 flex flex-col items-center md:items-start"
             initial={{ opacity: 0, x: -200 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1.5, ease: [0, 0.71, 0.2, 1.01], }}
@@ -87,7 +87,7 @@ export default function Hero() {
             </h2>
           </motion.div>
           <motion.div 
-            className="absolute top-0 left-0 w-screen md:w-[98vw] h-screen z-20 flex flex-col items-center md:items-end justify-end"
+            className="absolute top-0 left-0 w-full md:w-[98vw] h-screen z-20 flex flex-col items-center md:items-end justify-end"
             initial={{ opacity: 0, x: 200 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1.5, ease: [0, 0.71, 0.2, 1.01], }}

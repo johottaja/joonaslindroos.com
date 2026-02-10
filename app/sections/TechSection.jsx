@@ -71,6 +71,15 @@ export default function TechSection() {
 
     return (
         <section ref={sectionRef} className="w-full bg-neutral-950 relative pt-40 pb-30">
+            <div
+                className="absolute top-0 left-0 w-full h-full -z-50"
+                style={{
+                    background: 'linear-gradient(180deg, #fff2 0%, #0000 30%)',
+                    opacity: 0.7,
+                    pointerEvents: 'none',
+                    zIndex: 10,
+                }}
+            />
             <ModelViewer />
             <div className="absolute top-0 left-0 w-full h-full absolute pt-30">
                 <h2 

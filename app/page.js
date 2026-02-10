@@ -5,12 +5,12 @@ import Image from 'next/image'
 import Hero from '@/components/Hero.jsx'
 import ModelViewer from '@/components/ModelViewer.jsx'
 import GroundDivider from '@/components/GroundDivider.jsx'
-import TechSection from '@/components/sections/TechSection.jsx'
-import ProjectsSection from '@/components/sections/ProjectsSection.jsx'
-import AgentSection from '@/components/sections/AgentSection.jsx'
+import TechSection from '@/sections/TechSection.jsx'
+import ProjectsSection from '@/sections/ProjectsSection.jsx'
+import AgentSection from '@/sections/AgentSection.jsx'
 import LetterAnimation from '@/components/LetterAnimation.jsx'
-import FooterSection from '@/components/sections/FooterSection.jsx'
-import ContactSection from '@/components/sections/ContactSection.jsx'
+import FooterSection from '@/sections/FooterSection.jsx'
+import ContactSection from '@/sections/ContactSection.jsx'
 
 export default function Home() {
   return (

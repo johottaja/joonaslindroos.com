@@ -21,7 +21,7 @@ export default function LetterAnimation() {
     const updateCanvasSize = () => {
       if (typeof window !== 'undefined') {
         setCanvasSize({
-          width: window.innerWidth,
+          width: document.documentElement.clientWidth,
           height: window.innerHeight
         })
       }
@@ -195,6 +195,21 @@ export default function LetterAnimation() {
 
   return (
     <div className="flex flex-col justify-center items-center w-full bg-black relative">
+      <svg
+        className="absolute top-0 left-0 w-full z-50"
+        height="34"
+        width="100%"
+        viewBox="0 0 100 35"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <polyline
+            points="0,0 50,34 100,0 100,-10 0,-10"
+            fill="#0a0a0a"
+            stroke="#a3a3a3"  /* neutral-400 */
+            strokeWidth="5"
+        />
+      </svg>
       <h2 className="text-white text-7xl z-10 absolute tracking-widest absolute top-60"
       style={{
         backgroundImage: 'url(/images/edited.png)',
@@ -218,6 +233,26 @@ export default function LetterAnimation() {
           height: canvasSize.height > 0 ? `${canvasSize.height}px` : '100vh'
         }}
       />
+      <div
+        className="absolute top-0 left-0 w-full h-full -z-50"
+        style={{
+            background: 'linear-gradient(0deg, #fff2 0%, #0000 30%)',
+            opacity: 0.7,
+            pointerEvents: 'none',
+            zIndex: 10,
+        }}
+    />
+    <div
+        className="absolute top-0 left-0 w-full h-full -z-50"
+        style={{
+            background: 'linear-gradient(180deg, #fff2 0%, #0000 30%)',
+            opacity: 0.7,
+            pointerEvents: 'none',
+            zIndex: 10,
+        }}
+    />
     </div>
+    
+    
   )
 }

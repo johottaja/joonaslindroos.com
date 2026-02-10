@@ -144,7 +144,7 @@ export default function ProjectsSection() {
         // Phase 2: Move to bottom right corner and fade out (60vh)
         // Each card gets 140vh total, with 20vh overlap between cards
         const headingDuration = viewportHeight // 100vh
-        const appearDuration = viewportHeight * 1.2 // 120vh
+        const appearDuration = viewportHeight * 0.8 // 80vh
         const disappearDuration = viewportHeight * 0.6 // 60vh
         const cardTotalDuration = appearDuration + disappearDuration // 140vh
         const cardOverlap = viewportHeight * 0.2 // 20vh overlap
@@ -218,26 +218,26 @@ export default function ProjectsSection() {
     }, [])
 
     return (
-        <section ref={sectionRef} className="w-screen relative" style={{ height: sectionHeight }}>
+        <section ref={sectionRef} className="w-full relative" style={{ height: sectionHeight }}>
             <img 
                 ref={manRef}
                 src="/images/sysiphus_projects/man.png" 
-                className="fixed inset-0 w-screen h-screen object-cover -z-70 saturate-60 scale-110"
+                className="fixed inset-0 w-full h-screen object-cover -z-70 saturate-60 scale-110"
             />
             <img 
                 ref={mountainsRef}
                 src="/images/sysiphus_projects/mountains.png" 
-                className="fixed inset-0 w-screen h-screen object-cover -z-79 saturate-60 scale-110 translate-x-[5%]" 
+                className="fixed inset-0 w-full h-screen object-cover -z-79 saturate-60 scale-110 translate-x-[5%]" 
             />
             <img 
                 src="/images/sysiphus_projects/background_filled.png" 
-                className="fixed inset-0 w-screen h-screen object-cover -z-80 saturate-60" 
+                className="fixed inset-0 w-full h-screen object-cover -z-80 saturate-60" 
             />
             
             {/* Sticky container for cards */}
             <div 
                 ref={containerRef}
-                className="sticky top-0 left-0 w-screen h-screen -z-75 flex flex-col items-center justify-center overflow-hidden"
+                className="sticky top-0 left-0 w-full h-screen -z-75 flex flex-col items-center justify-center overflow-hidden"
                 style={{ perspective: '1000px', transform: `translateX(-10%)` }}
             >
                 {/* Heading */}

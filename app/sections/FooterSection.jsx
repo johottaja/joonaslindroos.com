@@ -179,8 +179,8 @@ export default function FooterSection() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="w-screen h-[300vh] relative">
-        <div className="w-screen h-screen sticky top-0">
+    <section ref={sectionRef} className="w-full h-[300vh] relative">
+        <div className="w-full h-screen sticky top-0 overflow-hidden">
           <img 
             src="/images/sysiphus_footer/sky.png" 
             alt="Background" 
@@ -205,7 +205,7 @@ export default function FooterSection() {
             style={{ y: groundY }}
           />
           <motion.div 
-            className="absolute top-0 left-0 w-screen h-screen flex flex-col items-center justify-start mt-30"
+            className="absolute top-0 left-0 w-full h-screen flex flex-col items-center justify-start mt-30"
             initial={{ opacity: 0, y: 100 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.5, ease: [0, 0.71, 0.2, 1.01], }}
@@ -222,13 +222,13 @@ export default function FooterSection() {
             <div
               key={index}
               ref={el => lettersRef.current[index] = el}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-black text-5xl font-regular text-shadow-lg"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-black text-5xl font-regular text-shadow-lg overflow-x-hidden"
             >
               {letter === ' ' ? '\u00A0' : letter}
             </div>
           ))}
         </div>
-        <div className="w-screen absolute bottom-4 left-0 font-sans flex items-center justify-center gap-4">
+        <div className="w-full absolute bottom-4 left-0 font-sans flex items-center justify-center gap-4">
           <h2 className="text-blue-500 text-lg font-bold text-shadow-lg py-1.5 px-4 border-1 border-neutral-500 rounded-full backdrop-blur-xs cursor-pointer hover:scale-110 transition-all duration-300">
             Linked<span className="text-white bg-blue-500 p-0.5 ml-0.5 rounded-sm">In</span>
           </h2>

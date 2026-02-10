@@ -21,12 +21,12 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html className="dark" lang="en">
+    <html className="dark overscroll-none" lang="en">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/res/images/favicon.ico" />
       </head>
-      <body className="bg-neutral-950 text-white">
+      <body className="bg-neutral-950 text-white overscroll-none">
         {children}
       </body>
     </html>

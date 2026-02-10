@@ -168,9 +168,9 @@ export default function AgentSection() {
   }
 
   return (
-    <section className=" py-50 bg-neutral-950 w-screen tracking-wide font-sans min-h-screen overflow-x-hidden">
+    <section className="py-50 bg-neutral-950 w-full tracking-wide font-sans min-h-screen overflow-hidden relative">
       <div className="max-w-5xl mx-auto rounded-lg shadow-lg p-3 sm:p-4 flex flex-row">
-        <div className="flex flex-col w-1/2 justify-center p-4 relative">
+        <div className="flex flex-col w-1/2 justify-center p-4 relative mr-10">
         
         <h2 className="text-2xl font-bold mb-8 text-center">Ask My AI agent about my projects</h2>
 
@@ -219,7 +219,7 @@ export default function AgentSection() {
             <div 
               key={idx} 
               ref={(el) => (messageRefs.current[idx] = el)}
-              className="w-1/2 mx-auto"
+              className="w-1/2 mx-auto -z-20"
               style={{ transformStyle: 'preserve-3d' }}
             >
             <div
@@ -256,6 +256,10 @@ export default function AgentSection() {
           <div className="h-1"></div>
         </div>
         </div>
+      </div>
+      <div className="absolute bottom-0 left-0 w-full h-full pointer-events-none"
+      style={{ background: 'linear-gradient(0deg, #fff2 0%, #0000 20%, #0000 80%, #fff2 100%)' }}>
+
       </div>
     </section>
   )
