@@ -1,6 +1,19 @@
 import { letterDefinitions, letterWidths, Line, Curve, wordLength, Vector } from './letters'
 import { animationConfig } from '../components/LetterAnimation.config'
 
+// Neutral color palette (white to gray shades)
+const neutralColors = [
+  '#ffffff',  // white
+  '#e8e8e8',  // very light gray
+  '#c0c0c0',  // light gray
+  '#888888',  // gray
+]
+
+// Get a random neutral color
+function getRandomNeutralColor() {
+  return neutralColors[Math.floor(Math.random() * neutralColors.length)]
+}
+
 // Easing function for smooth animation
 function easeInOutCubic(t) {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
@@ -104,6 +117,9 @@ class ShapeMorph {
     this.targetOffsetY = targetOffsetY
     this.sourceType = sourceShape.shape instanceof Line ? 'Line' : 'Curve'
     this.targetType = targetShape.shape instanceof Line ? 'Line' : 'Curve'
+    
+    // Random neutral color for this shape
+    this.color = getRandomNeutralColor()
     
     // Position represents the shape's anchor point (start for Line, p1 for Curve)
     // Initialize to source shape's world position (scaled)
@@ -275,26 +291,22 @@ class ShapeMorph {
   
   // Second half of Line → Curve: draw as Curve, interpolate from line to target curve
   drawCurveTransitionSecondHalf(ctx, t) {
-    const source = this.sourceShape
     const target = this.targetShape
     
     // this.position is the shape's p1 (moved by physics, should be near target p1 by now)
     const p1 = this.position
     
-    // At t=0, we want a curve that matches the line from first half
-    // The line goes from p1 to some end point
-    // Calculate approximate line end based on source line direction (scaled)
-    const sourceEnd = Vector.fromAngle(source.dir, source.length * this.scale)
-    
     // Target curve points relative to target p1 (scaled)
     const targetRelP2 = target.p2.subtract(target.p1).multiply(this.scale)
     const targetRelP3 = target.p3.subtract(target.p1).multiply(this.scale)
     
-    // At t=0: control at midpoint, end at line end
-    // At t=1: control and end at target positions
-    const lineMidRel = sourceEnd.multiply(animationConfig.transition.typeTransitionMidpoint)
+    // At t=0, curve should look like the line from end of first half
+    // First half ended with line pointing to targetRelP3
+    // For a straight line as curve: p2 at midpoint between p1 and p3
+    const lineMidRel = targetRelP3.multiply(animationConfig.transition.typeTransitionMidpoint)
     const p2Rel = Vector.lerp(lineMidRel, targetRelP2, t)
-    const p3Rel = Vector.lerp(sourceEnd, targetRelP3, t)
+    // p3 is already at target position (first half moved it there)
+    const p3Rel = targetRelP3
     
     const p2 = p1.add(p2Rel)
     const p3 = p1.add(p3Rel)
@@ -335,19 +347,16 @@ class ShapeMorph {
   
   // Second half of Curve → Line: draw as Line, interpolate from curve to target line
   drawLineTransitionSecondHalf(ctx, t) {
-    const source = this.sourceShape
     const target = this.targetShape
     
     // this.position is the shape's start point (moved by physics, should be near target start by now)
     const start = this.position
     
-    // At t=0, end point is source curve end (p3) relative to current start (scaled)
-    // At t=1, end point is target line end (scaled)
-    const sourceEndRel = source.p3.subtract(source.p1).multiply(this.scale)
+    // First half ended with curve looking like a line pointing to targetEnd
+    // So at t=0, we're already at targetEnd, and at t=1, still at targetEnd
+    // No interpolation needed - endpoint is already at target position
     const targetEnd = Vector.fromAngle(target.dir, target.length * this.scale)
-    
-    const endRel = Vector.lerp(sourceEndRel, targetEnd, t)
-    const end = start.add(endRel)
+    const end = start.add(targetEnd)
     
     ctx.beginPath()
     ctx.moveTo(start.x, start.y)
@@ -441,6 +450,7 @@ class MorphingSystem {
     ctx.lineWidth = animationConfig.canvas.lineWidth
     
     this.morphs.forEach(morph => {
+      ctx.strokeStyle = morph.color
       morph.draw(ctx, easedProgress)
     })
   }
