@@ -144,7 +144,7 @@ export default function ProjectsSection() {
         // Phase 2: Move to bottom right corner and fade out (60vh)
         // Each card gets 140vh total, with 20vh overlap between cards
         const headingDuration = viewportHeight // 100vh
-        const appearDuration = viewportHeight * 0.8 // 80vh
+        const appearDuration = viewportHeight * 0.9 // 80vh
         const disappearDuration = viewportHeight * 0.6 // 60vh
         const cardTotalDuration = appearDuration + disappearDuration // 140vh
         const cardOverlap = viewportHeight * 0.2 // 20vh overlap
@@ -243,7 +243,7 @@ export default function ProjectsSection() {
                 {/* Heading */}
                 <h1 
                     ref={headingRef}
-                    className="text-4xl md:text-6xl font-bold text-white mb-8 text-shadow-lg font-newamsterdam tracking-wider"
+                    className="text-3xl md:text-6xl font-bold text-white mb-8 text-shadow-lg font-newamsterdam tracking-wider"
                 >
                     Built along the way
                 </h1>

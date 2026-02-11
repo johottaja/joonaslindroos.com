@@ -199,7 +199,7 @@ export default function FooterSection() {
             style={{ y: mountains1Y }}
           />
           <motion.img 
-            src="/images/sysiphus_footer/ground.png" 
+            src="/images/sysiphus_footer/ground2.png" 
             alt="Background" 
             className="w-full h-screen object-cover absolute bottom-0 left-0 -z-40"
             style={{ y: groundY }}

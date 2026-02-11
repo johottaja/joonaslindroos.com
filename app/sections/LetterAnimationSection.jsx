@@ -3,11 +3,57 @@
 import { useEffect, useRef, useState } from 'react'
 import { letterWidths, letterDefinitions, Letter, Line, Curve, wordLength, Vector } from '../texttest/letters'
 import { MorphingSystem } from '../texttest/morphing'
-import { animationConfig } from './LetterAnimation.config'
+import { animationConfig } from '../components/LetterAnimation.config'
+import TexturedText from '@/components/TexturedText.jsx'
 
 const initialWord = animationConfig.words[0]
 
-export default function LetterAnimation() {
+// Calculate responsive scale based on window width
+const getResponsiveScale = (width) => {
+  const baseWidth = 1200 // Reference width where scale = 1.0
+  const minScale = 0.4
+  const maxScale = 1.5
+  const scale = width / baseWidth
+  return Math.min(Math.max(scale, minScale), maxScale)
+}
+
+// Split text into lines if too wide for canvas
+const splitIntoLines = (text, maxWidth, spacing, scale) => {
+  const totalWidth = wordLength(text, spacing) * scale
+  if (totalWidth <= maxWidth) {
+    return [text]
+  }
+  
+  // Split at space
+  const words = text.split(' ')
+  if (words.length === 1) {
+    return [text] // Can't split single word
+  }
+  
+  // Find best split point
+  const lines = []
+  let currentLine = ''
+  
+  for (const word of words) {
+    const testLine = currentLine ? `${currentLine} ${word}` : word
+    const testWidth = wordLength(testLine, spacing) * scale
+    
+    if (testWidth > maxWidth && currentLine) {
+      lines.push(currentLine)
+      currentLine = word
+    } else {
+      currentLine = testLine
+    }
+  }
+  
+  if (currentLine) {
+    lines.push(currentLine)
+  }
+  
+  return lines
+}
+
+export default function LetterAnimationSection() {
   const canvasRef = useRef(null)
   const animationFrameRef = useRef(null)
   const morphingSystemRef = useRef(null)
@@ -52,17 +98,17 @@ export default function LetterAnimation() {
     if (!morphingSystemRef.current) {
       morphingSystemRef.current = new MorphingSystem()
       morphingSystemRef.current.sourceWord = initialWord
-      morphingSystemRef.current.scale = animationConfig.scale
     }
     const morphingSystem = morphingSystemRef.current
+    const responsiveScale = getResponsiveScale(canvasSize.width)
 
     let lastTime = performance.now()
 
-    // Set canvas context properties once (they don't change)
+    // Set canvas context properties
     ctx.fillStyle = animationConfig.canvas.fillStyle
     ctx.strokeStyle = animationConfig.canvas.strokeStyle
     ctx.lineCap = animationConfig.canvas.lineCap
-    ctx.lineWidth = animationConfig.canvas.lineWidth
+    ctx.lineWidth = animationConfig.canvas.lineWidth * responsiveScale
 
     const spacing = animationConfig.spacing
     const centerX = canvas.width / 2
@@ -77,7 +123,7 @@ export default function LetterAnimation() {
       lastTime = currentTime
 
       // Update scale
-      morphingSystem.scale = animationConfig.scale
+      morphingSystem.scale = responsiveScale
 
       // Always update morphing system (physics continues even after morphing completes)
       if (morphingSystem.morphs && morphingSystem.morphs.length > 0) {
@@ -97,40 +143,51 @@ export default function LetterAnimation() {
         // Draw static word only if no morphs exist
         const word = morphingSystem.getCurrentWord() || initialWord
         setCurrentWord(word)
-        const currentScale = morphingSystem.scale || animationConfig.scale
+        const currentScale = morphingSystem.scale || responsiveScale
         const scaledSpacing = spacing * currentScale
-        const wordWidth = wordLength(word, spacing) * currentScale
-        let x = centerX - wordWidth / 2
-        const y = centerY
+        const maxWidth = canvas.width * 0.9 // 90% of canvas width
+        const lineHeight = 140 * currentScale // Vertical spacing between lines
+        
+        // Split into lines if needed
+        const lines = splitIntoLines(word, maxWidth, spacing, currentScale)
+        const totalHeight = (lines.length - 1) * lineHeight
+        const startY = centerY - totalHeight / 2
 
-        // Draw each letter with scaled positions
-        word.split('').forEach(letter => {
-          const letterWidth = (letterWidths[letter] || animationConfig.defaultLetterWidth) * currentScale
-          const letterShapes = letterDefinitions[letter] || []
+        // Draw each line
+        lines.forEach((line, lineIndex) => {
+          const lineWidth = wordLength(line, spacing) * currentScale
+          let x = centerX - lineWidth / 2
+          const y = startY + lineIndex * lineHeight
 
-          letterShapes.forEach(shape => {
-            if (shape instanceof Line) {
-              const start = shape.position.multiply(currentScale).add(new Vector(x, y))
-              const direction = Vector.fromAngle(shape.dir, shape.length * currentScale)
-              const end = start.add(direction)
+          // Draw each letter with scaled positions
+          line.split('').forEach(letter => {
+            const letterWidth = (letterWidths[letter] || animationConfig.defaultLetterWidth) * currentScale
+            const letterShapes = letterDefinitions[letter] || []
 
-              ctx.beginPath()
-              ctx.moveTo(start.x, start.y)
-              ctx.lineTo(end.x, end.y)
-              ctx.stroke()
-            } else if (shape instanceof Curve) {
-              const p1 = shape.p1.multiply(currentScale).add(new Vector(x, y))
-              const p2 = shape.p2.multiply(currentScale).add(new Vector(x, y))
-              const p3 = shape.p3.multiply(currentScale).add(new Vector(x, y))
+            letterShapes.forEach(shape => {
+              if (shape instanceof Line) {
+                const start = shape.position.multiply(currentScale).add(new Vector(x, y))
+                const direction = Vector.fromAngle(shape.dir, shape.length * currentScale)
+                const end = start.add(direction)
 
-              ctx.beginPath()
-              ctx.moveTo(p1.x, p1.y)
-              ctx.quadraticCurveTo(p2.x, p2.y, p3.x, p3.y)
-              ctx.stroke()
-            }
+                ctx.beginPath()
+                ctx.moveTo(start.x, start.y)
+                ctx.lineTo(end.x, end.y)
+                ctx.stroke()
+              } else if (shape instanceof Curve) {
+                const p1 = shape.p1.multiply(currentScale).add(new Vector(x, y))
+                const p2 = shape.p2.multiply(currentScale).add(new Vector(x, y))
+                const p3 = shape.p3.multiply(currentScale).add(new Vector(x, y))
+
+                ctx.beginPath()
+                ctx.moveTo(p1.x, p1.y)
+                ctx.quadraticCurveTo(p2.x, p2.y, p3.x, p3.y)
+                ctx.stroke()
+              }
+            })
+
+            x += letterWidth + scaledSpacing
           })
-
-          x += letterWidth + scaledSpacing
         })
       }
 
@@ -171,7 +228,8 @@ export default function LetterAnimation() {
             centerX, 
             centerY, 
             animationConfig.spacing, 
-            animationConfig.scale
+            getResponsiveScale(canvas.width),
+            canvas.width * 0.9 // max width for line splitting
           )
           setMorphingActive(true)
         }
@@ -194,7 +252,7 @@ export default function LetterAnimation() {
   }, [morphingActive, canvasSize])
 
   return (
-    <div className="flex flex-col justify-center items-center w-full bg-black relative">
+    <div className="flex flex-col justify-center items-center w-full bg-black relative h-screen">
       <svg
         className="absolute top-0 left-0 w-full z-50"
         height="34"
@@ -210,18 +268,10 @@ export default function LetterAnimation() {
             strokeWidth="5"
         />
       </svg>
-      <h2 className="text-white text-7xl z-10 absolute tracking-widest absolute top-60"
-      style={{
-        backgroundImage: 'url(/images/edited.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center bottom',
-        backgroundRepeat: 'no-repeat',
-        WebkitBackgroundClip: 'text',
-        backgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-        filter: 'grayscale(100%) brightness(300%) contrast(70%)',
-      }}>
-        Interested and Competent in
+      <h2 className="text-white text-5xl lg:text-7xl z-10 absolute tracking-widest absolute top-60 text-center">
+        <TexturedText>
+          Interested and Competent in
+        </TexturedText>
       </h2>
       <canvas 
         ref={canvasRef} 

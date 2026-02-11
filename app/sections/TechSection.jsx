@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import ModelViewer from '@/components/ModelViewer.jsx'
+import TexturedText from '@/components/TexturedText.jsx'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -70,7 +71,7 @@ export default function TechSection() {
     }, [])
 
     return (
-        <section ref={sectionRef} className="w-full bg-neutral-950 relative pt-40 pb-30">
+        <section ref={sectionRef} className="w-full bg-neutral-950 relative pt-40 sm:h-auto h-screen">
             <div
                 className="absolute top-0 left-0 w-full h-full -z-50"
                 style={{
@@ -81,59 +82,36 @@ export default function TechSection() {
                 }}
             />
             <ModelViewer />
-            <div className="absolute top-0 left-0 w-full h-full absolute pt-30">
-                <h2 
-                    ref={topHeadingRef}
-                    className="text-center tracking-widest text-5xl font-bold"
-                    style={{
-                        backgroundImage: 'url(/images/edited.png)',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center bottom',
-                        backgroundRepeat: 'no-repeat',
-                        WebkitBackgroundClip: 'text',
-                        backgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        filter: 'grayscale(100%) brightness(300%) contrast(70%)',
-                        transform: 'translateY(-50px)'
-                    }}
-                >
-                    Always pushing the boundaries
+            <div className="absolute top-0 left-0 w-full h-full mt-30">
+                <h2 className="text-center tracking-widest text-5xl font-bold">
+                    <TexturedText 
+                        innerRef={topHeadingRef}
+                        style={{ transform: 'translateY(-50px)' }}
+                    >
+                        Always pushing the boundaries
+                    </TexturedText>
                 </h2>
             </div>
-            <div className="absolute bottom-0 left-0 w-full pb-30">
-            <h2 
-                    ref={bottomHeadingRef}
-                    className="w-full text-center tracking-widest text-2xl font-bold"
-                    style={{
-                        backgroundImage: 'url(/images/edited.png)',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center bottom',
-                        backgroundRepeat: 'no-repeat',
-                        WebkitBackgroundClip: 'text',
-                        backgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        filter: 'grayscale(100%) brightness(300%) contrast(70%)',
-                        transform: 'translateY(50px)'
-                    }}
+            <div className="absolute bottom-0 left-0 w-full flex justify-center items-center">
+                <h2 className="tracking-widest text-center text-2xl font-bold px-5 py-10"
+                style={{
+                    background: 'radial-gradient(rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%)',
+                }}
                 >
-                    With the power of <br/>
-                    <p 
-                        ref={technologyTextRef}
-                        style={{
-                            backgroundImage: 'url(/images/edited.png)',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center bottom',
-                            backgroundRepeat: 'no-repeat',
-                            WebkitBackgroundClip: 'text',
-                            backgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            filter: 'grayscale(100%) brightness(200%) contrast(70%)',
-                            transform: 'scale(0.8)'
-                        }}
-                        className="text-7xl"
+                    <TexturedText 
+                        innerRef={bottomHeadingRef}
+                        style={{ transform: 'translateY(50px)' }}
                     >
-                        TECHNOLOGY
-                    </p>
+                        With the power of <br/>
+                        <TexturedText 
+                            innerRef={technologyTextRef}
+                            brightness={200}
+                            className="text-7xl"
+                            style={{ transform: 'scale(0.8)' }}
+                        >
+                            TECHNOLOGY
+                        </TexturedText>
+                    </TexturedText>
                 </h2>
             </div>
         </section>

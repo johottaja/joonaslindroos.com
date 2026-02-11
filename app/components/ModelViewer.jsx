@@ -16,8 +16,30 @@ export default function ModelViewer() {
   const modelRef = useRef(null)
   const lightRef = useRef(null)
   const technologiesRef = useRef(null)
+  const modelMaxDimRef = useRef(null)
   const [sceneReady, setSceneReady] = useState(false)
   const [cameraReady, setCameraReady] = useState(false)
+
+  // Helper function to calculate and set camera distance based on aspect ratio
+  const updateCameraDistance = (camera, maxDim) => {
+    if (!containerRef.current) return
+    
+    const fov = camera.fov * (Math.PI / 180)
+    const aspect = containerRef.current.clientWidth / containerRef.current.clientHeight
+    
+    // Calculate distance needed for vertical fit
+    const distanceForVertical = Math.abs(maxDim / 2 / Math.tan(fov / 2))
+    
+    // Calculate distance needed for horizontal fit
+    // Horizontal FOV is derived from vertical FOV and aspect ratio
+    const horizontalFov = 2 * Math.atan(Math.tan(fov / 2) * aspect)
+    const distanceForHorizontal = Math.abs(maxDim / 2 / Math.tan(horizontalFov / 2))
+    
+    // Use the larger distance to ensure model fits in both dimensions
+    let cameraZ = Math.max(distanceForVertical, distanceForHorizontal)
+    cameraZ *= 1.2 // Add some padding
+    camera.position.z = cameraZ
+  }
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -96,14 +118,12 @@ export default function ModelViewer() {
       
       // Scale to fit
       const maxDim = Math.max(size.x, size.y, size.z)
+      modelMaxDimRef.current = maxDim
       const scale = 2 / maxDim
       gltf.scene.scale.multiplyScalar(scale)
       
       // Adjust camera to fit model
-      const fov = camera.fov * (Math.PI / 180)
-      let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2))
-      cameraZ *= 1.2 // Add some padding
-      camera.position.z = cameraZ
+      updateCameraDistance(camera, maxDim)
     }, undefined, (error) => {
       console.error('Error loading model:', error)
     })
@@ -141,6 +161,11 @@ export default function ModelViewer() {
       camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight
       camera.updateProjectionMatrix()
       renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight)
+      
+      // Recalculate camera distance for new aspect ratio
+      if (modelMaxDimRef.current) {
+        updateCameraDistance(camera, modelMaxDimRef.current)
+      }
     }
     window.addEventListener('resize', handleResize)
 

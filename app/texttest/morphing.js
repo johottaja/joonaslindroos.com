@@ -1,6 +1,40 @@
 import { letterDefinitions, letterWidths, Line, Curve, wordLength, Vector } from './letters'
 import { animationConfig } from '../components/LetterAnimation.config'
 
+// Split text into lines if too wide
+function splitIntoLines(text, maxWidth, spacing, scale) {
+  const totalWidth = wordLength(text, spacing) * scale
+  if (totalWidth <= maxWidth) {
+    return [text]
+  }
+  
+  const words = text.split(' ')
+  if (words.length === 1) {
+    return [text]
+  }
+  
+  const lines = []
+  let currentLine = ''
+  
+  for (const word of words) {
+    const testLine = currentLine ? `${currentLine} ${word}` : word
+    const testWidth = wordLength(testLine, spacing) * scale
+    
+    if (testWidth > maxWidth && currentLine) {
+      lines.push(currentLine)
+      currentLine = word
+    } else {
+      currentLine = testLine
+    }
+  }
+  
+  if (currentLine) {
+    lines.push(currentLine)
+  }
+  
+  return lines
+}
+
 // Neutral color palette (white to gray shades)
 const neutralColors = [
   '#ffffff',  // white
@@ -141,6 +175,8 @@ class ShapeMorph {
     )
     this.maxSpeed = animationConfig.physics.maxSpeedMultiplier * scale
     this.maxForce = animationConfig.physics.maxForceMultiplier * scale
+    this.slowDownDistance = animationConfig.physics.slowDownDistance * scale
+    this.slowDownDistanceSquared = this.slowDownDistance * this.slowDownDistance
     this.velocity = Vector.fromAngle(Math.random() * 2 * Math.PI, animationConfig.physics.maxSpeedMultiplier * scale)
   }
   
@@ -152,8 +188,8 @@ class ShapeMorph {
     let speed = this.maxSpeed
     
     // Reduce speed when close to target (using squared distance for comparison)
-    if (dSquared < animationConfig.physics.slowDownDistanceSquared) {
-      speed = map(d, 0, animationConfig.physics.slowDownDistance, 0, this.maxSpeed)
+    if (dSquared < this.slowDownDistanceSquared) {
+      speed = map(d, 0, this.slowDownDistance, 0, this.maxSpeed)
     }
     
     // Normalize and scale desired velocity
@@ -378,7 +414,7 @@ class MorphingSystem {
     this.scale = animationConfig.scale
   }
   
-  startMorph(sourceWord, targetWord, startX, startY, spacing = animationConfig.spacing, scale = animationConfig.scale) {
+  startMorph(sourceWord, targetWord, startX, startY, spacing = animationConfig.spacing, scale = animationConfig.scale, maxWidth = Infinity) {
     this.sourceWord = sourceWord.toUpperCase()
     this.targetWord = targetWord.toUpperCase()
     this.spacing = spacing
@@ -387,15 +423,44 @@ class MorphingSystem {
     this.progress = 0
     this.startTime = null
     
-    // Extract shapes from both words (with scaling)
-    const sourceShapes = extractAllShapes(this.sourceWord, 0, 0, spacing, scale)
-    const targetShapes = extractAllShapes(this.targetWord, 0, 0, spacing, scale)
+    const lineHeight = 140 * scale
     
-    // Calculate positions for both words (centered, with scaling)
-    const sourceWidth = wordLength(this.sourceWord, spacing) * scale
-    const targetWidth = wordLength(this.targetWord, spacing) * scale
-    const sourceStartX = startX - sourceWidth / 2
-    const targetStartX = startX - targetWidth / 2
+    // Split both words into lines
+    const sourceLines = splitIntoLines(this.sourceWord, maxWidth, spacing, scale)
+    const targetLines = splitIntoLines(this.targetWord, maxWidth, spacing, scale)
+    
+    // Calculate vertical offsets for centering
+    const sourceTotalHeight = (sourceLines.length - 1) * lineHeight
+    const targetTotalHeight = (targetLines.length - 1) * lineHeight
+    const sourceStartY = startY - sourceTotalHeight / 2
+    const targetStartY = startY - targetTotalHeight / 2
+    
+    // Extract shapes from all lines with proper positions
+    const sourceShapes = []
+    sourceLines.forEach((line, lineIndex) => {
+      const lineWidth = wordLength(line, spacing) * scale
+      const lineStartX = startX - lineWidth / 2
+      const lineY = sourceStartY + lineIndex * lineHeight
+      const shapes = extractAllShapes(line, 0, 0, spacing, scale)
+      shapes.forEach(shape => {
+        shape.letterX += lineStartX
+        shape.letterY += lineY
+      })
+      sourceShapes.push(...shapes)
+    })
+    
+    const targetShapes = []
+    targetLines.forEach((line, lineIndex) => {
+      const lineWidth = wordLength(line, spacing) * scale
+      const lineStartX = startX - lineWidth / 2
+      const lineY = targetStartY + lineIndex * lineHeight
+      const shapes = extractAllShapes(line, 0, 0, spacing, scale)
+      shapes.forEach(shape => {
+        shape.letterX += lineStartX
+        shape.letterY += lineY
+      })
+      targetShapes.push(...shapes)
+    })
     
     // Create shape mappings
     const mapping = createShapeMapping(sourceShapes, targetShapes)
@@ -404,11 +469,11 @@ class MorphingSystem {
     this.morphs = mapping.map(({ source, target }) => {
       return new ShapeMorph(
         source,
-        source.letterX + sourceStartX,
-        source.letterY + startY,
+        source.letterX,
+        source.letterY,
         target,
-        target.letterX + targetStartX,
-        target.letterY + startY,
+        target.letterX,
+        target.letterY,
         scale
       )
     })
@@ -446,8 +511,8 @@ class MorphingSystem {
     // Calculate eased progress once for all morphs (performance optimization)
     const easedProgress = easeInOutCubic(morphProgress)
     
-    // Set line width from config
-    ctx.lineWidth = animationConfig.canvas.lineWidth
+    // Set line width from config, scaled by current scale
+    ctx.lineWidth = animationConfig.canvas.lineWidth * this.scale
     
     this.morphs.forEach(morph => {
       ctx.strokeStyle = morph.color
