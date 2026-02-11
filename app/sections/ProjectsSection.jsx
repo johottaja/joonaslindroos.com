@@ -8,41 +8,65 @@ import Link from 'next/link'
 gsap.registerPlugin(ScrollTrigger)
 
 const projects = [
+    {
+        id: 1,
+        title: 'Python Neural Networks',
+        image: '/images/neuralnetworks.webp',
+        href: 'https://github.com/johottaja/py-neural-networks',
+        external: true,
+        description: 'Developed a neural network from first principles using Python and NumPy, demonstrating a comprehensive understanding of perceptrons and backpropagation.',
+        date: '2024-12-01',
+        cornerText: 'Click for github'
+    },
     { 
-        id: 1, 
+        id: 2, 
+        title: 'AI Video Generator', 
+        image: '/images/pfp.png', 
+        href: 'https://github.com/johottaja/AI-videos', 
+        external: true,
+        description: 'A video generator that uses AI to generate images and stiches them together, integrating human-in-the-loop for QA',
+        date: '2023-11-01',
+        cornerText: 'Click for github'
+    },
+    { 
+        id: 3, 
         title: 'Fax or Cap', 
         image: '/images/Faxorcap.png', 
         href: 'https://test.joonaslindroos.com', 
         external: true,
         description: 'A rudamentary platform for posting and voting on other users statements truthfulness',
         date: '2022-06-01',
+        cornerText: 'Click for live demo'
     },
     { 
-        id: 2, 
+        id: 4, 
         title: 'Two Player Snake', 
         image: '/images/PvPSnakeGame.png', 
         href: '/snake/pvp', 
         external: false,
         description: 'Competitive two-player browser snake with real-time PvP gameplay over the internet.',
         date: '2021-03-15',
+        cornerText: 'Click for live demo'
     },
     { 
-        id: 3, 
+        id: 5, 
         title: 'One Player Snake', 
         image: '/images/SnakeGame.png', 
         href: '/snake/comp', 
         external: false,
         description: 'A modern take on the classic single-player snake arcade game with a global leaderboard',
         date: '2020-08-10',
+        cornerText: 'Click for live demo'
     },
     { 
-        id: 4, 
+        id: 6, 
         title: 'Text Animation', 
         image: '/images/TextAnimation.png', 
         href: '/textspread', 
         external: false,
         description: 'Interactive text animation playground with particle-based visual effects and text rendering',
         date: '2019-11-20',
+        cornerText: 'Click for live demo'
     },
 ]
 
@@ -222,7 +246,7 @@ export default function ProjectsSection() {
             <img 
                 ref={manRef}
                 src="/images/sysiphus_projects/man.png" 
-                className="fixed inset-0 w-full h-screen object-cover -z-70 saturate-60 scale-110"
+                className="fixed inset-0 w-full h-screen object-cover -z-70 saturate-60 scale-110 pointer-events-none"
             />
             <img 
                 ref={mountainsRef}
@@ -237,7 +261,7 @@ export default function ProjectsSection() {
             {/* Sticky container for cards */}
             <div 
                 ref={containerRef}
-                className="sticky top-0 left-0 w-full h-screen -z-75 flex flex-col items-center justify-center overflow-hidden"
+                className="sticky top-0 left-0 w-full h-screen z-10 flex flex-col items-center justify-center overflow-hidden"
                 style={{ perspective: '1000px', transform: `translateX(-10%)` }}
             >
                 {/* Heading */}
@@ -268,6 +292,12 @@ export default function ProjectsSection() {
                                 style={{ 
                                     transformStyle: 'preserve-3d',
                                 }}
+                                href={project.href}
+                                onClick={() => {
+                                    if (project.external) {
+                                        window.open(project.href, '_blank')
+                                    }
+                                }}
                             >
                                 <img 
                                     src={project.image}
@@ -280,6 +310,7 @@ export default function ProjectsSection() {
                                         {formatRelativeTime(project.date)}
                                     </div>
                                 )}
+                                <div className="absolute top-2 right-2 text-xs bg-black/70 text-white px-2 py-1 rounded">{project.cornerText}</div>
                                 <div className="absolute bottom-0 left-0 right-0 p-4">
                                     <h3 className="text-xl md:text-2xl font-bold text-white font-newamsterdam tracking-wide text-shadow-lg">
                                         {project.title}
