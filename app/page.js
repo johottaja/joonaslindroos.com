@@ -10,7 +10,6 @@ import ProjectsSection from '@/sections/ProjectsSection.jsx'
 import AgentSection from '@/sections/AgentSection.jsx'
 import LetterAnimationSection from '@/sections/LetterAnimationSection.jsx'
 import FooterSection from '@/sections/FooterSection.jsx'
-import ContactSection from '@/sections/ContactSection.jsx'
 
 export default function Home() {
   return (

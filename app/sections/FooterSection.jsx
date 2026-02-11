@@ -14,6 +14,9 @@ export default function FooterSection() {
   const sectionRef = useRef(null)
   const lettersRef = useRef([])
   const [isContactModalOpen, setIsContactModalOpen] = useState(false)
+  const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' })
+  const [contactStatus, setContactStatus] = useState(null) // 'sending' | 'success' | 'error'
+  const [contactError, setContactError] = useState('')
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"]
@@ -235,7 +238,11 @@ export default function FooterSection() {
           </h2>
           <h2 
             className="text-white font-newamsterdam tracking-widest text-lg text-shadow-lg py-1.5 px-4 border-1 border-neutral-500 rounded-full backdrop-blur-xs cursor-pointer hover:scale-110 transition-all duration-300"
-            onClick={() => setIsContactModalOpen(true)}
+            onClick={() => {
+              setContactStatus(null)
+              setContactError('')
+              setIsContactModalOpen(true)
+            }}
           >
             Contact Me
           </h2>
@@ -283,7 +290,47 @@ export default function FooterSection() {
 
                 <div className="p-6 sm:p-8 tracking-widest">
                   <h2 className="text-center text-2xl mb-6 text-white tracking-widest">Contact me</h2>
-                  <form method="post" action="/api/contact">
+                  {contactStatus === 'success' ? (
+                    <div className="text-center py-8">
+                      <p className="text-green-400 text-lg mb-2">Message sent!</p>
+                      <p className="text-gray-300 text-sm">Thanks for reaching out. I'll get back to you soon.</p>
+                    </div>
+                  ) : (
+                  <form onSubmit={async (e) => {
+                    e.preventDefault()
+                    setContactStatus('sending')
+                    setContactError('')
+
+                    const recaptchaToken = typeof window !== 'undefined' && window.grecaptcha
+                      ? window.grecaptcha.getResponse()
+                      : null
+
+                    try {
+                      const res = await fetch('/api/contact', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          name: contactForm.name,
+                          email: contactForm.email,
+                          message: contactForm.message,
+                          ...(recaptchaToken ? { 'g-recaptcha-response': recaptchaToken } : {}),
+                        }),
+                      })
+
+                      const data = await res.json()
+
+                      if (!res.ok) {
+                        throw new Error(data.message || 'Failed to send message')
+                      }
+
+                      setContactStatus('success')
+                      setContactForm({ name: '', email: '', message: '' })
+                    } catch (err) {
+                      setContactStatus('error')
+                      setContactError(err.message || 'Something went wrong. Please try again.')
+                      if (window.grecaptcha) window.grecaptcha.reset()
+                    }
+                  }}>
                     <div className="mb-4">
                       <input 
                         className="w-full px-3 py-2 bg-neutral-700/40 border border-neutral-300 rounded-md text-white placeholder-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
@@ -293,7 +340,10 @@ export default function FooterSection() {
                         placeholder="Name" 
                         maxLength="30"
                         minLength="1" 
-                        required 
+                        required
+                        value={contactForm.name}
+                        onChange={(e) => setContactForm(f => ({ ...f, name: e.target.value }))}
+                        disabled={contactStatus === 'sending'}
                       />
                     </div>
                     <div className="mb-4">
@@ -305,7 +355,10 @@ export default function FooterSection() {
                         placeholder="Email"
                         maxLength="150" 
                         minLength="1" 
-                        required 
+                        required
+                        value={contactForm.email}
+                        onChange={(e) => setContactForm(f => ({ ...f, email: e.target.value }))}
+                        disabled={contactStatus === 'sending'}
                       />
                     </div>
                     <div className="mb-4">
@@ -318,6 +371,9 @@ export default function FooterSection() {
                         maxLength="300"
                         minLength="1" 
                         required
+                        value={contactForm.message}
+                        onChange={(e) => setContactForm(f => ({ ...f, message: e.target.value }))}
+                        disabled={contactStatus === 'sending'}
                       ></textarea>
                     </div>
                     <div>
@@ -330,14 +386,19 @@ export default function FooterSection() {
                           ></div>
                         </div>
                       )}
+                      {contactStatus === 'error' && (
+                        <p className="text-red-400 text-sm mb-3 text-center">{contactError}</p>
+                      )}
                       <button 
-                        className="w-full bg-neutral-600 hover:bg-neutral-700 border-1 border-neutral-300 text-white font-medium py-2 px-4 cursor-pointer rounded-md transition-colors duration-200" 
+                        className="w-full bg-neutral-600 hover:bg-neutral-700 border-1 border-neutral-300 text-white font-medium py-2 px-4 cursor-pointer rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
                         type="submit"
+                        disabled={contactStatus === 'sending'}
                       >
-                        Send
+                        {contactStatus === 'sending' ? 'Sending...' : 'Send'}
                       </button>
                     </div>
                   </form>
+                  )}
                 </div>
               </motion.div>
             </motion.div>
