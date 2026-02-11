@@ -2,6 +2,51 @@ import { NextResponse } from 'next/server'
 import { Agent, run, tool } from '@openai/agents'
 import { z } from 'zod'
 
+const RATE_LIMIT_WINDOW_MS = 12 * 60 * 60 * 1000 // 12 hours
+const RATE_LIMIT_MAX_REQUESTS = 10 // max requests per window per IP
+
+/** @type {Map<string, number[]>} IP → array of request timestamps */
+const rateLimitMap = new Map()
+
+// Periodically prune stale entries so the map doesn't grow unbounded.
+setInterval(() => {
+  const now = Date.now()
+  for (const [ip, timestamps] of rateLimitMap) {
+    const valid = timestamps.filter((t) => now - t < RATE_LIMIT_WINDOW_MS)
+    if (valid.length === 0) {
+      rateLimitMap.delete(ip)
+    } else {
+      rateLimitMap.set(ip, valid)
+    }
+  }
+}, RATE_LIMIT_WINDOW_MS)
+
+function checkRateLimit(ip) {
+  const now = Date.now()
+  const timestamps = (rateLimitMap.get(ip) || []).filter(
+    (t) => now - t < RATE_LIMIT_WINDOW_MS,
+  )
+
+  if (timestamps.length >= RATE_LIMIT_MAX_REQUESTS) {
+    rateLimitMap.set(ip, timestamps)
+    return false
+  }
+
+  timestamps.push(now)
+  rateLimitMap.set(ip, timestamps)
+  return true
+}
+
+function getClientIp(request) {
+  const forwarded = request.headers.get('x-forwarded-for')
+  if (forwarded) {
+    return forwarded.split(',')[0].trim()
+  }
+  return request.headers.get('x-real-ip') || '127.0.0.1'
+}
+
+// ---------------------------------------------------------------------------
+
 const GITHUB_USERNAME = process.env.GITHUB_USERNAME || 'johottaja'
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN
 
@@ -96,26 +141,44 @@ const portfolioAgent = new Agent({
   name: 'Portfolio Agent',
   instructions:
     "You are an AI assistant on Joonas Lindroos' personal website. " +
+    "Always talk about Joonas' projects and work in a positive, professional and enthusiastic manner. " +
     'You can answer questions about his work and GitHub projects. ' +
+    'Never talk about anything not related to Joonas or his work, especially anyhing illegal or discriminatory.' +
     'When users ask about his projects, repositories, or code examples, use the list_github_projects tool to get an up-to-date list. ' +
     'When users want deeper information about a specific project, use the get_github_readme tool to retrieve its README.md markdown. ' +
-    'Be concise and helpful, and include relevant project names and URLs in your responses.',
+    'Be concise and helpful, and include relevant project names and URLs in your responses.' +
+    'FORMATTING INSTRUCTIONS: Separate each couple of sentences or thoughts with a double newline (\\n\\n). Keep each part brief and focused. When listing projects, separate each project with a double newline also.',
   tools: [listGithubProjectsTool, getGithubReadmeTool],
 })
 
 export async function POST(request) {
+  const ip = getClientIp(request)
+
+  if (!checkRateLimit(ip)) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please try again in a minute.' },
+      { status: 429 },
+    )
+  }
+
   try {
     const body = await request.json()
-    const { message } = body || {}
+    const { message, previousResponseId } = body || {}
 
-    if (!message || typeof message !== 'string' || !message.trim()) {
-      return NextResponse.json({ error: 'Message is required' }, { status: 400 })
+    if (!message || typeof message !== 'string') {
+      return NextResponse.json({ error: 'A message string is required' }, { status: 400 })
     }
 
-    const result = await run(portfolioAgent, message.trim())
+    const options = {}
+    if (previousResponseId) {
+      options.previousResponseId = previousResponseId
+    }
+
+    const result = await run(portfolioAgent, message, options)
 
     return NextResponse.json({
       reply: result.finalOutput,
+      responseId: result.lastResponseId,
     })
   } catch (err) {
     console.error('Agent route error:', err)

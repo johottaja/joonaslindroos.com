@@ -19,6 +19,7 @@ export default function AgentSection() {
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [responseId, setResponseId] = useState(null)
   
   const scrollContainerRef = useRef(null)
   const messageRefs = useRef([])
@@ -112,16 +113,31 @@ export default function AgentSection() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: input.trim(),
-          instructions: 'Please format your response as short, concise sentences. Separate each sentence or thought with a double newline (\\n\\n). Keep each part brief and focused. When listing projects, separate each project with a double newline also.',
+          message: userMessage.content,
+          ...(responseId ? { previousResponseId: responseId } : {}),
         }),
       })
 
+      const data = await res.json()
+
       if (!res.ok) {
-        throw new Error('Failed to reach the agent. Please try again.')
+        if (res.status === 429) {
+          setMessages((current) => [
+            ...current,
+            {
+              role: 'assistant',
+              content:
+                "You've used all your messages for now. If you're interested in Joonas' work or want to get in touch, feel free to reach out via the **Contact Me** button below or connect on [LinkedIn](https://www.linkedin.com/in/joonas-lindroos-917280230/)!",
+            },
+          ])
+          return
+        }
+        throw new Error(data.error || 'Failed to reach the agent.')
       }
 
-      const data = await res.json()
+      if (data.responseId) {
+        setResponseId(data.responseId)
+      }
       const assistantMessage = {
         role: 'assistant',
         content: data.reply ?? 'Sorry, I could not generate a response.',
@@ -225,7 +241,7 @@ export default function AgentSection() {
                       }`}
                     >
                       {message.role === 'assistant' ? (
-                        <ReactMarkdown className="whitespace-pre-wrap break-words">
+                        <ReactMarkdown className="prose prose-sm prose-invert break-words">
                           {part}
                         </ReactMarkdown>
                       ) : (
