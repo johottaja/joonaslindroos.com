@@ -58,9 +58,11 @@ export default function LetterAnimationSection() {
   const animationFrameRef = useRef(null)
   const morphingSystemRef = useRef(null)
   const cycleTimeoutRef = useRef(null)
+  const headerRef = useRef(null)
   const [morphingActive, setMorphingActive] = useState(false)
   const [currentWord, setCurrentWord] = useState(initialWord)
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 })
+  const [headerBottom, setHeaderBottom] = useState(0)
 
   // Initialize canvas size and handle resize
   useEffect(() => {
@@ -70,6 +72,12 @@ export default function LetterAnimationSection() {
           width: document.documentElement.clientWidth,
           height: window.innerHeight
         })
+        
+        // Update header bottom position
+        if (headerRef.current) {
+          const rect = headerRef.current.getBoundingClientRect()
+          setHeaderBottom(rect.bottom)
+        }
       }
     }
 
@@ -112,7 +120,9 @@ export default function LetterAnimationSection() {
 
     const spacing = animationConfig.spacing
     const centerX = canvas.width / 2
-    const centerY = canvas.height / 2
+    // Position text so its top edge starts below the header
+    const headerPadding = 40
+    const textTopY = headerBottom + headerPadding
 
     const draw = (currentTime) => {
       // Clear canvas
@@ -150,8 +160,8 @@ export default function LetterAnimationSection() {
         
         // Split into lines if needed
         const lines = splitIntoLines(word, maxWidth, spacing, currentScale)
-        const totalHeight = (lines.length - 1) * lineHeight
-        const startY = centerY - totalHeight / 2
+        // Position first line at textTopY, subsequent lines below
+        const startY = textTopY
 
         // Draw each line
         lines.forEach((line, lineIndex) => {
@@ -201,7 +211,7 @@ export default function LetterAnimationSection() {
         cancelAnimationFrame(animationFrameRef.current)
       }
     }
-  }, [canvasSize])
+  }, [canvasSize, headerBottom])
 
   // Auto-cycle logic
   useEffect(() => {
@@ -214,7 +224,9 @@ export default function LetterAnimationSection() {
         if (!canvas || !morphingSystemRef.current) return
 
         const centerX = canvas.width / 2
-        const centerY = canvas.height / 2
+        // Position text so its top edge starts below the header
+        const headerPadding = 40
+        const textTopY = headerBottom + headerPadding
 
         const current = morphingSystemRef.current.getCurrentWord() || initialWord
         const currentIndex = animationConfig.words.findIndex(w => w === current.toUpperCase())
@@ -226,7 +238,7 @@ export default function LetterAnimationSection() {
             current, 
             targetWord, 
             centerX, 
-            centerY, 
+            textTopY, 
             animationConfig.spacing, 
             getResponsiveScale(canvas.width),
             canvas.width * 0.9 // max width for line splitting
@@ -249,7 +261,7 @@ export default function LetterAnimationSection() {
         clearTimeout(cycleTimeoutRef.current)
       }
     }
-  }, [morphingActive, canvasSize])
+  }, [morphingActive, canvasSize, headerBottom])
 
   return (
     <div className="flex flex-col justify-center items-center w-full bg-black relative h-screen">
@@ -268,7 +280,10 @@ export default function LetterAnimationSection() {
             strokeWidth="5"
         />
       </svg>
-      <h2 className="text-white text-5xl lg:text-7xl z-10 absolute tracking-widest absolute top-60 text-center">
+      <h2 
+        ref={headerRef}
+        className="text-white text-5xl lg:text-7xl z-10 absolute tracking-widest absolute top-60 text-center"
+      >
         <TexturedText>
           Interested and Competent in
         </TexturedText>

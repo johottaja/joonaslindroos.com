@@ -429,11 +429,9 @@ class MorphingSystem {
     const sourceLines = splitIntoLines(this.sourceWord, maxWidth, spacing, scale)
     const targetLines = splitIntoLines(this.targetWord, maxWidth, spacing, scale)
     
-    // Calculate vertical offsets for centering
-    const sourceTotalHeight = (sourceLines.length - 1) * lineHeight
-    const targetTotalHeight = (targetLines.length - 1) * lineHeight
-    const sourceStartY = startY - sourceTotalHeight / 2
-    const targetStartY = startY - targetTotalHeight / 2
+    // startY is the top position for the first line (no centering offset)
+    const sourceStartY = startY
+    const targetStartY = startY
     
     // Extract shapes from all lines with proper positions
     const sourceShapes = []
