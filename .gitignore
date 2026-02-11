@@ -2,8 +2,8 @@ node_modules
 .idea
 .env
 out
-.next/
-.idea/
+.next
+.idea
 .vscode/
 .env.local
 .env.development.local

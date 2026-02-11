@@ -1,6 +1,5 @@
 const Config = require("./../config.js");
-const Snake = require("./snake.js")
-const {init} = require("express/lib/middleware/init");
+const Snake = require("./snake.js");
 
 module.exports = class PvPGame {
     constructor(io, code) {

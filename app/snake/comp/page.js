@@ -1,48 +1,23 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Script from 'next/script'
 
 export default function SnakeComp() {
   const router = useRouter()
+  const [gameLoaded, setGameLoaded] = useState(false)
+  const [texturesLoaded, setTexturesLoaded] = useState(false)
 
-  useEffect(() => {
-    // Load external scripts
-    const loadScript = (src) => {
-      return new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = src
-        script.async = true
-        script.onload = resolve
-        script.onerror = reject
-        document.head.appendChild(script)
-      })
-    }
-
-    const loadScripts = async () => {
-      try {
-        await loadScript('/static/games/snake/comp/js/textures.js')
-        await loadScript('/static/games/snake/comp/js/sketch.js')
-      } catch (error) {
-        console.error('Error loading scripts:', error)
-      }
-    }
-
-    loadScripts()
-
-    // Handle leaderboard button click
-    const handleLeaderboardClick = () => {
-      router.push('/snake/comp/leaderboard')
-    }
-
-    const leaderboardButton = document.getElementById('leaderboard-button')
-    if (leaderboardButton) {
-      leaderboardButton.onclick = handleLeaderboardClick
-    }
-  }, [router])
+  const handleLeaderboardClick = () => {
+    router.push('/snake/comp/leaderboard')
+  }
 
   return (
     <>
+      <Script src="/games/snake/comp/js/game.js" strategy="afterInteractive" onLoad={() => setGameLoaded(true)} />
+      {gameLoaded && <Script src="/games/snake/comp/js/textures.js" strategy="afterInteractive" onLoad={() => setTexturesLoaded(true)} />}
+      {texturesLoaded && <Script src="/games/snake/comp/js/sketch.js" strategy="afterInteractive" />}
       <div className="main">
         <div className="message-box">
           <p>This is a message box.</p>
@@ -54,7 +29,7 @@ export default function SnakeComp() {
           <canvas id="game-canvas"></canvas>
         </div>
       </div>
-      <button id="leaderboard-button" className="leaderboard-button">Leaderboard</button>
+      <button id="leaderboard-button" className="leaderboard-button" onClick={handleLeaderboardClick}>Leaderboard</button>
       
       <template id="instructions-template">
         <p>Move using WASD or the arrow keys</p>
@@ -71,7 +46,7 @@ export default function SnakeComp() {
       <template id="highscore-submit-template">
         <p id="highscore-text">You hit a highscore!</p>
         <p id="lower-highscore-text">Give us your name and a short message.</p>
-        <form method="post" action="/api/highscores" id="info-form">
+        <form id="info-form">
           <p id="bad-name-text">Name must be at least 3 characters long.</p>
           <label className="form-label" htmlFor="name">Name</label><br/>
           <input name="name" autoFocus maxLength="30" className="highscore-name-input" type="text" id="name"/><br/>
@@ -81,7 +56,6 @@ export default function SnakeComp() {
           <textarea name="message" maxLength="150" className="highscore-message-input" rows="4" cols="30"
                     id="message"></textarea><br/>
 
-          <label htmlFor="score"></label>
           <input name="score" readOnly id="score" style={{ display: 'none' }}/>
 
           <input className="submit-button" type="button" value="Submit" id="info-submit-button"/>

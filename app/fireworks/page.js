@@ -1,37 +1,15 @@
 'use client'
 
-import { useEffect } from 'react'
+import Script from 'next/script'
 
 export default function Fireworks() {
-  useEffect(() => {
-    // Load external scripts
-    const loadScript = (src) => {
-      return new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = src
-        script.async = true
-        script.onload = resolve
-        script.onerror = reject
-        document.head.appendChild(script)
-      })
-    }
-
-    const loadScripts = async () => {
-      try {
-        await loadScript('/static/p5/p5.js')
-        await loadScript('/static/p5/p5.dom.js')
-        await loadScript('/static/games/fireworks/particles.js')
-        await loadScript('/static/games/fireworks/sketch.js')
-      } catch (error) {
-        console.error('Error loading scripts:', error)
-      }
-    }
-
-    loadScripts()
-  }, [])
 
   return (
     <>
+      <Script src="/static/p5/p5.js" strategy="afterInteractive" />
+      <Script src="/static/p5/p5.dom.js" strategy="afterInteractive" />
+      <Script src="/static/games/fireworks/particles.js" strategy="afterInteractive" />
+      <Script src="/static/games/fireworks/sketch.js" strategy="afterInteractive" />
       <p id="gotoOptions" className="unselectable">Press this or scroll down for options</p>
       <div className="fluid-container mContainer">
         <div className="row mRow">

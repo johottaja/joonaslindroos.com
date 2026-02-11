@@ -1,42 +1,19 @@
 'use client'
 
-import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Script from 'next/script'
 
 export default function SnakePvP() {
   const router = useRouter()
-
-  useEffect(() => {
-    // Load external scripts
-    const loadScript = (src) => {
-      return new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = src
-        script.async = true
-        script.onload = resolve
-        script.onerror = reject
-        document.head.appendChild(script)
-      })
-    }
-
-    const loadScripts = async () => {
-      try {
-        await loadScript('/games/snake/pvp/js/landing.js')
-        await loadScript('/games/snake/pvp/js/CookieUtil.js')
-      } catch (error) {
-        console.error('Error loading scripts:', error)
-      }
-    }
-
-    loadScripts()
-  }, [])
 
   const handleJoin = (e) => {
     e.preventDefault()
     const formData = new FormData(e.target)
     const code = formData.get('code')
     if (code) {
-      router.push(`/snake/pvp/join?code=${code}`)
+      // Store code in cookie so the game page can read it
+      document.cookie = `code=${code};path=/;max-age=${30 * 24 * 60 * 60}`
+      router.push(`/snake/pvp/game?code=${code}`)
     }
   }
 
@@ -52,6 +29,8 @@ export default function SnakePvP() {
 
   return (
     <>
+      <Script src="/games/snake/pvp/js/landing.js" strategy="afterInteractive" />
+      <Script src="/games/snake/pvp/js/CookieUtil.js" strategy="afterInteractive" />
       <div className="main">
         <div className="message-box">
           <form onSubmit={handleJoin} autoComplete="off">

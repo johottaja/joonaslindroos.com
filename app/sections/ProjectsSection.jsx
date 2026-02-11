@@ -175,9 +175,9 @@ export default function ProjectsSection() {
 
         cards.forEach((card, index) => {
             // Unique initial state per card (random X, from \"horizon\" below viewport)
-            gsap.set(card, { 
-                scale: 0.4, 
+            gsap.set(card, {
                 z: -2000, 
+                scale: 0.4, 
                 opacity: 0,
                 rotateX: 20,
                 rotateY: 45,
@@ -246,16 +246,16 @@ export default function ProjectsSection() {
             <img 
                 ref={manRef}
                 src="/images/sysiphus_projects/man.png" 
-                className="fixed inset-0 w-full h-screen object-cover -z-70 saturate-60 scale-110 pointer-events-none"
+                className="fixed inset-0 w-full h-screen object-cover -z-70 saturate-60 scale-110 pointer-events-none select-none"
             />
             <img 
                 ref={mountainsRef}
                 src="/images/sysiphus_projects/mountains.png" 
-                className="fixed inset-0 w-full h-screen object-cover -z-79 saturate-60 scale-110 translate-x-[5%]" 
+                className="fixed inset-0 w-full h-screen object-cover -z-79 saturate-60 scale-110 translate-x-[5%] pointer-events-none select-none" 
             />
             <img 
                 src="/images/sysiphus_projects/background_filled.png" 
-                className="fixed inset-0 w-full h-screen object-cover -z-80 saturate-60" 
+                className="fixed inset-0 w-full h-screen object-cover -z-80 saturate-60 pointer-events-none select-none" 
             />
             
             {/* Sticky container for cards */}
@@ -274,7 +274,7 @@ export default function ProjectsSection() {
 
                 {/* Cards container with perspective */}
                 <div 
-                    className="relative w-full max-w-4xl h-64 md:h-80"
+                    className="relative w-full max-w-4xl h-64 md:h-80 pointer-events-none -z-72"
                     style={{ transformStyle: 'preserve-3d' }}
                 >
                     {projects.map((project, index) => {
@@ -288,7 +288,7 @@ export default function ProjectsSection() {
                                 key={project.id}
                                 ref={el => cardRefs.current[index] = el}
                                 {...cardProps}
-                                className="absolute inset-0 mx-auto w-72 md:w-96 h-48 md:h-64 rounded-xl overflow-hidden shadow-2xl cursor-pointer group"
+                                className="absolute inset-0 mx-auto w-72 md:w-96 h-48 md:h-64 rounded-xl overflow-hidden shadow-2xl cursor-pointer group pointer-events-auto"
                                 style={{ 
                                     transformStyle: 'preserve-3d',
                                 }}

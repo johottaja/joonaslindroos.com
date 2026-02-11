@@ -1,39 +1,18 @@
 'use client'
 
-import { useEffect } from 'react'
+import Script from 'next/script'
 
 export default function TextSpread() {
-  useEffect(() => {
-    // Load external scripts
-    const loadScript = (src) => {
-      return new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = src
-        script.async = true
-        script.onload = resolve
-        script.onerror = reject
-        document.head.appendChild(script)
-      })
-    }
-
-    const loadScripts = async () => {
-      try {
-        await loadScript('/static/opentype/opentype.js')
-        await loadScript('/static/games/textspread/algorithms.js')
-        await loadScript('/static/games/textspread/spreadfunctions.js')
-        await loadScript('/static/games/textspread/particle.js')
-        await loadScript('/static/games/textspread/textanimation.js')
-        await loadScript('/static/games/textspread/sketch.js')
-      } catch (error) {
-        console.error('Error loading scripts:', error)
-      }
-    }
-
-    loadScripts()
-  }, [])
 
   return (
     <>
+      <Script src="/opentype/opentype.js" strategy="afterInteractive" />
+      <Script src="/games/textspread/algorithms.js" strategy="afterInteractive" />
+      <Script src="/games/textspread/spreadfunctions.js" strategy="afterInteractive" />
+      <Script src="/games/textspread/particle.js" strategy="afterInteractive" />
+      <Script src="/games/textspread/textanimation.js" strategy="afterInteractive" />
+      <Script src="/games/textspread/sketch.js" strategy="afterInteractive" />
+
       <p id="gotoOptions" className="unselectable">Press this or scroll down for options.</p>
       <div className="fluid-container mContainer">
         <div className="row mRow">
@@ -55,7 +34,7 @@ export default function TextSpread() {
                 <div className="form-group col-md-6 mCol">
                   <label className="form-label" htmlFor="colorscheme">Color Scheme</label>
                   <select id="colorscheme" className="form-control">
-                    <option selected>Cartoony</option>
+                    <option defaultChecked>Cartoony</option>
                     <option>Crystal</option>
                     <option>Rainbow</option>
                     <option>Nature</option>
@@ -65,7 +44,7 @@ export default function TextSpread() {
                 <div className="form-group col-md-6 mCol">
                   <label className="form-label" htmlFor="spreadfunction">Spread Points</label>
                   <select id="spreadfunction" className="form-control">
-                    <option selected>Sides</option>
+                    <option defaultChecked>Sides</option>
                     <option>Spiral</option>
                     <option>Double Spiral</option>
                     <option>Bottom</option>
@@ -80,7 +59,7 @@ export default function TextSpread() {
                 <div className="form-group col-md-6 mCol">
                   <label className="form-label" htmlFor="style">Style</label>
                   <select id="style" className="form-control">
-                    <option selected>Normal</option>
+                    <option defaultChecked>Normal</option>
                     <option>Straight</option>
                     <option>Wavey</option>
                     <option>Orderly</option>

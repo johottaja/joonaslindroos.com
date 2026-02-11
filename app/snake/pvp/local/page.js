@@ -1,37 +1,19 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useState } from 'react'
+import Script from 'next/script'
 
 export default function SnakePvPLocal() {
-  useEffect(() => {
-    // Load external scripts
-    const loadScript = (src) => {
-      return new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = src
-        script.async = true
-        script.onload = resolve
-        script.onerror = reject
-        document.head.appendChild(script)
-      })
-    }
-
-    const loadScripts = async () => {
-      try {
-        await loadScript('/static/games/snake/pvp/local/js/config.js')
-        await loadScript('/static/games/snake/pvp/local/js/snake.js')
-        await loadScript('/static/games/snake/pvp/local/js/game.js')
-        await loadScript('/static/games/snake/pvp/local/js/sketch.js')
-      } catch (error) {
-        console.error('Error loading scripts:', error)
-      }
-    }
-
-    loadScripts()
-  }, [])
+  const [configLoaded, setConfigLoaded] = useState(false)
+  const [snakeLoaded, setSnakeLoaded] = useState(false)
+  const [gameLoaded, setGameLoaded] = useState(false)
 
   return (
     <>
+      <Script src="/games/snake/pvp/local/js/config.js" strategy="afterInteractive" onLoad={() => setConfigLoaded(true)} />
+      {configLoaded && <Script src="/games/snake/pvp/local/js/snake.js" strategy="afterInteractive" onLoad={() => setSnakeLoaded(true)} />}
+      {snakeLoaded && <Script src="/games/snake/pvp/local/js/game.js" strategy="afterInteractive" onLoad={() => setGameLoaded(true)} />}
+      {gameLoaded && <Script src="/games/snake/pvp/local/js/sketch.js" strategy="afterInteractive" />}
       <div className="main">
         <div className="message-box">
           <p>This is a message box.</p>
@@ -59,7 +41,7 @@ export default function SnakePvPLocal() {
       
       <template id="game-over-template">
         <p id="game-over-text">Game over!</p>
-        <button className="restart-button" type="submit">Restart</button>
+        <button className="restart-button" onClick={() => window.location.reload()}>Restart</button>
       </template>
     </>
   )

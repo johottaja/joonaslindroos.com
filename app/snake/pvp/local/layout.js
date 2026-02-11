@@ -6,9 +6,9 @@ export const metadata = {
 export default function SnakePvPLocalLayout({ children }) {
   return (
     <>
-      <link rel="stylesheet" type="text/css" href="/static/games/snake/pvp/local/css/game.css" />
-      <link rel="stylesheet" type="text/css" href="/static/games/snake/style.css" />
-      <link rel="stylesheet" type="text/css" href="/static/res/fonts/JosefinSans.css" />
+      <link rel="stylesheet" type="text/css" href="/games/snake/pvp/local/css/game.css" />
+      <link rel="stylesheet" type="text/css" href="/games/snake/style.css" />
+      <link rel="stylesheet" type="text/css" href="/fonts/JosefinSans.css" />
       {children}
     </>
   )

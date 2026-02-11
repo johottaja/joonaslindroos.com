@@ -4,18 +4,42 @@ const messageBox = document.querySelector(".message-box");
 const canvas = document.getElementById("game-canvas");
 const context = canvas.getContext("2d");
 
-const socket = io(window.location.host ,{
-    path: "/snake/comp/socket/"
-});
-
-let Config = null;
+let game = null;
 let textures = null;
+
+let lastTime = 0;
+let accumulator = 0;
+
+function run(time = performance.now()) {
+    const deltaTime = time - lastTime;
+    lastTime = time;
+
+    if (game.running) {
+        accumulator += deltaTime;
+        if (accumulator >= CompConfig.frameTime) {
+            while (accumulator >= CompConfig.frameTime && game.running) {
+                accumulator -= CompConfig.frameTime;
+                game.update();
+            }
+            // Render current state
+            const state = game.getState();
+            textures.drawBackground();
+            textures.drawApple(state.apple);
+            textures.drawSnake(state.snake);
+            scoreCounter.textContent = state.snake.length;
+        }
+    }
+
+    if (game.running) {
+        requestAnimationFrame(run);
+    }
+}
 
 function gameOver(score) {
     setMessageBoxContents("#game-over-template");
     messageBox.querySelector("#game-over-score-display")
         .textContent = `Final score: ${score}`;
-    messageBox.querySelector(".restart-button").onclick = function() {
+    messageBox.querySelector(".restart-button").onclick = function () {
         window.location.reload();
     };
     showMessageBox();
@@ -24,10 +48,13 @@ function gameOver(score) {
 function getPlayerInfo(score) {
     setMessageBoxContents("#highscore-submit-template");
     messageBox.querySelector("#score").value = score;
+    messageBox.querySelector("#info-submit-button").onclick = function () {
+        submitInfo(score);
+    };
     showMessageBox();
 }
 
-function submitInfo() {
+async function submitInfo(score) {
     const infoForm = document.getElementById("info-form");
     const name = infoForm.elements["name"].value;
     const message = infoForm.elements["message"].value;
@@ -48,8 +75,16 @@ function submitInfo() {
     }
 
     if (!errors) {
-        socket.emit("player_info", { name: name, message: message });
-        window.location.href = "/snake/comp/leaderboard"
+        try {
+            await fetch('/api/highscores', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name, message: message, score: String(score) })
+            });
+        } catch (err) {
+            console.error("Failed to submit highscore:", err);
+        }
+        window.location.href = "/snake/comp/leaderboard";
     }
 }
 
@@ -67,79 +102,80 @@ function setMessageBoxContents(templateID) {
     messageBox.appendChild(templateContents.content.cloneNode(true));
 }
 
-socket.on("game_config", config => {
-    Config = JSON.parse(config);
+function initCanvas() {
+    let tileSize = Math.floor(window.innerHeight / 2 / CompConfig.tileCount);
+    CompConfig.tileSize = tileSize % 2 === 0 ? tileSize : tileSize + 1;
 
-    let tileSize = Math.floor(window.innerHeight / 2 / 15);
-    Config.tileSize = tileSize % 2 === 0 ? tileSize : tileSize + 1;
-
-    if (Config.tileSize * Config.tileCount >= window.innerWidth - window.innerWidth / 10) {
-        tileSize = Math.floor(window.innerWidth / 10 * 9 / 15);
-        Config.tileSize = tileSize % 2 === 0 ? tileSize : tileSize + 1;
+    if (CompConfig.tileSize * CompConfig.tileCount >= window.innerWidth - window.innerWidth / 10) {
+        tileSize = Math.floor(window.innerWidth / 10 * 9 / CompConfig.tileCount);
+        CompConfig.tileSize = tileSize % 2 === 0 ? tileSize : tileSize + 1;
     }
 
-    console.log(Config.tileSize);
+    canvas.width = CompConfig.tileCount * CompConfig.tileSize;
+    canvas.height = CompConfig.tileCount * CompConfig.tileSize;
 
-    canvas.width = Config.tileCount * Config.tileSize;
-    canvas.height = Config.tileCount * Config.tileSize;
-
-    textures = createTextures(Config);
+    textures = createTextures(CompConfig);
     textures.setContext(context);
-
     textures.drawBackground();
-    socket.emit("get_game_state");
-});
+}
 
-socket.on("game_state", state => {
-    const gameState = JSON.parse(state);
-    textures.drawBackground()
-    textures.drawApple(gameState.apple);
-    textures.drawSnake(gameState.snake);
-    scoreCounter.textContent = gameState.snake.length;
-});
-
-socket.on("game_over", gameOverStatus => {
-    if (gameOverStatus.podium) {
-        getPlayerInfo(gameOverStatus.score);
-    } else {
-        gameOver(gameOverStatus.score);
-    }
-});
-
-socket.on("display_message", message => {
-    if (message) {
-        showMessageBox();
-        setMessageBoxContents("#message-display-template");
-        document.querySelector("#message-display").innerHTML = message;
-    } else {
-        hideMessageBox();
-    }
-});
 function start() {
-    socket.emit("get_game_config");
+    game = new CompetitiveGame({
+        onGameState: function (state) {
+            textures.drawBackground();
+            textures.drawApple(state.apple);
+            textures.drawSnake(state.snake);
+            scoreCounter.textContent = state.snake.length;
+        },
+        onGameOver: function (gameOverStatus) {
+            if (gameOverStatus.podium) {
+                getPlayerInfo(gameOverStatus.score);
+            } else {
+                gameOver(gameOverStatus.score);
+            }
+        },
+        onDisplayMessage: function (message) {
+            if (message) {
+                showMessageBox();
+                setMessageBoxContents("#message-display-template");
+                document.querySelector("#message-display").innerHTML = message;
+            } else {
+                hideMessageBox();
+                // Game is starting, begin the game loop
+                lastTime = performance.now();
+                accumulator = 0;
+                run();
+            }
+        }
+    });
+
+    initCanvas();
+
+    // Draw initial state
+    const state = game.getState();
+    textures.drawApple(state.apple);
+    textures.drawSnake(state.snake);
+
     window.addEventListener("keydown", e => {
-        socket.emit("game_input", e.code);
-    })
+        game.handleInput(e.code);
+    });
+
     setMessageBoxContents("#instructions-template");
     showMessageBox();
 }
 
-window.onload = start;
-window.onresize = function() {
-    let tileSize = Math.floor(window.innerHeight / 2 / 15);
-    Config.tileSize = tileSize % 2 === 0 ? tileSize : tileSize + 1;
-
-    if (Config.tileSize * Config.tileCount >= window.innerWidth - window.innerWidth / 10) {
-        tileSize = Math.floor(window.innerWidth / 10 * 9 / 15);
-        Config.tileSize = tileSize % 2 === 0 ? tileSize : tileSize + 1;
-    }
-
-    canvas.width = Config.tileCount * Config.tileSize;
-    canvas.height = Config.tileCount * Config.tileSize;
-
-    textures = createTextures(Config);
-    textures.setContext(context);
-
-    textures.drawBackground();
-    socket.emit("get_game_state");
+if (document.readyState === 'complete') {
+    start();
+} else {
+    window.addEventListener('load', start);
 }
+
+window.onresize = function () {
+    if (!textures) return;
+    initCanvas();
+    if (game) {
+        const state = game.getState();
+        textures.drawApple(state.apple);
+        textures.drawSnake(state.snake);
+    }
+};

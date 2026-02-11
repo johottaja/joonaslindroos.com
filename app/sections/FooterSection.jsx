@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { useWindowSize, useDebounce } from "@uidotdev/usehooks"
 import { useRef, useEffect, useState } from 'react'
+import Script from 'next/script'
 import gsap from 'gsap'
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin'
 
@@ -27,38 +28,6 @@ export default function FooterSection() {
   const mountains1Y = useTransform(scrollYProgress, [0, 1], [200, 0])
   const groundY = useTransform(scrollYProgress, [0, 1], [450, 0])
   const textY = useTransform(scrollYProgress, [0, 1], [0, -100])
-
-  // Load reCAPTCHA script when modal opens
-  useEffect(() => {
-    if (!isContactModalOpen) return
-    
-    const loadScript = (src) => {
-      return new Promise((resolve, reject) => {
-        if (document.querySelector(`script[src="${src}"]`)) {
-          resolve()
-          return
-        }
-        const script = document.createElement('script')
-        script.src = src
-        script.async = true
-        script.onload = resolve
-        script.onerror = reject
-        document.head.appendChild(script)
-      })
-    }
-
-    const loadScripts = async () => {
-      try {
-        if (process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY) {
-          await loadScript('https://www.google.com/recaptcha/api.js')
-        }
-      } catch (error) {
-        console.error('Error loading scripts:', error)
-      }
-    }
-
-    loadScripts()
-  }, [isContactModalOpen])
 
   useEffect(() => {
     const letters = lettersRef.current.filter(Boolean)
@@ -182,7 +151,11 @@ export default function FooterSection() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="w-full h-[300vh] relative">
+    <>
+      {isContactModalOpen && process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
+        <Script src="https://www.google.com/recaptcha/api.js" strategy="lazyOnload" />
+      )}
+      <section ref={sectionRef} className="w-full h-[300vh] relative">
         <div className="w-full h-screen sticky top-0 overflow-hidden">
           <img 
             src="/images/sysiphus_footer/sky.png" 
@@ -404,6 +377,7 @@ export default function FooterSection() {
             </motion.div>
           )}
         </AnimatePresence>
-    </section>
+      </section>
+    </>
   )
 }

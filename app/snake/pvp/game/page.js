@@ -1,36 +1,19 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useState } from 'react'
+import Script from 'next/script'
 
 export default function SnakePvPGame() {
-  useEffect(() => {
-    // Load external scripts
-    const loadScript = (src) => {
-      return new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = src
-        script.async = true
-        script.onload = resolve
-        script.onerror = reject
-        document.head.appendChild(script)
-      })
-    }
-
-    const loadScripts = async () => {
-      try {
-        await loadScript('/static/games/snake/pvp/js/textures.js')
-        await loadScript('/static/games/snake/pvp/js/sketch.js')
-        await loadScript('/static/games/snake/pvp/js/CookieUtil.js')
-      } catch (error) {
-        console.error('Error loading scripts:', error)
-      }
-    }
-
-    loadScripts()
-  }, [])
+  const [socketLoaded, setSocketLoaded] = useState(false)
+  const [cookieLoaded, setCookieLoaded] = useState(false)
+  const [texturesLoaded, setTexturesLoaded] = useState(false)
 
   return (
     <>
+      <Script src="/snake/pvp/socket/socket.io.js" strategy="afterInteractive" onLoad={() => setSocketLoaded(true)} />
+      {socketLoaded && <Script src="/games/snake/pvp/js/CookieUtil.js" strategy="afterInteractive" onLoad={() => setCookieLoaded(true)} />}
+      {cookieLoaded && <Script src="/games/snake/pvp/js/textures.js" strategy="afterInteractive" onLoad={() => setTexturesLoaded(true)} />}
+      {texturesLoaded && <Script src="/games/snake/pvp/js/sketch.js" strategy="afterInteractive" />}
       <div className="main">
         <div className="message-box">
           <p>This is a message box.</p>
@@ -59,7 +42,7 @@ export default function SnakePvPGame() {
       
       <template id="game-over-template">
         <p id="game-over-text">Game over!</p>
-        <button className="restart-button">Restart</button>
+        <button className="restart-button" onClick={() => window.location.reload()}>Restart</button>
       </template>
     </>
   )

@@ -108,7 +108,11 @@ function start() {
 
 }
 
-window.onload = start;
+if (document.readyState === 'complete') {
+    start();
+} else {
+    window.addEventListener('load', start);
+}
 window.onresize = function() {
     let tileSize = Math.floor(window.innerHeight / 5 * 3 / 20);
     Config.tileSize = tileSize % 2 === 0 ? tileSize : tileSize + 1;

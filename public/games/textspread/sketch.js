@@ -14,7 +14,7 @@ let mouseDown = false;
 window.onload = function() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    opentype.load("../res/fonts/Avenir.otf", function(err, f) {
+    opentype.load("/fonts/Avenir.otf", function(err, f) {
         if (err) {
             console.log("error");
         } else {

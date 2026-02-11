@@ -96,10 +96,13 @@ socket.on("redirect", () => {
 });
 
 function start() {
-    const code = CookieUtil.get("code");
+    const code = CookieUtil.get("code") || new URLSearchParams(window.location.search).get("code");
     if (!code) {
         window.location = "/snake/pvp";
+        return;
     }
+    // Store code in cookie for future use
+    CookieUtil.set("code", code, 30);
     socket.emit("join_game", code);
     scoreCounter.textContent = `Code: ${code}`;
     window.addEventListener("keydown", (e) => {
@@ -108,7 +111,11 @@ function start() {
     socket.emit("get_game_config");
 }
 
-window.onload = start;
+if (document.readyState === 'complete') {
+    start();
+} else {
+    window.addEventListener('load', start);
+}
 window.onresize = function() {
     let tileSize = Math.floor(window.innerHeight / 5 * 3 / 20);
     Config.tileSize = tileSize % 2 === 0 ? tileSize : tileSize + 1;

@@ -11,6 +11,9 @@ export default function SnakePvPCreate() {
     // Generate a random game code
     const code = Math.random().toString(36).substring(2, 8).toUpperCase()
     setGameCode(code)
+
+    // Store code in cookie so the game page can read it
+    document.cookie = `code=${code};path=/;max-age=${30 * 24 * 60 * 60}`
     
     // Redirect to game with the code
     setTimeout(() => {

@@ -6,9 +6,10 @@ export const metadata = {
 export default function TextSpreadLayout({ children }) {
   return (
     <>
-      <link rel="stylesheet" href="/static/games/textspread/style.css" />
-      <link rel="stylesheet" type="text/css" href="/static/res/fonts/JosefinSans.css" />
-      <link rel="stylesheet" type="text/css" href="/static/res/fonts/Avenir.css" />
+      <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+      <link rel="stylesheet" href="/games/textspread/style.css" />
+      <link rel="stylesheet" type="text/css" href="/fonts/JosefinSans.css" />
+      <link rel="stylesheet" type="text/css" href="/fonts/Avenir.css" />
       {children}
     </>
   )
