@@ -22,15 +22,31 @@ export default function SnakePvPCreate() {
   }, [router])
 
   return (
-    <>
-      <div className="main">
-        <div className="message-box">
-          <h2>Creating Game...</h2>
-          <p>Your game code is: <strong>{gameCode}</strong></p>
-          <p>Share this code with your opponent.</p>
-          <p>Redirecting to game...</p>
+    <div className="main">
+      <div className="message-box" style={{ display: 'block' }}>
+        <h2 style={{ marginBottom: '30px', fontSize: '2em' }}>Creating Game...</h2>
+        <div style={{ 
+          backgroundColor: 'rgba(0, 0, 0, 0.3)', 
+          padding: '20px', 
+          borderRadius: '10px',
+          marginBottom: '20px'
+        }}>
+          <p style={{ fontSize: '0.9em', marginBottom: '10px' }}>Your game code is:</p>
+          <p style={{ 
+            fontSize: '2.5em', 
+            fontWeight: 'bold', 
+            letterSpacing: '0.2em',
+            color: '#4CAF50',
+            margin: '10px 0'
+          }}>
+            {gameCode}
+          </p>
         </div>
+        <p style={{ fontSize: '1.1em', marginBottom: '10px' }}>
+          Share this code with your opponent.
+        </p>
+        <p style={{ opacity: 0.7 }}>Redirecting to game...</p>
       </div>
-    </>
+    </div>
   )
 }

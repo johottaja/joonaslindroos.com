@@ -27,10 +27,26 @@ function JoinContent() {
 
   return (
     <div className="main">
-      <div className="message-box">
-        <h2>Joining Game...</h2>
-        <p>Game code: <strong>{gameCode}</strong></p>
-        <p>Connecting to game...</p>
+      <div className="message-box" style={{ display: 'block' }}>
+        <h2 style={{ marginBottom: '30px', fontSize: '2em' }}>Joining Game...</h2>
+        <div style={{ 
+          backgroundColor: 'rgba(0, 0, 0, 0.3)', 
+          padding: '20px', 
+          borderRadius: '10px',
+          marginBottom: '20px'
+        }}>
+          <p style={{ fontSize: '0.9em', marginBottom: '10px' }}>Game code:</p>
+          <p style={{ 
+            fontSize: '2.5em', 
+            fontWeight: 'bold', 
+            letterSpacing: '0.2em',
+            color: '#2196F3',
+            margin: '10px 0'
+          }}>
+            {gameCode}
+          </p>
+        </div>
+        <p style={{ opacity: 0.7 }}>Connecting to game...</p>
       </div>
     </div>
   )

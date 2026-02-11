@@ -1,6 +1,3 @@
-const scoreCounter = document.querySelector(".score-counter"); //TODO: Color scheme??
-const messageBox = document.querySelector(".message-box");
-
 const canvas = document.getElementById("game-canvas");
 const context = canvas.getContext("2d");
 
@@ -11,26 +8,6 @@ let player = 1;
 const socket = io(window.location.host, {
     path: "/snake/pvp/socket/"
 });
-
-function gameOver() {
-    setMessageBoxContents("#game-over-template");
-    //document.querySelector("#game-over-text").textContent = game.gameEndText;
-    showMessageBox();
-}
-
-function hideMessageBox() {
-    messageBox.style.display = "none";
-}
-
-function showMessageBox() {
-    messageBox.style.display = "block";
-}
-
-function setMessageBoxContents(templateID) {
-    let templateContents = document.querySelector(templateID);
-    messageBox.innerHTML = "";
-    messageBox.appendChild(templateContents.content.cloneNode(true));
-}
 
 socket.on("game_config", message => {
     Config = JSON.parse(message);
@@ -61,34 +38,40 @@ socket.on("game_state", gameStateRaw => {
 
 socket.on("display_message", message => {
     if (message) {
-        showMessageBox();
         if (message === "instructionsP1") {
             player = 1
-            setMessageBoxContents("#instructions-template");
-            document.querySelector("#instructions-sideteller").textContent = "You are purple";
+            if (window.showInstructions) {
+                window.showInstructions(1, "You are purple");
+            }
             return;
         } else if (message === "instructionsP2") {
             player = 2;
-            setMessageBoxContents("#instructions-template");
-            document.querySelector("#instructions-sideteller").textContent = "You are yellow";
+            if (window.showInstructions) {
+                window.showInstructions(2, "You are yellow");
+            }
             return;
         }
-        setMessageBoxContents("#message-display-template");
-        document.querySelector("#message-display").innerHTML = message;
+        if (window.showMessage) {
+            window.showMessage(message);
+        }
     } else {
-        hideMessageBox();
+        if (window.hideMessageBox) {
+            window.hideMessageBox();
+        }
     }
 });
 
 socket.on("game_over", message => {
-    setMessageBoxContents("#game-over-template");
-    document.querySelector("#game-over-text").textContent = message;
-    showMessageBox();
+    if (window.showGameOver) {
+        window.showGameOver(message);
+    }
 });
 
 socket.on("update_length", lengths => {
     lengths = JSON.parse(lengths);
-    scoreCounter.textContent = `${lengths.me} - ${lengths.other}`;
+    if (window.updateScore) {
+        window.updateScore(`${lengths.me} - ${lengths.other}`);
+    }
 });
 
 socket.on("redirect", () => {
@@ -104,7 +87,9 @@ function start() {
     // Store code in cookie for future use
     CookieUtil.set("code", code, 30);
     socket.emit("join_game", code);
-    scoreCounter.textContent = `Code: ${code}`;
+    if (window.updateScore) {
+        window.updateScore(`Code: ${code}`);
+    }
     window.addEventListener("keydown", (e) => {
         socket.emit("game_input", e.code);
     });

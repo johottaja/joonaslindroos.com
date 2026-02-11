@@ -1,6 +1,3 @@
-const scoreCounter = document.querySelector(".score-counter");
-const messageBox = document.querySelector(".message-box");
-
 const canvas = document.getElementById("game-canvas");
 const context = canvas.getContext("2d");
 
@@ -26,80 +23,15 @@ function run(time = performance.now()) {
             textures.drawBackground();
             textures.drawApple(state.apple);
             textures.drawSnake(state.snake);
-            scoreCounter.textContent = state.snake.length;
+            if (window.updateScore) {
+                window.updateScore(state.snake.length);
+            }
         }
     }
 
     if (game.running) {
         requestAnimationFrame(run);
     }
-}
-
-function gameOver(score) {
-    setMessageBoxContents("#game-over-template");
-    messageBox.querySelector("#game-over-score-display")
-        .textContent = `Final score: ${score}`;
-    messageBox.querySelector(".restart-button").onclick = function () {
-        window.location.reload();
-    };
-    showMessageBox();
-}
-
-function getPlayerInfo(score) {
-    setMessageBoxContents("#highscore-submit-template");
-    messageBox.querySelector("#score").value = score;
-    messageBox.querySelector("#info-submit-button").onclick = function () {
-        submitInfo(score);
-    };
-    showMessageBox();
-}
-
-async function submitInfo(score) {
-    const infoForm = document.getElementById("info-form");
-    const name = infoForm.elements["name"].value;
-    const message = infoForm.elements["message"].value;
-    const badName = document.getElementById("bad-name-text");
-    const badMessage = document.getElementById("bad-message-text");
-
-    badName.style.display = "none";
-    badMessage.style.display = "none";
-
-    let errors = false;
-    if (name.length < 3) {
-        badName.style.display = "block";
-        errors = true;
-    }
-    if (message.length < 5) {
-        badMessage.style.display = "block";
-        errors = true;
-    }
-
-    if (!errors) {
-        try {
-            await fetch('/api/highscores', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: name, message: message, score: String(score) })
-            });
-        } catch (err) {
-            console.error("Failed to submit highscore:", err);
-        }
-        window.location.href = "/snake/comp/leaderboard";
-    }
-}
-
-function hideMessageBox() {
-    messageBox.style.display = "none";
-}
-
-function showMessageBox() {
-    messageBox.style.display = "block";
-}
-
-function setMessageBoxContents(templateID) {
-    let templateContents = document.querySelector(templateID);
-    messageBox.innerHTML = "";
-    messageBox.appendChild(templateContents.content.cloneNode(true));
 }
 
 function initCanvas() {
@@ -125,22 +57,24 @@ function start() {
             textures.drawBackground();
             textures.drawApple(state.apple);
             textures.drawSnake(state.snake);
-            scoreCounter.textContent = state.snake.length;
+            if (window.updateScore) {
+                window.updateScore(state.snake.length);
+            }
         },
         onGameOver: function (gameOverStatus) {
-            if (gameOverStatus.podium) {
-                getPlayerInfo(gameOverStatus.score);
-            } else {
-                gameOver(gameOverStatus.score);
+            if (window.showGameOver) {
+                window.showGameOver(gameOverStatus);
             }
         },
         onDisplayMessage: function (message) {
             if (message) {
-                showMessageBox();
-                setMessageBoxContents("#message-display-template");
-                document.querySelector("#message-display").innerHTML = message;
+                if (window.showCountdown) {
+                    window.showCountdown(message);
+                }
             } else {
-                hideMessageBox();
+                if (window.startGame) {
+                    window.startGame();
+                }
                 // Game is starting, begin the game loop
                 lastTime = performance.now();
                 accumulator = 0;
@@ -160,8 +94,9 @@ function start() {
         game.handleInput(e.code);
     });
 
-    setMessageBoxContents("#instructions-template");
-    showMessageBox();
+    if (window.showInstructions) {
+        window.showInstructions();
+    }
 }
 
 if (document.readyState === 'complete') {
