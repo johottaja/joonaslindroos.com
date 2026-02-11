@@ -229,7 +229,8 @@ export default function FooterSection() {
           ))}
         </div>
         <div className="w-full absolute bottom-4 left-0 font-sans flex items-center justify-center gap-4">
-          <h2 className="text-blue-500 text-lg font-bold text-shadow-lg py-1.5 px-4 border-1 border-neutral-500 rounded-full backdrop-blur-xs cursor-pointer hover:scale-110 transition-all duration-300">
+          <h2 className="text-blue-500 text-lg font-bold text-shadow-lg py-1.5 px-4 border-1 border-neutral-500 rounded-full backdrop-blur-xs cursor-pointer hover:scale-110 transition-all duration-300"
+              href="https://www.linkedin.com/in/joonas-lindroos-917280230/">
             Linked<span className="text-white bg-blue-500 p-0.5 ml-0.5 rounded-sm">In</span>
           </h2>
           <h2 
@@ -238,7 +239,8 @@ export default function FooterSection() {
           >
             Contact Me
           </h2>
-          <h2 className="text-blue-500 text-lg font-bold text-shadow-lg py-1.5 px-4 border-1 border-neutral-500 rounded-full backdrop-blur-xs cursor-pointer hover:scale-110 transition-all duration-300">
+          <h2 className="text-blue-500 text-lg font-bold text-shadow-lg py-1.5 px-4 border-1 border-neutral-500 rounded-full backdrop-blur-xs cursor-pointer hover:scale-110 transition-all duration-300"
+              href="https://github.com/johottaja">
             <img src="/images/github.svg" alt="Github" className="h-7" />
           </h2>
         </div>

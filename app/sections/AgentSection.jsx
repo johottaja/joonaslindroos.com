@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
-import { Send } from 'lucide-react'
+import { Send, Loader2 } from 'lucide-react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
@@ -15,46 +15,6 @@ export default function AgentSection() {
       content:
         "Hi! I'm an AI agent that knows about Joonas' GitHub projects. Ask me anything about his work or specific repos.",
     },
-    {
-      role: 'user',
-      content: "What programming languages does Joonas use most on GitHub?",
-    },
-    {
-      role: 'assistant',
-      content: "Joonas primarily uses JavaScript, TypeScript, and Python in his public repositories.",
-    },
-    {
-      role: 'user',
-      content: "Can you list some of Joonas' most popular repositories?",
-    },
-    {
-      role: 'assistant',
-      content: "Certainly! Some popular repos include 'cool-app', 'openai-integration', and 'portfolio-site'.",
-    },
-    {
-      role: 'user',
-      content: "Does he have any projects related to machine learning?",
-    },
-    {
-      role: 'assistant',
-      content: "Yes, Joonas has a project called 'ml-experiments' where he explores different machine learning algorithms.",
-    },
-    {
-      role: 'user',
-      content: "How often does Joonas contribute to his repos?",
-    },
-    {
-      role: 'assistant',
-      content: "Joonas is quite active and typically pushes updates several times a month.",
-    },
-    {
-      role: 'user',
-      content: "Is there a way to contact Joonas from his repos?",
-    },
-    {
-      role: 'assistant',
-      content: "Most repositories include a README with his contact info or links to social profiles.",
-    },
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -63,6 +23,17 @@ export default function AgentSection() {
   const scrollContainerRef = useRef(null)
   const messageRefs = useRef([])
   const messageWrapperRef = useRef(null)
+
+  // Auto-scroll to bottom when new messages are added
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (!container) return
+    
+    container.scrollTo({
+      top: container.scrollHeight,
+      behavior: 'smooth'
+    })
+  }, [messages])
 
   // Update message scaling based on scroll position
   useEffect(() => {
@@ -87,11 +58,14 @@ export default function AgentSection() {
         // Scale from 0.3 at the top to 1.0 at the bottom
         const scale = Math.max(0.3, Math.min(1, 0.3 + relativePosition * 0.7))
         
-        // Alternate rotation direction based on index
-        // Even index: rotate right (positive), Odd index: rotate left (negative)
-        const direction = idx % 2 === 0 ? 1 : -1
+        // Direction based on message role
+        // user: rotate right (positive), assistant: rotate left (negative)
+        const role = messageEl.dataset.role
+        const direction = role === 'user' ? -1 : 1
         const rotateY = (1 - relativePosition) * 20 * -direction
-        const translateX = (1 - relativePosition) * 350 * -direction
+        // Scale translateX based on viewport width, clamped between 150px and 450px
+        const baseTranslateX = Math.min(Math.max(window.innerWidth * 0.25, 100), 250)
+        const translateX = (1 - relativePosition) * baseTranslateX * -direction
         
         gsap.to(messageEl, {
           scale: scale,
@@ -139,6 +113,7 @@ export default function AgentSection() {
         },
         body: JSON.stringify({
           message: input.trim(),
+          instructions: 'Please format your response as short, concise sentences. Separate each sentence or thought with a double newline (\\n\\n). Keep each part brief and focused. When listing projects, separate each project with a double newline also.',
         }),
       })
 
@@ -169,10 +144,10 @@ export default function AgentSection() {
 
   return (
     <section className="py-50 bg-neutral-950 w-full tracking-wide font-sans min-h-screen overflow-hidden relative">
-      <div className="max-w-5xl mx-auto rounded-lg shadow-lg p-3 sm:p-4 flex flex-row">
-        <div className="flex flex-col w-1/2 justify-center p-4 relative mr-10">
+      <div className="max-w-5xl mx-auto rounded-lg shadow-lg p-3 sm:p-4 flex md:flex-row flex-col-reverse">
+        <div className="flex flex-col-reverse md:flex-col md:w-1/2 w-full justify-center p-4 relative mr-10">
         
-        <h2 className="text-2xl font-bold mb-8 text-center">Ask My AI agent about my projects</h2>
+        <h2 className="text-2xl font-bold my-8 text-center">Ask My AI agent about my projects</h2>
 
         <form onSubmit={handleSubmit} className="space-y-2 flex flex-col">
           <label htmlFor="agent-input" className="sr-only">
@@ -185,9 +160,15 @@ export default function AgentSection() {
               id="agent-input"
               rows={3}
               className="flex-1 z-30 bg-transparent border-none overscroll-y-contain outline-none resize-none text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-0"
-              placeholder="Ask about my public projects and their contents..."
+              placeholder='Try saying "Tell me about his projects" or ask about a specific project...'
               value={input}
               onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault()
+                  handleSubmit(e)
+                }
+              }}
               disabled={isLoading}
             />
             <button
@@ -203,7 +184,7 @@ export default function AgentSection() {
           {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
         </form>
         </div>
-        <div ref={messageWrapperRef} className="relative w-1/2 h-64 border-b border-white" 
+        <div ref={messageWrapperRef} className="relative md:w-1/2 w-full h-64 border-b border-white" 
         style={{ perspective: '1000px', 
           background: 'linear-gradient(0deg, #333, #0a0a0a0 100%)',
          }}>
@@ -215,40 +196,54 @@ export default function AgentSection() {
           style={{ transformStyle: 'preserve-3d' }}
         >
           <div className="h-80"></div>
-          {messages.map((message, idx) => (
-            <div 
-              key={idx} 
-              ref={(el) => (messageRefs.current[idx] = el)}
-              className="w-1/2 mx-auto -z-20"
-              style={{ transformStyle: 'preserve-3d' }}
-            >
-            <div
-              className={`flex ${
-                message.role === 'user' ? 'justify-end' : 'justify-start'
-              }`}
-            >
-              <div
-                className={`max-w-[85%] rounded-md px-3 py-2 shadow-xl ${
-                  message.role === 'user'
-                    ? 'bg-neutral-900 text-white'
-                    : 'bg-neutral-700 text-gray-100'
-                }`}
-              >
-                {message.role === 'assistant' ? (
-                  <ReactMarkdown className="whitespace-pre-wrap break-words">
-                    {message.content}
-                  </ReactMarkdown>
-                ) : (
-                  <p className="whitespace-pre-wrap break-words">{message.content}</p>
-                )}
-              </div>
-            </div>
-            </div>
-          ))}
+          {messages.flatMap((message, msgIdx) => {
+            // Split assistant messages by double newlines for rendering
+            const parts = message.role === 'assistant' 
+              ? message.content.split('\n\n').filter(part => part.trim())
+              : [message.content]
+            
+            return parts.map((part, partIdx) => {
+              const uniqueIdx = msgIdx * 1000 + partIdx
+              return (
+                <div 
+                  key={uniqueIdx} 
+                  ref={(el) => (messageRefs.current[uniqueIdx] = el)}
+                  data-role={message.role}
+                  className="w-1/2 mx-auto -z-20"
+                  style={{ transformStyle: 'preserve-3d' }}
+                >
+                  <div
+                    className={`flex ${
+                      message.role === 'user' ? 'justify-end' : 'justify-start'
+                    }`}
+                  >
+                    <div
+                      className={`max-w-[85%] rounded-md px-3 py-2 shadow-xl ${
+                        message.role === 'user'
+                          ? 'bg-neutral-900 text-white'
+                          : 'bg-neutral-700 text-gray-100'
+                      }`}
+                    >
+                      {message.role === 'assistant' ? (
+                        <ReactMarkdown className="whitespace-pre-wrap break-words">
+                          {part}
+                        </ReactMarkdown>
+                      ) : (
+                        <p className="whitespace-pre-wrap break-words">{part}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )
+            })
+          })}
           {isLoading && (
             <div className="flex justify-start">
-              <div className="max-w-[85%] rounded-md px-3 py-2 bg-gray-700 text-gray-300 text-xs italic">
-                Thinking...
+              <div className="w-1/2 mx-auto rounded-md px-3 py-2 text-gray-300 text-xs italic flex flex-col items-start justify-center gap-2">
+                <div className="bg-neutral-700 text-white rounded-md px-3 py-2 flex items-center justify-center gap-2">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  Thinking...
+                </div>
               </div>
             </div>
             
