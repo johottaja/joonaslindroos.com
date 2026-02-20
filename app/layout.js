@@ -33,6 +33,7 @@ export default function RootLayout({ children }) {
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/res/images/favicon.ico" />
+        <link rel="preload" href="/fonts/New_Amsterdam/NewAmsterdam-Regular.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
       </head>
       <body className="bg-neutral-950 text-white overscroll-none">
         {children}

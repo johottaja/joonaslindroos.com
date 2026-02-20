@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Link from 'next/link'
+import Image from 'next/image'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -243,19 +244,28 @@ export default function ProjectsSection() {
 
     return (
         <section ref={sectionRef} className="w-full relative" style={{ height: sectionHeight }}>
-            <img 
+            <Image 
                 ref={manRef}
-                src="/images/sysiphus_projects/man.png" 
-                className="fixed inset-0 w-full h-screen object-cover -z-70 saturate-60 scale-110 pointer-events-none select-none"
+                src="/images/sysiphus_projects/man.png"
+                alt=""
+                fill
+                sizes="100vw"
+                className="!fixed object-cover -z-70 saturate-60 scale-110 pointer-events-none select-none"
             />
-            <img 
+            <Image 
                 ref={mountainsRef}
-                src="/images/sysiphus_projects/mountains.png" 
-                className="fixed inset-0 w-full h-screen object-cover -z-79 saturate-60 scale-110 translate-x-[5%] pointer-events-none select-none" 
+                src="/images/sysiphus_projects/mountains.png"
+                alt=""
+                fill
+                sizes="100vw"
+                className="!fixed object-cover -z-79 saturate-60 scale-110 translate-x-[5%] pointer-events-none select-none"
             />
-            <img 
-                src="/images/sysiphus_projects/background_filled.png" 
-                className="fixed inset-0 w-full h-screen object-cover -z-80 saturate-60 pointer-events-none select-none" 
+            <Image 
+                src="/images/sysiphus_projects/background_filled.png"
+                alt=""
+                fill
+                sizes="100vw"
+                className="!fixed object-cover -z-80 saturate-60 pointer-events-none select-none"
             />
             
             {/* Sticky container for cards */}
@@ -299,10 +309,13 @@ export default function ProjectsSection() {
                                     }
                                 }}
                             >
-                                <img 
+                                <Image 
                                     src={project.image}
                                     alt={project.title}
-                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                    fill
+                                    sizes="(max-width: 768px) 288px, 384px"
+                                    loading="eager"
+                                    className="object-cover transition-transform duration-300 group-hover:scale-110"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                                 {project.date && (

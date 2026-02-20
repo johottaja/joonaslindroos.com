@@ -4,8 +4,11 @@ import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { useWindowSize, useDebounce } from "@uidotdev/usehooks"
 import { useRef, useEffect, useState } from 'react'
 import Script from 'next/script'
+import Image from 'next/image'
 import gsap from 'gsap'
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin'
+
+const MotionImage = motion.create(Image)
 
 gsap.registerPlugin(MotionPathPlugin)
 
@@ -157,35 +160,43 @@ export default function FooterSection() {
       )}
       <section ref={sectionRef} className="w-full h-[300vh] relative">
         <div className="w-full h-screen sticky top-0 overflow-hidden">
-          <img 
-            src="/images/sysiphus_footer/sky.png" 
-            alt="Background" 
-            className="w-full h-screen object-cover absolute top-0 left-0 -z-100" 
+          <Image
+            src="/images/sysiphus_footer/sky.png"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover -z-100"
           />
-          <motion.img 
-            src="/images/sysiphus_footer/mountains2.png" 
-            alt="Background" 
-            className="w-full h-screen object-cover absolute bottom-0 left-0 -z-80"
-            style={{ y: mountains2Y }}
+          <MotionImage
+            src="/images/sysiphus_footer/mountains2.png"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover -z-80"
+            style={{ y: mountains2Y, willChange: 'transform' }}
           />
-          <motion.img 
-            src="/images/sysiphus_footer/mountains1.png" 
-            alt="Background" 
-            className="w-full h-screen object-cover absolute bottom-0 left-0 -z-60"
-            style={{ y: mountains1Y }}
+          <MotionImage
+            src="/images/sysiphus_footer/mountains1.png"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover -z-60"
+            style={{ y: mountains1Y, willChange: 'transform' }}
           />
-          <motion.img 
-            src="/images/sysiphus_footer/ground2.png" 
-            alt="Background" 
-            className="w-full h-screen object-cover absolute bottom-0 left-0 -z-40"
-            style={{ y: groundY }}
+          <MotionImage
+            src="/images/sysiphus_footer/ground2.png"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover -z-40"
+            style={{ y: groundY, willChange: 'transform' }}
           />
           <motion.div 
             className="absolute top-0 left-0 w-full h-screen flex flex-col items-center justify-start mt-30"
             initial={{ opacity: 0, y: 100 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.5, ease: [0, 0.71, 0.2, 1.01], }}
-            style={{ y: textY }}
+            style={{ y: textY, willChange: 'transform' }}
           >
             <h2 className="xl:text-6xl sm:text-4xl md:text-4xl text-3xl font-bold text-white font-newamsterdam tracking-wider text-shadow-lg">
               No mountain too tall

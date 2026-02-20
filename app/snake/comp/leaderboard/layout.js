@@ -8,6 +8,8 @@ export default function LeaderboardLayout({ children }) {
     <>
       <link rel="stylesheet" type="text/css" href="/games/snake/style.css" />
       <link rel="stylesheet" type="text/css" href="/games/snake/comp/css/leaderboard.css" />
+      <link rel="preload" href="/fonts/JosefinSans.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+      <link rel="preload" href="/fonts/Pacifico.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
       <link rel="stylesheet" type="text/css" href="/fonts/JosefinSans.css" />
       <link rel="stylesheet" type="text/css" href="/fonts/Pacifico.css" />
       <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />

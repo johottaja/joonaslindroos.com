@@ -1,4 +1,7 @@
 @font-face {
     font-family: JosefinSans;
-    src: url('/fonts/JosefinSans.ttf') format('truetype');
+    src: url('/fonts/JosefinSans.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
 }

@@ -19,16 +19,18 @@
 
 @font-face {
   font-family: 'bartle';
-  src: url('/fonts/BBH_Sans_Bartle/BBHSansBartle-Regular.ttf') format('truetype');
+  src: url('/fonts/BBH_Sans_Bartle/BBHSansBartle-Regular.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'newamsterdam';
-  src: url('/fonts/New_Amsterdam/NewAmsterdam-Regular.ttf') format('truetype');
+  src: url('/fonts/New_Amsterdam/NewAmsterdam-Regular.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @layer components {
