@@ -13,6 +13,8 @@ export default function ModelViewer() {
   const rendererRef = useRef(null)
   const cameraRef = useRef(null)
   const animationFrameRef = useRef(null)
+  const animateFnRef = useRef(null)
+  const isVisibleRef = useRef(true)
   const modelRef = useRef(null)
   const lightRef = useRef(null)
   const technologiesRef = useRef(null)
@@ -131,29 +133,40 @@ export default function ModelViewer() {
     // Animation loop
     const clock = new THREE.Clock()
     const animate = () => {
+      if (!isVisibleRef.current) return
+
       animationFrameRef.current = requestAnimationFrame(animate)
       
-      // Rotate the light around the model at eye level (not from top)
-      // and make it always point towards the model center
       if (lightRef.current) {
         const time = clock.getElapsedTime()
         const radius = 35
-        const height = 15// Keep light at model's level, not above
+        const height = 15
         lightRef.current.position.x = Math.cos(time * 0.2) * radius
         lightRef.current.position.z = Math.sin(time * 0.2) * radius
         lightRef.current.position.y = height
-        // Make the light always point at the model center (0, 0, 0)
         lightRef.current.lookAt(0, 0, 0)
       }
       
-      // Animate technologies
       if (technologiesRef.current) {
         technologiesRef.current.animate()
       }
       
       renderer.render(scene, camera)
     }
+    animateFnRef.current = animate
     animate()
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const wasVisible = isVisibleRef.current
+        isVisibleRef.current = entry.isIntersecting
+        if (entry.isIntersecting && !wasVisible) {
+          animate()
+        }
+      },
+      { threshold: 0 }
+    )
+    observer.observe(containerRef.current)
 
     // Handle resize
     const handleResize = () => {
@@ -171,6 +184,7 @@ export default function ModelViewer() {
 
     // Cleanup
     return () => {
+      observer.disconnect()
       window.removeEventListener('resize', handleResize)
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current)

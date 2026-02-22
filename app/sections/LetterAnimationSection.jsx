@@ -54,8 +54,12 @@ const splitIntoLines = (text, maxWidth, spacing, scale) => {
 }
 
 export default function LetterAnimationSection() {
+  const sectionRef = useRef(null)
   const canvasRef = useRef(null)
   const animationFrameRef = useRef(null)
+  const drawFnRef = useRef(null)
+  const isVisibleRef = useRef(true)
+  const lastTimeRef = useRef(null)
   const morphingSystemRef = useRef(null)
   const cycleTimeoutRef = useRef(null)
   const headerRef = useRef(null)
@@ -110,7 +114,7 @@ export default function LetterAnimationSection() {
     const morphingSystem = morphingSystemRef.current
     const responsiveScale = getResponsiveScale(canvasSize.width)
 
-    let lastTime = performance.now()
+    lastTimeRef.current = performance.now()
 
     // Set canvas context properties
     ctx.fillStyle = animationConfig.canvas.fillStyle
@@ -120,17 +124,17 @@ export default function LetterAnimationSection() {
 
     const spacing = animationConfig.spacing
     const centerX = canvas.width / 2
-    // Position text so its top edge starts below the header
     const headerPadding = 40
     const textTopY = headerBottom + headerPadding
 
     const draw = (currentTime) => {
-      // Clear canvas
+      if (!isVisibleRef.current) return
+
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-      // Calculate deltaTime in seconds
-      const deltaTime = (currentTime - lastTime) / animationConfig.deltaTimeMultiplier
-      lastTime = currentTime
+      const rawDelta = (currentTime - lastTimeRef.current) / animationConfig.deltaTimeMultiplier
+      const deltaTime = Math.min(rawDelta, 0.1)
+      lastTimeRef.current = currentTime
 
       // Update scale
       morphingSystem.scale = responsiveScale
@@ -204,9 +208,24 @@ export default function LetterAnimationSection() {
       animationFrameRef.current = requestAnimationFrame(draw)
     }
 
+    drawFnRef.current = draw
     draw(performance.now())
 
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const wasVisible = isVisibleRef.current
+        isVisibleRef.current = entry.isIntersecting
+        if (entry.isIntersecting && !wasVisible) {
+          lastTimeRef.current = performance.now()
+          draw(performance.now())
+        }
+      },
+      { threshold: 0 }
+    )
+    if (sectionRef.current) observer.observe(sectionRef.current)
+
     return () => {
+      observer.disconnect()
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current)
       }
@@ -217,9 +236,9 @@ export default function LetterAnimationSection() {
   useEffect(() => {
     if (!morphingSystemRef.current || canvasSize.width === 0) return
 
-    // When morphing completes, wait DISPLAY_DURATION then cycle to next word
     if (!morphingActive) {
       const startCycle = () => {
+        if (!isVisibleRef.current) return
         const canvas = canvasRef.current
         if (!canvas || !morphingSystemRef.current) return
 
@@ -264,7 +283,7 @@ export default function LetterAnimationSection() {
   }, [morphingActive, canvasSize, headerBottom])
 
   return (
-    <div className="flex flex-col justify-center items-center w-full bg-black relative h-screen">
+    <div ref={sectionRef} className="flex flex-col justify-center items-center w-full bg-black relative h-screen">
       <svg
         className="absolute top-0 left-0 w-full z-50"
         height="34"

@@ -1,8 +1,8 @@
 'use client'
 
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion'
-import { useWindowSize, useDebounce, useThrottle } from "@uidotdev/usehooks";
-import { useEffect, useState } from 'react'
+import { useWindowSize, useDebounce } from "@uidotdev/usehooks";
+import { useEffect } from 'react'
 import Image from 'next/image'
 
 const MotionImage = motion.create(Image)
@@ -16,26 +16,18 @@ export default function Hero() {
   const maxScroll = debouncedHeight ? debouncedHeight : 0
   const clampedScrollY = useTransform(scrollY, [0, maxScroll], [0, maxScroll], { clamp: true })
   
-  // Mouse-based horizontal parallax
   const mouseX = useMotionValue(0)
   const springMouseX = useSpring(mouseX, { stiffness: 60, damping: 20, mass: 1 })
-  const [rawMouseX, setRawMouseX] = useState(0)
-  const throttledMouseX = useThrottle(rawMouseX, 100)
-
-  useEffect(() => {
-    mouseX.set(throttledMouseX)
-  }, [throttledMouseX, mouseX])
 
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (debouncedWidth) {
-        setRawMouseX(e.clientX / debouncedWidth)
+        mouseX.set(e.clientX / debouncedWidth)
       }
     }
-    
-    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mousemove', handleMouseMove, { passive: true })
     return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [debouncedWidth])
+  }, [debouncedWidth, mouseX])
   
   const mountainsY = useTransform(clampedScrollY, [0, debouncedHeight * 2], [0, -20])
   const parallax1Y = useTransform(clampedScrollY, [0, debouncedHeight * 2], [0, -40]) 
@@ -61,7 +53,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 100 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.5, ease: [0, 0.71, 0.2, 1.01], }}
-          style={{ y: mountainsY, x: mountainsX, willChange: 'transform' }}
+          style={{ y: mountainsY, x: mountainsX }}
         />
         <MotionImage src="/images/sysiphus/sysiphus_parallax_2.webp" alt="Sysiphus Parallax 2"
           fill
@@ -70,7 +62,7 @@ export default function Hero() {
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1.5, ease: [0, 0.71, 0.2, 1.01], }}
-          style={{ y: parallax1Y, x: parallax1X, willChange: 'transform' }}
+          style={{ y: parallax1Y, x: parallax1X }}
         />
         <MotionImage src="/images/sysiphus/sysiphus_parallax_1.webp" alt="Sysiphus Parallax 1"
           fill
@@ -79,7 +71,7 @@ export default function Hero() {
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1.5, ease: [0, 0.71, 0.2, 1.01], }}
-          style={{ y: parallax2Y, x: parallax2X, willChange: 'transform' }}
+          style={{ y: parallax2Y, x: parallax2X }}
         />
         <Image src="/images/sysiphus/Sysiphus_sky.webp" alt="Sysiphus Sky"
           fill
@@ -91,7 +83,7 @@ export default function Hero() {
             initial={{ opacity: 0, x: -200 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1.5, ease: [0, 0.71, 0.2, 1.01], }}
-            style={{ y: headerTextY, x: headerTextX, willChange: 'transform' }}
+            style={{ y: headerTextY, x: headerTextX }}
           >
             <h1 className="text-[50px] sm:text-[80px] md:text-[100px] xl:text-[150px] text-white font-newamsterdam tracking-wider text-shadow-lg">
               Joonas Lindroos
@@ -105,7 +97,7 @@ export default function Hero() {
             initial={{ opacity: 0, x: 200 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1.5, ease: [0, 0.71, 0.2, 1.01], }}
-            style={{ y: coldTextY, x: coldTextX, willChange: 'transform' }}
+            style={{ y: coldTextY, x: coldTextX }}
           >
             <h2 className="xl:text-[60px] sm:text-[30px] md:text-[40px] text-[30px] mt-20 md:mt-0 md:border-0 border-t-2 border-white font-bold text-white font-newamsterdam tracking-wider text-shadow-lg text-center">
               Defined by resilience,<br /> driven by purpose.
