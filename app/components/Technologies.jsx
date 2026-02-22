@@ -37,17 +37,17 @@ const Technologies = forwardRef(({ scene, camera }, ref) => {
     // Load and create floating technology sprites
     const textureLoader = new THREE.TextureLoader()
     const techImages = [
-      'React.png',
-      'TypeScript.png',
-      'Python.png',
-      'CPlusPlus.png',
-      'Django.png',
-      'Docker.png',
-      'MySQL.png',
-      'Nodejs.png',
-      'PostgresSQL.png',
-      'PyTorch.png',
-      'TailwindCSS.png'
+      'React.webp',
+      'TypeScript.webp',
+      'Python.webp',
+      'CPlusPlus.webp',
+      'Django.webp',
+      'Docker.webp',
+      'MySQL.webp',
+      'Nodejs.webp',
+      'PostgresSQL.webp',
+      'PyTorch.webp',
+      'TailwindCSS.webp'
     ]
     
     const orbitRadius = 1
@@ -104,7 +104,7 @@ const Technologies = forwardRef(({ scene, camera }, ref) => {
         const finalTexture = convertToBronze(texture, 1.0)
         
         // Increase brightness for Django and MySQL since they're naturally darker
-        const isDarkerImage = imageName === 'Django.png' || imageName === 'MySQL.png'
+        const isDarkerImage = imageName === 'Django.webp' || imageName === 'MySQL.webp'
         const spriteMaterial = new THREE.SpriteMaterial({ 
           map: finalTexture,
           transparent: true,

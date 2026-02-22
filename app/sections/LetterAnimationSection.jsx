@@ -314,7 +314,8 @@ export default function LetterAnimationSection() {
         className="block"
         style={{ 
           width: canvasSize.width > 0 ? `${canvasSize.width}px` : '100%',
-          height: canvasSize.height > 0 ? `${canvasSize.height}px` : '100vh'
+          height: canvasSize.height > 0 ? `${canvasSize.height}px` : '100vh',
+          transform: 'translateZ(0)'
         }}
       />
       <div

@@ -12,9 +12,8 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <GroundDivider />
+      <GroundDivider /> 
       <TechSection />
-      <LetterAnimationSection />
       <GroundDivider />
       <ProjectsSection />
       <GroundDivider />

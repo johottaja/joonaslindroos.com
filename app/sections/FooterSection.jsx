@@ -17,6 +17,7 @@ const NAME = "Joonas Lindroos"
 export default function FooterSection() {
   const sectionRef = useRef(null)
   const lettersRef = useRef([])
+  const gsapTimelinesRef = useRef([])
   const [isContactModalOpen, setIsContactModalOpen] = useState(false)
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' })
   const [contactStatus, setContactStatus] = useState(null) // 'sending' | 'success' | 'error'
@@ -55,7 +56,8 @@ export default function FooterSection() {
     const fourthPath = `M ${-farWidth} ${height * 0.8} Q ${-farWidth / 3} ${-veryHighPeak} ${farWidth / 2} ${height * 2}`
 
     letters.forEach((letter, index) => {
-      const tl = gsap.timeline({ repeat: -1, repeatDelay: 2, delay: index * staggerDelay })
+      const tl = gsap.timeline({ repeat: -1, repeatDelay: 2, delay: index * staggerDelay, paused: true })
+      gsapTimelinesRef.current.push(tl)
 
       // Start: right to center (forward path)
       tl.call(() => { letter.style.zIndex = -50 })
@@ -148,8 +150,20 @@ export default function FooterSection() {
       })
     })
 
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        gsapTimelinesRef.current.forEach(tl => tl.resume())
+      } else {
+        gsapTimelinesRef.current.forEach(tl => tl.pause())
+      }
+    }, { threshold: 0 })
+
+    if (sectionRef.current) observer.observe(sectionRef.current)
+
     return () => {
-      letters.forEach(letter => gsap.killTweensOf(letter))
+      observer.disconnect()
+      gsapTimelinesRef.current.forEach(tl => tl.kill())
+      gsapTimelinesRef.current = []
     }
   }, [])
 
@@ -209,7 +223,7 @@ export default function FooterSection() {
             <div
               key={index}
               ref={el => lettersRef.current[index] = el}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-black text-5xl font-regular text-shadow-lg overflow-x-hidden"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-black text-5xl font-regular text-shadow-lg overflow-hidden will-change-transform"
             >
               {letter === ' ' ? '\u00A0' : letter}
             </div>
@@ -221,7 +235,7 @@ export default function FooterSection() {
             Linked<span className="text-white bg-blue-500 p-0.5 ml-0.5 rounded-sm">In</span>
           </h2>
           <h2 
-            className="text-white font-newamsterdam tracking-widest text-lg text-shadow-lg py-1.5 px-4 border-1 border-neutral-500 rounded-full backdrop-blur-xs cursor-pointer hover:scale-110 transition-all duration-300"
+            className="text-white font-newamsterdam tracking-widest text-lg text-shadow-lg py-1.5 px-4 border-1 border-neutral-500 rounded-full backdrop-blur-xs cursor-pointer hover:scale-110 transition-all duration-300 text-nowrap"
             onClick={() => {
               setContactStatus(null)
               setContactError('')

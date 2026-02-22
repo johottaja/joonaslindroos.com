@@ -99,6 +99,8 @@ export default function ProjectsSection() {
     const cardRefs = useRef([])
     const manRef = useRef(null)
     const mountainsRef = useRef(null)
+    const mountainsTweenRef = useRef(null)
+    const manTweenRef = useRef(null)
     const [sectionHeight, setSectionHeight] = useState('100vh')
 
     useEffect(() => {
@@ -120,7 +122,7 @@ export default function ProjectsSection() {
                 trigger: section,
                 start: 'top top',
                 end: `+=${viewportHeight}`, // 100vh
-                scrub: 1,
+                scrub: true,
             }
         })
 
@@ -139,30 +141,42 @@ export default function ProjectsSection() {
             duration: 0.5,
         })
 
-        // Subtle looping shake for background layers
+        // Subtle looping shake for background layers - start paused, resume when visible
         if (mountains) {
-            gsap.to(mountains, {
+            mountainsTweenRef.current = gsap.to(mountains, {
                 x: '+=5',
                 y: '+=3',
-                rotationZ: 0.3,
                 duration: 3,
                 repeat: -1,
                 yoyo: true,
                 ease: 'sine.inOut',
+                paused: true,
             })
         }
 
         if (man) {
-            gsap.to(man, {
+            manTweenRef.current = gsap.to(man, {
                 x: '-=10',
                 y: '+=10',
-                rotationZ: -0.4,
                 duration: 2.5,
                 repeat: -1,
                 yoyo: true,
                 ease: 'sine.inOut',
+                paused: true,
             })
         }
+
+        const bgObserver = new IntersectionObserver(([entry]) => {
+            if (entry.isIntersecting) {
+                mountainsTweenRef.current?.resume()
+                manTweenRef.current?.resume()
+            } else {
+                mountainsTweenRef.current?.pause()
+                manTweenRef.current?.pause()
+            }
+        }, { threshold: 0 })
+
+        if (section) bgObserver.observe(section)
 
         // Animation timeline for each card:
         // Phase 1: Appear from horizon (80vh)
@@ -195,7 +209,7 @@ export default function ProjectsSection() {
                     trigger: section,
                     start: `top+=${cardStartOffset}px top`,
                     end: `top+=${disappearEndOffset}px top`,
-                    scrub: 1,
+                    scrub: true,
                 }
             })
 
@@ -239,6 +253,9 @@ export default function ProjectsSection() {
         // Cleanup
         return () => {
             ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+            bgObserver.disconnect()
+            mountainsTweenRef.current?.kill()
+            manTweenRef.current?.kill()
         }
     }, [])
 
@@ -251,6 +268,7 @@ export default function ProjectsSection() {
                 fill
                 sizes="100vw"
                 className="!fixed object-cover -z-70 saturate-60 scale-110 pointer-events-none select-none"
+                style={{ willChange: 'transform' }}
             />
             <Image 
                 ref={mountainsRef}
@@ -258,7 +276,8 @@ export default function ProjectsSection() {
                 alt=""
                 fill
                 sizes="100vw"
-                className="!fixed object-cover -z-79 saturate-60 scale-110 translate-x-[5%] pointer-events-none select-none"
+                className="!fixed object-cover -z-79 scale-110 translate-x-[5%] pointer-events-none select-none"
+                style={{ willChange: 'transform' }}
             />
             <Image 
                 src="/images/sysiphus_projects/background_filled.png"
@@ -301,6 +320,7 @@ export default function ProjectsSection() {
                                 className="absolute inset-0 mx-auto w-72 md:w-96 h-48 md:h-64 rounded-xl overflow-hidden shadow-2xl cursor-pointer group pointer-events-auto"
                                 style={{ 
                                     transformStyle: 'preserve-3d',
+                                    willChange: 'transform',
                                 }}
                                 href={project.href}
                                 onClick={() => {
