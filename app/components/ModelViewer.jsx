@@ -90,15 +90,6 @@ export default function ModelViewer() {
       console.error('Error loading HDR environment map:', error)
     })
 
-    // Soft ambient light to fill shadows
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4)
-    scene.add(ambientLight)
-    
-    // Softer directional light - reduced intensity and warmer color
-    const directionalLight = new THREE.DirectionalLight(0xfff5e1, 0.8) // Reduced intensity for softer look
-    directionalLight.position.set(10, 10, 10)
-    scene.add(directionalLight)
-    lightRef.current = directionalLight
 
     // Load model
     const loader = new GLTFLoader()
@@ -136,16 +127,6 @@ export default function ModelViewer() {
       if (!isVisibleRef.current) return
 
       animationFrameRef.current = requestAnimationFrame(animate)
-      
-      if (lightRef.current) {
-        const time = clock.getElapsedTime()
-        const radius = 35
-        const height = 15
-        lightRef.current.position.x = Math.cos(time * 0.2) * radius
-        lightRef.current.position.z = Math.sin(time * 0.2) * radius
-        lightRef.current.position.y = height
-        lightRef.current.lookAt(0, 0, 0)
-      }
       
       if (technologiesRef.current) {
         technologiesRef.current.animate()
