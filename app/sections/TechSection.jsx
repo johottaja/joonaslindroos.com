@@ -93,7 +93,7 @@ export default function TechSection() {
                 </h2>
             </div>
             <div className="absolute bottom-0 left-0 w-full flex justify-center items-center">
-                <h2 className="tracking-widest text-center text-2xl font-bold px-5 py-10"
+                <div className="tracking-widest text-center text-2xl font-bold px-5 py-10"
                 style={{
                     background: 'radial-gradient(rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%)',
                 }}
@@ -102,17 +102,17 @@ export default function TechSection() {
                         innerRef={bottomHeadingRef}
                         style={{ transform: 'translateY(50px)' }}
                     >
-                        With the power of <br/>
-                        <TexturedText 
-                            innerRef={technologyTextRef}
-                            brightness={200}
-                            className="text-7xl"
-                            style={{ transform: 'scale(0.8)' }}
-                        >
-                            TECHNOLOGY
-                        </TexturedText>
+                        With the power of
                     </TexturedText>
-                </h2>
+                    <TexturedText 
+                        innerRef={technologyTextRef}
+                        brightness={200}
+                        className="text-7xl"
+                        style={{ transform: 'scale(0.8)', brightness: 200 }}
+                    >
+                        TECHNOLOGY
+                    </TexturedText>
+                </div>
             </div>
         </section>
     )

@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion'
-import { useWindowSize, useDebounce } from "@uidotdev/usehooks";
+import { useWindowSize, useDebounce, useThrottle } from "@uidotdev/usehooks";
 import { useEffect } from 'react'
 
 export default function Hero() {
@@ -9,6 +9,7 @@ export default function Hero() {
   const { height: windowHeight, width: windowWidth } = useWindowSize()
   const debouncedHeight = useDebounce(windowHeight, 100)
   const debouncedWidth = useDebounce(windowWidth, 100)
+  const throttledScrollY = useThrottle(scrollY, 100)
   
   const maxScroll = debouncedHeight ? debouncedHeight : 0
   const clampedScrollY = useTransform(scrollY, [0, maxScroll], [0, maxScroll], { clamp: true })
@@ -26,12 +27,12 @@ export default function Hero() {
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [debouncedWidth, mouseX])
   
-  const mountainsY = useTransform(clampedScrollY, [0, debouncedHeight * 2], [0, -20])
-  const parallax1Y = useTransform(clampedScrollY, [0, debouncedHeight * 2], [0, -40]) 
-  const parallax2Y = useTransform(clampedScrollY, [0, debouncedHeight * 2], [0, -60])
+  const mountainsY = useTransform(throttledScrollY, [0, debouncedHeight * 2], [0, -20])
+  const parallax1Y = useTransform(throttledScrollY, [0, debouncedHeight * 2], [0, -40]) 
+  const parallax2Y = useTransform(throttledScrollY, [0, debouncedHeight * 2], [0, -60])
   
-  const headerTextY = useTransform(clampedScrollY, [0, debouncedHeight * 2], [0, -100])
-  const coldTextY = useTransform(clampedScrollY, [0, debouncedHeight * 2], [0, -50])
+  const headerTextY = useTransform(throttledScrollY, [0, debouncedHeight * 2], [0, -100])
+  const coldTextY = useTransform(throttledScrollY, [0, debouncedHeight * 2], [0, -50])
   
   // Horizontal parallax transforms (different speeds for depth effect)
   const mountainsX = useTransform(springMouseX, [-1, 1], [-10, 10])
@@ -44,35 +45,35 @@ export default function Hero() {
     <header className="h-[200lvh] relative -z-30 w-full">
       <div className="sticky top-0 w-full h-[110lvh] -z-50 overflow-hidden">
         <motion.img src="/images/sysiphus/sysiphus_far_mountains.webp" alt="Sysiphus Far Mountains"
-          className="absolute inset-0 w-full h-full object-cover object-center -z-40 translate-y-[10px] scale-110 saturate-60"
+          className="absolute inset-0 w-full h-full object-cover object-center translate-y-[10px] -z-40 scale-110 backface-hidden "
           initial={{ opacity: 0, y: 100 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.5, ease: 'easeOut' }}
-          style={{ y: mountainsY, x: mountainsX, willChange: 'transform' }}
+          style={{ y: mountainsY, x: mountainsX, z: 0, willChange: 'transform', WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
         />
         <motion.img src="/images/sysiphus/sysiphus_parallax_2.webp" alt="Sysiphus Parallax 2"
-          className="absolute inset-0 w-full h-full object-contain object-bottom-right -z-30 translate-x-1/5 md:translate-x-0 translate-y-[50px] scale-110 saturate-60"
+          className="absolute inset-0 w-full h-full object-contain object-bottom-right -z-30 translate-x-1/5 md:translate-x-0 translate-y-[50px] scale-110 backface-hidden"
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1.5, ease: 'easeOut' }}
-          style={{ y: parallax1Y, x: parallax1X, willChange: 'transform' }}
+          style={{ y: parallax1Y, x: parallax1X, z: 0, willChange: 'transform', WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
         />
         <motion.img src="/images/sysiphus/sysiphus_parallax_1.webp" alt="Sysiphus Parallax 1"
-          className="absolute inset-0 w-full h-full object-contain object-bottom-right -z-20 translate-x-1/5 md:translate-x-0 translate-y-[30px] scale-110 saturate-60"
+          className="absolute inset-0 w-full h-full object-contain object-bottom-right -z-20 translate-x-1/5 md:translate-x-0 translate-y-[30px] scale-110 backface-hidden"
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1.5, ease: 'easeOut' }}
-          style={{ y: parallax2Y, x: parallax2X, willChange: 'transform' }}
+          style={{ y: parallax2Y, x: parallax2X, z: 0, willChange: 'transform', WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
         />
         <img src="/images/sysiphus/Sysiphus_sky.webp" alt="Sysiphus Sky"
-          className="absolute inset-0 w-full h-full object-cover -z-50 saturate-60" />
+          className="absolute inset-0 w-full h-full object-cover -z-50 backface-hidden" />
         <div className="absolute w-full h-screen z-20 flex flex-col md:justify-between justify-center">
           <motion.div 
             className="w-full z-20 md:mx-10 mx-0 mt-10 flex flex-col justify-center md:justify-start items-center md:items-start"
             initial={{ opacity: 0, x: -200 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1.5, ease: 'easeOut' }}
-            style={{ y: headerTextY, x: headerTextX, willChange: 'transform' }}
+            style={{ y: headerTextY, x: headerTextX, z: 0, willChange: 'transform', WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
           >
             <h1 className="text-[50px] sm:text-[80px] md:text-[100px] xl:text-[150px] text-white font-newamsterdam tracking-wider text-shadow-lg">
               Joonas Lindroos
@@ -86,7 +87,7 @@ export default function Hero() {
             initial={{ opacity: 0, x: 200 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1.5, ease: 'easeOut' }}
-            style={{ y: coldTextY, x: coldTextX, willChange: 'transform' }}
+            style={{ y: coldTextY, x: coldTextX, z: 0, willChange: 'transform', WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
           >
             <h2 className="xl:text-[60px] sm:text-[30px] md:text-[40px] text-[30px] mt-20 md:mt-0 md:border-0 border-t-2 border-white font-bold text-white font-newamsterdam tracking-wider text-shadow-lg text-center">
               Defined by resilience,<br /> driven by purpose.

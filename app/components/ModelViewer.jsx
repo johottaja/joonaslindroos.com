@@ -16,7 +16,6 @@ export default function ModelViewer() {
   const animateFnRef = useRef(null)
   const isVisibleRef = useRef(true)
   const modelRef = useRef(null)
-  const lightRef = useRef(null)
   const technologiesRef = useRef(null)
   const modelMaxDimRef = useRef(null)
   const [sceneReady, setSceneReady] = useState(false)

@@ -1,39 +1,6 @@
 import { letterDefinitions, letterWidths, Line, Curve, wordLength, Vector } from './letters'
 import { animationConfig } from '../components/LetterAnimation.config'
-
-// Split text into lines if too wide
-function splitIntoLines(text, maxWidth, spacing, scale) {
-  const totalWidth = wordLength(text, spacing) * scale
-  if (totalWidth <= maxWidth) {
-    return [text]
-  }
-  
-  const words = text.split(' ')
-  if (words.length === 1) {
-    return [text]
-  }
-  
-  const lines = []
-  let currentLine = ''
-  
-  for (const word of words) {
-    const testLine = currentLine ? `${currentLine} ${word}` : word
-    const testWidth = wordLength(testLine, spacing) * scale
-    
-    if (testWidth > maxWidth && currentLine) {
-      lines.push(currentLine)
-      currentLine = word
-    } else {
-      currentLine = testLine
-    }
-  }
-  
-  if (currentLine) {
-    lines.push(currentLine)
-  }
-  
-  return lines
-}
+import { splitIntoLines } from './util'
 
 // Neutral color palette (white to gray shades)
 const neutralColors = [
@@ -518,6 +485,11 @@ class MorphingSystem {
     })
   }
   
+  isSettled(threshold = 0.5) {
+    if (this.active) return false
+    return this.morphs.every(m => m.velocity.magnitudeSquared() < threshold * threshold)
+  }
+
   getCurrentWord() {
     if (this.progress >= 1.0 || !this.active) {
       return this.targetWord || this.sourceWord

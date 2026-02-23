@@ -9,10 +9,11 @@ export default function TexturedText({
     innerRef
 }) {
     return (
-        <span
+        <p
             ref={innerRef}
             className={className}
             style={{
+                willChange: 'transform',
                 backgroundImage: 'url(/images/texture.png)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center bottom',
@@ -25,6 +26,6 @@ export default function TexturedText({
             }}
         >
             {children}
-        </span>
+        </p>
     )
 }
