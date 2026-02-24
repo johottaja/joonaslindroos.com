@@ -149,8 +149,8 @@ export default function ProjectsSection() {
         // Phase 1: Fade in and move to middle, 10% right
         headingTimeline.fromTo(
             heading,
-            { opacity: 0, y: 100, x: '20%' },
-            { opacity: 1, y: 100, x: '20%', ease: 'power2.out', duration: 0.5 }
+            { opacity: 0, y: 100, x: viewportWidth > 640 ? '20%' : '0%' },
+            { opacity: 1, y: 100, x: viewportWidth > 640 ? '20%' : '0%', ease: 'power2.out', duration: 0.5 }
         )
 
         // Phase 2: Slide from 10% right to centered (x = 0)
@@ -241,7 +241,7 @@ export default function ProjectsSection() {
             const cardWidth = 384 // md:w-96 = 384px
             const cardHeight = 256 // md:h-64 = 256px
             // Card center target so right/bottom edges are ~100px from screen edges
-            const rightOffset = (window.innerWidth - 100 - cardWidth / 2) - (window.innerWidth / 2)
+            const rightOffset = (window.innerWidth - cardWidth / 2) - ((viewportWidth > 640) ? (window.innerWidth / 2) : 0)
             const bottomOffset = (window.innerHeight - 100 - cardHeight / 2) - (window.innerHeight / 2)
 
             tl.to(card, {
@@ -272,7 +272,7 @@ export default function ProjectsSection() {
                 alt=""
                 fill
                 sizes="100vw"
-                className="!fixed object-cover -z-70 saturate-60 scale-110 pointer-events-none select-none"
+                className="!fixed object-cover bg-center bottom-0 left-0 w-full h-full -z-70 saturate-60 scale-110 pointer-events-none select-none"
                 style={{ willChange: 'transform', z: 0, WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
             />
             <Image 
@@ -296,8 +296,8 @@ export default function ProjectsSection() {
             {/* Sticky container for cards */}
             <div 
                 ref={containerRef}
-                className="sticky top-0 left-0 w-full h-screen z-10 flex flex-col items-center justify-center overflow-hidden"
-                style={{ perspective: '1000px', transform: `translateX(-10%)` }}
+                className="sticky top-0 left-0 w-full h-screen z-10 flex flex-col items-center justify-center overflow-hidden sm:translate-x-[-10%]"
+                style={{ perspective: '1000px' }}
             >
                 {/* Heading */}
                 <h1 

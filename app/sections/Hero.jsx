@@ -45,35 +45,35 @@ export default function Hero() {
     <header className="h-[200lvh] relative -z-30 w-full">
       <div className="sticky top-0 w-full h-[110lvh] -z-50 overflow-hidden">
         <motion.img src="/images/sysiphus/sysiphus_far_mountains.webp" alt="Sysiphus Far Mountains"
-          className="absolute inset-0 w-full h-full object-cover object-center translate-y-[10px] -z-40 scale-110 backface-hidden "
+          className="absolute inset-0 w-full h-full object-cover object-center translate-y-[10px] -z-40 scale-110 backface-hidden saturate-60"
           initial={{ opacity: 0, y: 100 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.5, ease: 'easeOut' }}
-          style={{ y: mountainsY, x: mountainsX, z: 0, willChange: 'transform', WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
+          style={{ y: mountainsY, x: mountainsX, z: 0, willChange: 'transform, filter', WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
         />
         <motion.img src="/images/sysiphus/sysiphus_parallax_2.webp" alt="Sysiphus Parallax 2"
-          className="absolute inset-0 w-full h-full object-contain object-bottom-right -z-30 translate-x-1/5 md:translate-x-0 translate-y-[50px] scale-110 backface-hidden"
+          className="absolute inset-0 w-full h-full object-contain object-bottom-right -z-30 translate-x-1/5 md:translate-x-0 translate-y-[50px] scale-110 backface-hidden saturate-60"
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1.5, ease: 'easeOut' }}
-          style={{ y: parallax1Y, x: parallax1X, z: 0, willChange: 'transform', WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
+          style={{ y: parallax1Y, x: parallax1X, z: 0, willChange: 'transform, filter', WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
         />
         <motion.img src="/images/sysiphus/sysiphus_parallax_1.webp" alt="Sysiphus Parallax 1"
-          className="absolute inset-0 w-full h-full object-contain object-bottom-right -z-20 translate-x-1/5 md:translate-x-0 translate-y-[30px] scale-110 backface-hidden"
+          className="absolute inset-0 w-full h-full object-contain object-bottom-right -z-20 translate-x-1/5 md:translate-x-0 translate-y-[30px] scale-110 backface-hidden saturate-60"
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1.5, ease: 'easeOut' }}
-          style={{ y: parallax2Y, x: parallax2X, z: 0, willChange: 'transform', WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
+          style={{ y: parallax2Y, x: parallax2X, z: 0, willChange: 'transform, filter', WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
         />
         <img src="/images/sysiphus/Sysiphus_sky.webp" alt="Sysiphus Sky"
-          className="absolute inset-0 w-full h-full object-cover -z-50 backface-hidden" />
+          className="absolute inset-0 w-full h-full object-cover -z-50 backface-hidden saturate-60" />
         <div className="absolute w-full h-screen z-20 flex flex-col md:justify-between justify-center">
           <motion.div 
             className="w-full z-20 md:mx-10 mx-0 mt-10 flex flex-col justify-center md:justify-start items-center md:items-start"
             initial={{ opacity: 0, x: -200 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1.5, ease: 'easeOut' }}
-            style={{ y: headerTextY, x: headerTextX, z: 0, willChange: 'transform', WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
+            style={{ y: headerTextY, x: headerTextX, z: 0, willChange: 'transform, filter', WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
           >
             <h1 className="text-[50px] sm:text-[80px] md:text-[100px] xl:text-[150px] text-white font-newamsterdam tracking-wider text-shadow-lg">
               Joonas Lindroos
