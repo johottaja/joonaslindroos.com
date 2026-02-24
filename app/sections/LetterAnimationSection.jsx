@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { MorphController } from './MorphController'
-import { animationConfig } from '../components/LetterAnimation.config'
+import { MorphController } from '@/textmorph/MorphController'
+import { animationConfig } from '@/textmorph/LetterAnimation.config'
 import TexturedText from '@/components/TexturedText.jsx'
 
 const initialWord = animationConfig.words[0]

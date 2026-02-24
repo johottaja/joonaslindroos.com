@@ -1,6 +1,6 @@
-import { MorphingSystem } from '../textmorph/morphing'
-import { getResponsiveScale } from '../textmorph/util'
-import { drawStaticWord } from '../textmorph/drawWord'
+import { MorphingSystem } from './morphing'
+import { getResponsiveScale } from './util'
+import { drawStaticWord } from './drawWord'
 
 const HEADER_PADDING = 40
 

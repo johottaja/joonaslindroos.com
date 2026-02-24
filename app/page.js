@@ -1,5 +1,5 @@
 import dynamic from 'next/dynamic'
-import Hero from '@/components/Hero.jsx'
+import Hero from '@/sections/Hero.jsx'
 import GroundDivider from '@/components/GroundDivider.jsx'
 
 const TechSection = dynamic(() => import('@/sections/TechSection.jsx'))
@@ -17,9 +17,9 @@ export default function Home() {
       <LetterAnimationSection />
       <GroundDivider />
       <ProjectsSection />
-      
+      <GroundDivider />
       <AgentSection />
-      
+      <GroundDivider />
       <FooterSection />
     </>
   )

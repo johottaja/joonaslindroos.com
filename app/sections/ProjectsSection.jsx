@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Link from 'next/link'
@@ -101,7 +101,21 @@ export default function ProjectsSection() {
     const mountainsRef = useRef(null)
     const mountainsTweenRef = useRef(null)
     const manTweenRef = useRef(null)
-    const [sectionHeight, setSectionHeight] = useState('100vh')
+
+    // Duration constants in viewport-height units (used for section height and scroll animations)
+    const HEADING_DURATION_VH = 1
+    const APPEAR_DURATION_VH = 0.9
+    const DISAPPEAR_DURATION_VH = 0.6
+    const CARD_TOTAL_DURATION_VH = APPEAR_DURATION_VH + DISAPPEAR_DURATION_VH
+    const CARD_OVERLAP_VH = 0.5
+    const EXTRA_TAIL_SPACE_VH = 1.5
+
+    const sectionHeightVh =
+        HEADING_DURATION_VH +
+        (projects.length - 1) * (CARD_TOTAL_DURATION_VH - CARD_OVERLAP_VH) +
+        CARD_TOTAL_DURATION_VH +
+        EXTRA_TAIL_SPACE_VH
+    const sectionHeight = `calc(100vh * ${sectionHeightVh})`
 
     useEffect(() => {
         const section = sectionRef.current
@@ -116,12 +130,18 @@ export default function ProjectsSection() {
         const viewportHeight = window.innerHeight
         const viewportWidth = window.innerWidth
 
+        const headingDuration = viewportHeight * HEADING_DURATION_VH
+        const appearDuration = viewportHeight * APPEAR_DURATION_VH
+        const disappearDuration = viewportHeight * DISAPPEAR_DURATION_VH
+        const cardTotalDuration = viewportHeight * CARD_TOTAL_DURATION_VH
+        const cardOverlap = viewportHeight * CARD_OVERLAP_VH
+
         // Heading fade-in timeline - takes full 100vh
         const headingTimeline = gsap.timeline({
             scrollTrigger: {
                 trigger: section,
                 start: 'top top',
-                end: `+=${viewportHeight}`, // 100vh
+                end: `+=${headingDuration}`,
                 scrub: true,
             }
         })
@@ -178,16 +198,7 @@ export default function ProjectsSection() {
 
         if (section) bgObserver.observe(section)
 
-        // Animation timeline for each card:
-        // Phase 1: Appear from horizon (80vh)
-        // Phase 2: Move to bottom right corner and fade out (60vh)
-        // Each card gets 140vh total, with 20vh overlap between cards
-        const headingDuration = viewportHeight // 100vh
-        const appearDuration = viewportHeight * 0.9 // 80vh
-        const disappearDuration = viewportHeight * 0.6 // 60vh
-        const cardTotalDuration = appearDuration + disappearDuration // 140vh
-        const cardOverlap = viewportHeight * 0.5 // 20vh overlap
-
+        // Animation timeline for each card: appear from horizon, then move to corner and fade out
         cards.forEach((card, index) => {
             // Unique initial state per card (random X, from \"horizon\" below viewport)
             gsap.set(card, {
@@ -243,12 +254,6 @@ export default function ProjectsSection() {
                 duration: disappearDuration / cardTotalDuration,
             })
         })
-
-        // Calculate total section height dynamically
-        const lastCardEnd = headingDuration + ((cards.length - 1) * (cardTotalDuration - cardOverlap)) + cardTotalDuration
-        // Add extra space at the end so the last card's exit animation can fully play
-        const extraTailSpace = viewportHeight*1.5 // one more viewport height as a spacer
-        setSectionHeight(`${lastCardEnd + extraTailSpace}px`)
 
         // Cleanup
         return () => {

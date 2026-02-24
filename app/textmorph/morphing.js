@@ -1,5 +1,5 @@
 import { letterDefinitions, letterWidths, Line, Curve, wordLength, Vector } from './letters'
-import { animationConfig } from '../components/LetterAnimation.config'
+import { animationConfig } from './LetterAnimation.config'
 import { splitIntoLines } from './util'
 
 // Neutral color palette (white to gray shades)
