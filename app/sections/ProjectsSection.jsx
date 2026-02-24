@@ -195,14 +195,12 @@ export default function ProjectsSection() {
                 man?.classList.remove('invisible')
                 mountains?.classList.remove('invisible')
                 bgFill?.classList.remove('invisible')
-                console.log('bgFill is visible')
             } else {
                 mountainsTweenRef.current?.pause()
                 manTweenRef.current?.pause()
                 man?.classList.add('invisible')
                 mountains?.classList.add('invisible')
                 bgFill?.classList.add('invisible')
-                console.log('bgFill is invisible')
             }
         }, { threshold: 0 })
 
@@ -278,29 +276,29 @@ export default function ProjectsSection() {
         <section ref={sectionRef} className="w-full relative" style={{ height: sectionHeight }}>
             <Image 
                 ref={manRef}
-                src="/images/sysiphus_projects/man.png"
+                src="/images/sysiphus_projects/man_sat.png"
                 alt=""
                 fill
                 sizes="100vw"
-                className="!fixed object-cover bg-center bottom-0 left-0 w-full h-full -z-70 saturate-60 scale-110 pointer-events-none select-none invisible"
+                className="!fixed object-cover bg-center bottom-0 left-0 w-full h-full -z-70 scale-110 pointer-events-none select-none invisible"
                 style={{ willChange: 'transform', z: 0, WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
             />
             <Image 
                 ref={mountainsRef}
-                src="/images/sysiphus_projects/mountains.png"
+                src="/images/sysiphus_projects/mountains_sat.png"
                 alt=""
                 fill
                 sizes="100vw"
-                className="!fixed object-cover -z-79 scale-110 saturate-60 translate-x-[5%] pointer-events-none select-none invisible"
+                className="!fixed object-cover -z-79 scale-110 translate-x-[5%] pointer-events-none select-none invisible"
                 style={{ willChange: 'transform', z: 0, WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
             />
             <Image 
                 ref={bgFillRef}
-                src="/images/sysiphus_projects/background_filled.png"
+                src="/images/sysiphus_projects/sky_2_sat.webp"
                 alt=""
                 fill
                 sizes="100vw"
-                className="!fixed object-cover -z-80 saturate-60 pointer-events-none select-none invisible"
+                className="!fixed object-cover -z-80 pointer-events-none select-none invisible"
                 style={{ z: 0, WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
             />
             
