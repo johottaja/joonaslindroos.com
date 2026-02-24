@@ -186,7 +186,7 @@ export default function ProjectsSection() {
         const appearDuration = viewportHeight * 0.9 // 80vh
         const disappearDuration = viewportHeight * 0.6 // 60vh
         const cardTotalDuration = appearDuration + disappearDuration // 140vh
-        const cardOverlap = viewportHeight * 0.2 // 20vh overlap
+        const cardOverlap = viewportHeight * 0.5 // 20vh overlap
 
         cards.forEach((card, index) => {
             // Unique initial state per card (random X, from \"horizon\" below viewport)
@@ -268,7 +268,7 @@ export default function ProjectsSection() {
                 fill
                 sizes="100vw"
                 className="!fixed object-cover -z-70 saturate-60 scale-110 pointer-events-none select-none"
-                style={{ willChange: 'transform' }}
+                style={{ willChange: 'transform', z: 0, WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
             />
             <Image 
                 ref={mountainsRef}
@@ -276,8 +276,8 @@ export default function ProjectsSection() {
                 alt=""
                 fill
                 sizes="100vw"
-                className="!fixed object-cover -z-79 scale-110 translate-x-[5%] pointer-events-none select-none"
-                style={{ willChange: 'transform' }}
+                className="!fixed object-cover -z-79 scale-110 saturate-60 translate-x-[5%] pointer-events-none select-none"
+                style={{ willChange: 'transform', z: 0, WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
             />
             <Image 
                 src="/images/sysiphus_projects/background_filled.png"
@@ -285,6 +285,7 @@ export default function ProjectsSection() {
                 fill
                 sizes="100vw"
                 className="!fixed object-cover -z-80 saturate-60 pointer-events-none select-none"
+                style={{ z: 0, WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
             />
             
             {/* Sticky container for cards */}
@@ -296,7 +297,7 @@ export default function ProjectsSection() {
                 {/* Heading */}
                 <h1 
                     ref={headingRef}
-                    className="text-3xl md:text-6xl font-bold text-white mb-8 text-shadow-lg font-newamsterdam tracking-wider"
+                    className="text-3xl md:text-6xl font-bold text-white mb-8 text-shadow-lg font-newamsterdam tracking-wider will-change-transform"
                 >
                     Built along the way
                 </h1>
@@ -304,7 +305,7 @@ export default function ProjectsSection() {
                 {/* Cards container with perspective */}
                 <div 
                     className="relative w-full max-w-4xl h-64 md:h-80 pointer-events-none -z-72"
-                    style={{ transformStyle: 'preserve-3d' }}
+                    style={{ transformStyle: 'preserve-3d', willChange: 'transform', WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
                 >
                     {projects.map((project, index) => {
                         const CardWrapper = project.external ? 'a' : Link
@@ -313,7 +314,7 @@ export default function ProjectsSection() {
                             : { href: project.href }
 
                         return (
-                            <CardWrapper
+                            <Link
                                 key={project.id}
                                 ref={el => cardRefs.current[index] = el}
                                 {...cardProps}
@@ -354,7 +355,7 @@ export default function ProjectsSection() {
                                         </p>
                                     )}
                                 </div>
-                            </CardWrapper>
+                            </Link>
                         )
                     })}
                 </div>

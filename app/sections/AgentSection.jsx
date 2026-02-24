@@ -36,7 +36,8 @@ export default function AgentSection() {
     })
   }, [messages])
 
-  // Update message scaling based on scroll position
+  // Update message scaling based on scroll position (throttled to avoid repaint storms when textarea is focused)
+  const scaleRafRef = useRef(null)
   useEffect(() => {
     const container = scrollContainerRef.current
     if (!container) return
@@ -44,10 +45,9 @@ export default function AgentSection() {
     const updateScale = () => {
       const containerRect = container.getBoundingClientRect()
       const containerTop = containerRect.top
-      const containerBottom = containerRect.bottom
       const containerHeight = containerRect.height
 
-      messageRefs.current.forEach((messageEl, idx) => {
+      messageRefs.current.forEach((messageEl) => {
         if (!messageEl) return
 
         const messageRect = messageEl.getBoundingClientRect()
@@ -59,12 +59,9 @@ export default function AgentSection() {
         // Scale from 0.3 at the top to 1.0 at the bottom
         const scale = Math.max(0.3, Math.min(1, 0.3 + relativePosition * 0.7))
         
-        // Direction based on message role
-        // user: rotate right (positive), assistant: rotate left (negative)
         const role = messageEl.dataset.role
         const direction = role === 'user' ? -1 : 1
         const rotateY = (1 - relativePosition) * 20 * -direction
-        // Scale translateX based on viewport width, clamped between 150px and 450px
         const baseTranslateX = Math.min(Math.max(window.innerWidth * 0.25, 100), 250)
         const translateX = (1 - relativePosition) * baseTranslateX * -direction
         
@@ -80,18 +77,23 @@ export default function AgentSection() {
       })
     }
 
-    // Initial update
+    const scheduleUpdate = () => {
+      if (scaleRafRef.current != null) return
+      scaleRafRef.current = requestAnimationFrame(() => {
+        scaleRafRef.current = null
+        updateScale()
+      })
+    }
+
     updateScale()
 
-    // Update on scroll
-    container.addEventListener('scroll', updateScale)
-    
-    // Update on window resize
-    window.addEventListener('resize', updateScale)
+    container.addEventListener('scroll', scheduleUpdate)
+    window.addEventListener('resize', scheduleUpdate)
 
     return () => {
-      container.removeEventListener('scroll', updateScale)
-      window.removeEventListener('resize', updateScale)
+      container.removeEventListener('scroll', scheduleUpdate)
+      window.removeEventListener('resize', scheduleUpdate)
+      if (scaleRafRef.current != null) cancelAnimationFrame(scaleRafRef.current)
     }
   }, [messages])
 
@@ -160,17 +162,17 @@ export default function AgentSection() {
 
   return (
     <section className="py-50 bg-neutral-950 w-full tracking-wide font-sans min-h-screen overflow-hidden relative">
-      <div className="max-w-5xl mx-auto rounded-lg shadow-lg p-3 sm:p-4 flex md:flex-row flex-col-reverse">
+      <div className="max-w-5xl mx-auto rounded-lg shadow-lg p-3 sm:p-4 flex md:flex-row flex-col-reverse will-change-transform translate-z-0">
         <div className="flex flex-col-reverse md:flex-col md:w-1/2 w-full justify-center p-4 relative mr-10">
         
-        <h2 className="text-2xl font-bold my-8 text-center">Ask My AI agent about my projects</h2>
+        <h2 className="text-2xl font-bold my-8 text-center pointer-events-none select-none will-change-transform">Ask My AI agent about my projects</h2>
 
         <form onSubmit={handleSubmit} className="space-y-2 flex flex-col">
           <label htmlFor="agent-input" className="sr-only">
             Ask a question
           </label>
           <div
-            className="w-full flex items-start gap-2 px-3 py-2 bg-neutral-900 border border-gray-800 rounded-xl focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-transparent shadow-[0_0_10px_2px_rgba(255,255,255,0.1)]"
+            className="w-full flex items-start gap-2 px-3 py-2 bg-neutral-900 border border-gray-800 rounded-xl  shadow-[0_0_10px_2px_rgba(255,255,255,0.1)]"
           >
             <textarea
               id="agent-input"
@@ -190,7 +192,7 @@ export default function AgentSection() {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-shrink-0 z-30 inline-flex items-center justify-center rounded-full p-2 
+              className="flex-shrink-0 z-40 inline-flex items-center justify-center rounded-full p-2 
               disabled:bg-gray-600 disabled:cursor-not-allowed text-white transition-all duration-500 cursor-pointer
               hover:bg-neutral-800"
             >
@@ -200,7 +202,7 @@ export default function AgentSection() {
           {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
         </form>
         </div>
-        <div ref={messageWrapperRef} className="relative md:w-1/2 w-full h-64 border-b border-white" 
+        <div ref={messageWrapperRef} className="relative md:w-1/2 w-full h-64 border-b border-white will-change-transform" 
         style={{ perspective: '1000px', 
           background: 'linear-gradient(0deg, #333, #0a0a0a0 100%)',
          }}>
@@ -209,7 +211,7 @@ export default function AgentSection() {
           className="absolute top-0 left-0 h-128 w-[200%]
           overflow-y-auto space-y-3 text-sm
           -translate-x-1/4 -translate-y-1/2 -z-20 overflow-x-hidden"
-          style={{ transformStyle: 'preserve-3d' }}
+          style={{ transformStyle: 'preserve-3d', willChange: 'transform', WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
         >
           <div className="h-80"></div>
           {messages.flatMap((message, msgIdx) => {
@@ -226,7 +228,7 @@ export default function AgentSection() {
                   ref={(el) => (messageRefs.current[uniqueIdx] = el)}
                   data-role={message.role}
                   className="w-1/2 mx-auto -z-20"
-                  style={{ transformStyle: 'preserve-3d' }}
+                  style={{ transformStyle: 'preserve-3d', willChange: 'transform', WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
                 >
                   <div
                     className={`flex ${

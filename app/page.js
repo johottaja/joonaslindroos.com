@@ -17,9 +17,9 @@ export default function Home() {
       <LetterAnimationSection />
       <GroundDivider />
       <ProjectsSection />
-      <GroundDivider />
+      
       <AgentSection />
-      <GroundDivider />
+      
       <FooterSection />
     </>
   )

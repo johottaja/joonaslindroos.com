@@ -108,7 +108,7 @@ export default function TechSection() {
                         innerRef={technologyTextRef}
                         brightness={200}
                         className="text-7xl"
-                        style={{ transform: 'scale(0.8)', brightness: 200 }}
+                        style={{ transform: 'scale(0.8)' }}
                     >
                         TECHNOLOGY
                     </TexturedText>
