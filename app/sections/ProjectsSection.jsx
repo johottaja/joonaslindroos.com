@@ -99,6 +99,7 @@ export default function ProjectsSection() {
     const cardRefs = useRef([])
     const manRef = useRef(null)
     const mountainsRef = useRef(null)
+    const bgFillRef = useRef(null)
     const mountainsTweenRef = useRef(null)
     const manTweenRef = useRef(null)
 
@@ -124,6 +125,7 @@ export default function ProjectsSection() {
         const cards = cardRefs.current
         const man = manRef.current
         const mountains = mountainsRef.current
+        const bgFill = bgFillRef.current
 
         if (!section || !container || !heading || cards.length === 0) return
 
@@ -190,9 +192,17 @@ export default function ProjectsSection() {
             if (entry.isIntersecting) {
                 mountainsTweenRef.current?.resume()
                 manTweenRef.current?.resume()
+                man?.classList.remove('invisible')
+                mountains?.classList.remove('invisible')
+                bgFill?.classList.remove('invisible')
+                console.log('bgFill is visible')
             } else {
                 mountainsTweenRef.current?.pause()
                 manTweenRef.current?.pause()
+                man?.classList.add('invisible')
+                mountains?.classList.add('invisible')
+                bgFill?.classList.add('invisible')
+                console.log('bgFill is invisible')
             }
         }, { threshold: 0 })
 
@@ -272,7 +282,7 @@ export default function ProjectsSection() {
                 alt=""
                 fill
                 sizes="100vw"
-                className="!fixed object-cover bg-center bottom-0 left-0 w-full h-full -z-70 saturate-60 scale-110 pointer-events-none select-none"
+                className="!fixed object-cover bg-center bottom-0 left-0 w-full h-full -z-70 saturate-60 scale-110 pointer-events-none select-none invisible"
                 style={{ willChange: 'transform', z: 0, WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
             />
             <Image 
@@ -281,15 +291,16 @@ export default function ProjectsSection() {
                 alt=""
                 fill
                 sizes="100vw"
-                className="!fixed object-cover -z-79 scale-110 saturate-60 translate-x-[5%] pointer-events-none select-none"
+                className="!fixed object-cover -z-79 scale-110 saturate-60 translate-x-[5%] pointer-events-none select-none invisible"
                 style={{ willChange: 'transform', z: 0, WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
             />
             <Image 
+                ref={bgFillRef}
                 src="/images/sysiphus_projects/background_filled.png"
                 alt=""
                 fill
                 sizes="100vw"
-                className="!fixed object-cover -z-80 saturate-60 pointer-events-none select-none"
+                className="!fixed object-cover -z-80 saturate-60 pointer-events-none select-none invisible"
                 style={{ z: 0, WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
             />
             

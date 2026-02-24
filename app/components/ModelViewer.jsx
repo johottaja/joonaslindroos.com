@@ -93,7 +93,7 @@ export default function ModelViewer() {
     // Load model
     const loader = new GLTFLoader()
     loader.setMeshoptDecoder(MeshoptDecoder)
-    loader.load('/models/final_web.glb', (gltf) => {
+    loader.load('/models/final.glb', (gltf) => {
       scene.add(gltf.scene)
       modelRef.current = gltf.scene
       modelRef.current.rotation.y = 1.10
