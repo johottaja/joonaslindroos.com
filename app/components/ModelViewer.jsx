@@ -37,7 +37,7 @@ export default function ModelViewer() {
     const distanceForHorizontal = Math.abs(maxDim / 2 / Math.tan(horizontalFov / 2))
     
     // Use the larger distance to ensure model fits in both dimensions
-    let cameraZ = Math.max(distanceForVertical, distanceForHorizontal)
+    let cameraZ = Math.max(Math.max(distanceForVertical, distanceForHorizontal), 3)
     cameraZ *= 1.2 // Add some padding
     camera.position.z = cameraZ
   }

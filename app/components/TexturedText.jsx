@@ -13,7 +13,7 @@ export default function TexturedText({
             ref={innerRef}
             className={className}
             style={{
-                willChange: 'transform',
+                willChange: 'transform, filter',
                 backgroundImage: 'url(/images/texture.png)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center bottom',

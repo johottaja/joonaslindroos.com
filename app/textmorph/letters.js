@@ -50,6 +50,39 @@ class Vector {
   dot(v) {
     return this.x * v.x + this.y * v.y
   }
+
+  set(x, y) {
+    this.x = x
+    this.y = y
+    return this
+  }
+
+  addMut(v) {
+    this.x += v.x
+    this.y += v.y
+    return this
+  }
+
+  subtractMut(v) {
+    this.x -= v.x
+    this.y -= v.y
+    return this
+  }
+
+  multiplyMut(scalar) {
+    this.x *= scalar
+    this.y *= scalar
+    return this
+  }
+
+  normalizeMut() {
+    const mag = Math.sqrt(this.x * this.x + this.y * this.y)
+    if (mag > 0) {
+      this.x /= mag
+      this.y /= mag
+    }
+    return this
+  }
   
   static lerp(v1, v2, t) {
     return new Vector(

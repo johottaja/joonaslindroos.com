@@ -83,14 +83,13 @@ export default function TechSection() {
             />
             <ModelViewer />
             <div className="absolute top-0 left-0 w-full h-full mt-30">
-                <h2 className="text-center tracking-widest text-5xl font-bold">
-                    <TexturedText 
-                        innerRef={topHeadingRef}
-                        style={{ transform: 'translateY(-50px)' }}
-                    >
-                        Always pushing the boundaries
-                    </TexturedText>
-                </h2>
+                <TexturedText 
+                    innerRef={topHeadingRef}
+                    style={{ transform: 'translateY(-50px)' }}
+                    className="text-center tracking-widest text-5xl font-bold"
+                >
+                    Always pushing the boundaries
+                </TexturedText>
             </div>
             <div className="absolute bottom-0 left-0 w-full flex justify-center items-center">
                 <div className="tracking-widest text-center text-2xl font-bold px-5 py-10"
@@ -106,7 +105,7 @@ export default function TechSection() {
                     </TexturedText>
                     <TexturedText 
                         innerRef={technologyTextRef}
-                        brightness={200}
+                        brightness={800}
                         className="text-7xl"
                         style={{ transform: 'scale(0.8)' }}
                     >

@@ -18,25 +18,33 @@ export default function LetterMorphSection() {
   const [headerBottom, setHeaderBottom] = useState(0)
 
   useEffect(() => {
+    let resizeTimer = null
+
     const updateCanvasSize = () => {
-      if (typeof window !== 'undefined') {
-        setCanvasSize({
-          width: document.documentElement.clientWidth,
-          height: window.innerHeight
-        })
-        if (headerRef.current && sectionRef.current) {
-          const headerRect = headerRef.current.getBoundingClientRect()
-          const sectionRect = sectionRef.current.getBoundingClientRect()
-          const relativeBottom = headerRect.bottom - sectionRect.top
-          setHeaderBottom(relativeBottom)
-          headerBottomRef.current = relativeBottom
-        }
+      if (typeof window === 'undefined') return
+      const w = document.documentElement.clientWidth
+      const h = window.innerHeight
+      setCanvasSize(prev => (prev.width === w && prev.height === h) ? prev : { width: w, height: h })
+      if (headerRef.current && sectionRef.current) {
+        const headerRect = headerRef.current.getBoundingClientRect()
+        const sectionRect = sectionRef.current.getBoundingClientRect()
+        const relativeBottom = headerRect.bottom - sectionRect.top
+        setHeaderBottom(prev => prev === relativeBottom ? prev : relativeBottom)
+        headerBottomRef.current = relativeBottom
       }
     }
 
+    const onResize = () => {
+      if (resizeTimer) clearTimeout(resizeTimer)
+      resizeTimer = setTimeout(updateCanvasSize, 100)
+    }
+
     updateCanvasSize()
-    window.addEventListener('resize', updateCanvasSize)
-    return () => window.removeEventListener('resize', updateCanvasSize)
+    window.addEventListener('resize', onResize)
+    return () => {
+      window.removeEventListener('resize', onResize)
+      if (resizeTimer) clearTimeout(resizeTimer)
+    }
   }, [])
 
   useEffect(() => {

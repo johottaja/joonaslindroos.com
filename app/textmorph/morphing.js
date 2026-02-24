@@ -97,274 +97,192 @@ function lerp(a, b, t) {
   return a + (b - a) * t
 }
 
-// Interpolate angle (handles wrapping) - now using Vector method
-function lerpAngle(a, b, t) {
-  return Vector.lerpAngle(a, b, t)
-}
-
-// Map function for value remapping
-function map(value, x1, y1, x2, y2) {
-  return (value - x1) * (y2 - x2) / (y1 - x1) + x2
-}
 
 class ShapeMorph {
   constructor(sourceShape, sourceOffsetX, sourceOffsetY, targetShape, targetOffsetX, targetOffsetY, scale = 1.0) {
     this.scale = scale
     this.sourceShape = sourceShape.shape
-    this.sourceOffsetX = sourceOffsetX
-    this.sourceOffsetY = sourceOffsetY
     this.targetShape = targetShape.shape
-    this.targetOffsetX = targetOffsetX
-    this.targetOffsetY = targetOffsetY
     this.sourceType = sourceShape.shape instanceof Line ? 'Line' : 'Curve'
     this.targetType = targetShape.shape instanceof Line ? 'Line' : 'Curve'
-    
-    // Random neutral color for this shape
+
     this.color = getRandomNeutralColor()
-    
-    // Position represents the shape's anchor point (start for Line, p1 for Curve)
-    // Initialize to source shape's world position (scaled)
-    const sourceShapePos = this.sourceType === 'Line' 
-      ? this.sourceShape.position 
+
+    const sourceShapePos = this.sourceType === 'Line'
+      ? this.sourceShape.position
       : this.sourceShape.p1
     this.position = new Vector(
       sourceOffsetX + sourceShapePos.x * scale,
       sourceOffsetY + sourceShapePos.y * scale
     )
-    
-    // Target position is target shape's anchor point world position (scaled)
+
     const targetShapePos = this.targetType === 'Line'
       ? this.targetShape.position
       : this.targetShape.p1
-    this.targetPos = new Vector(
-      targetOffsetX + targetShapePos.x * scale,
-      targetOffsetY + targetShapePos.y * scale
-    )
+    this.targetX = targetOffsetX + targetShapePos.x * scale
+    this.targetY = targetOffsetY + targetShapePos.y * scale
+
     this.maxSpeed = animationConfig.physics.maxSpeedMultiplier * scale
     this.maxForce = animationConfig.physics.maxForceMultiplier * scale
+    this.maxSpeedSq = this.maxSpeed * this.maxSpeed
+    this.maxForceSq = this.maxForce * this.maxForce
     this.slowDownDistance = animationConfig.physics.slowDownDistance * scale
-    this.slowDownDistanceSquared = this.slowDownDistance * this.slowDownDistance
-    this.velocity = Vector.fromAngle(Math.random() * 2 * Math.PI, animationConfig.physics.maxSpeedMultiplier * scale)
-  }
-  
-  arrive(target) {
-    // Calculate desired velocity
-    const desired = target.subtract(this.position)
-    const dSquared = desired.magnitudeSquared()
-    const d = Math.sqrt(dSquared)
-    let speed = this.maxSpeed
-    
-    // Reduce speed when close to target (using squared distance for comparison)
-    if (dSquared < this.slowDownDistanceSquared) {
-      speed = map(d, 0, this.slowDownDistance, 0, this.maxSpeed)
-    }
-    
-    // Normalize and scale desired velocity
-    const norm = d > 0 ? desired.normalize() : new Vector(0, 0)
-    const desiredVel = norm.multiply(speed)
-    
-    // Calculate steering force
-    let steer = desiredVel.subtract(this.velocity)
-    
-    // Limit steering force (using squared magnitude for comparison)
-    const steerMagSquared = steer.magnitudeSquared()
-    if (steerMagSquared > this.maxForce * this.maxForce) {
-      steer = steer.normalize().multiply(this.maxForce)
-    }
-    
-    return steer
+    this.slowDownDistanceSq = this.slowDownDistance * this.slowDownDistance
+    this.velocity = Vector.fromAngle(Math.random() * 2 * Math.PI, this.maxSpeed)
   }
 
   update(deltaTime) {
-    // Calculate steering force using arrive behavior
-    const steer = this.arrive(this.targetPos)
-    
-    // Apply steering to velocity
-    this.velocity = this.velocity.add(steer)
-    
-    // Limit max speed (using squared magnitude for comparison)
-    const speedSquared = this.velocity.magnitudeSquared()
-    if (speedSquared > this.maxSpeed * this.maxSpeed) {
-      this.velocity = this.velocity.normalize().multiply(this.maxSpeed)
+    const px = this.position.x, py = this.position.y
+    const vx = this.velocity.x, vy = this.velocity.y
+
+    // --- arrive behavior (inlined, zero-alloc) ---
+    const dx = this.targetX - px
+    const dy = this.targetY - py
+    const dSq = dx * dx + dy * dy
+    const d = Math.sqrt(dSq)
+
+    let speed = this.maxSpeed
+    if (dSq < this.slowDownDistanceSq) {
+      speed = d * this.maxSpeed / this.slowDownDistance
     }
-    
-    // Update position (velocity is in pixels per second, deltaTime is in seconds)
-    this.position = this.position.add(this.velocity.multiply(deltaTime))
+
+    let dvx, dvy
+    if (d > 0) {
+      const s = speed / d
+      dvx = dx * s
+      dvy = dy * s
+    } else {
+      dvx = 0
+      dvy = 0
+    }
+
+    let sx = dvx - vx
+    let sy = dvy - vy
+    const steerSq = sx * sx + sy * sy
+    if (steerSq > this.maxForceSq) {
+      const inv = this.maxForce / Math.sqrt(steerSq)
+      sx *= inv
+      sy *= inv
+    }
+
+    // --- apply steering to velocity ---
+    let nvx = vx + sx
+    let nvy = vy + sy
+    const speedSq = nvx * nvx + nvy * nvy
+    if (speedSq > this.maxSpeedSq) {
+      const inv = this.maxSpeed / Math.sqrt(speedSq)
+      nvx *= inv
+      nvy *= inv
+    }
+    this.velocity.x = nvx
+    this.velocity.y = nvy
+
+    // --- update position ---
+    this.position.x = px + nvx * deltaTime
+    this.position.y = py + nvy * deltaTime
   }
 
-  draw(ctx, easedProgress) {
-    // easedProgress is now pre-calculated in MorphingSystem.draw()
-    
+  addToPath(ctx, easedProgress) {
     if (this.sourceType === this.targetType) {
-      // Same type - direct interpolation
       if (this.sourceType === 'Line') {
-        this.drawLineMorph(ctx, easedProgress)
+        this._lineToLine(ctx, easedProgress)
       } else {
-        this.drawCurveMorph(ctx, easedProgress)
+        this._curveToCurve(ctx, easedProgress)
       }
     } else {
-      // Different types - switch at midpoint
-      if (easedProgress < animationConfig.transition.typeTransitionMidpoint) {
-        // First half: draw as source type, interpolate toward target
-        const t = easedProgress * animationConfig.transition.transitionProgressMultiplier // 0 to 1
+      const mid = animationConfig.transition.typeTransitionMidpoint
+      const mul = animationConfig.transition.transitionProgressMultiplier
+      if (easedProgress < mid) {
+        const t = easedProgress * mul
         if (this.sourceType === 'Line') {
-          this.drawLineTransitionFirstHalf(ctx, t)
+          this._lineToCurveFirstHalf(ctx, t)
         } else {
-          this.drawCurveTransitionFirstHalf(ctx, t)
+          this._curveToLineFirstHalf(ctx, t)
         }
       } else {
-        // Second half: draw as target type, interpolate from source to target
-        const t = (easedProgress - animationConfig.transition.typeTransitionMidpoint) * animationConfig.transition.transitionProgressMultiplier // 0 to 1
+        const t = (easedProgress - mid) * mul
         if (this.targetType === 'Line') {
-          this.drawLineTransitionSecondHalf(ctx, t)
+          this._curveToLineSecondHalf(ctx, t)
         } else {
-          this.drawCurveTransitionSecondHalf(ctx, t)
+          this._lineToCurveSecondHalf(ctx, t)
         }
       }
     }
   }
-  
-  drawLineMorph(ctx, t) {
-    const source = this.sourceShape
-    const target = this.targetShape
-    
-    // this.position is the shape's start point (moved by physics)
-    const start = this.position
-    
-    // Interpolate shape properties: length and direction (scaled)
-    const length = lerp(source.length, target.length, t) * this.scale
-    const dir = lerpAngle(source.dir, target.dir, t)
-    
-    const direction = Vector.fromAngle(dir, length)
-    const end = start.add(direction)
-    
-    ctx.beginPath()
-    ctx.moveTo(start.x, start.y)
-    ctx.lineTo(end.x, end.y)
-    ctx.stroke()
+
+  _lineToLine(ctx, t) {
+    const sx = this.position.x, sy = this.position.y
+    const src = this.sourceShape, tgt = this.targetShape
+    const length = lerp(src.length, tgt.length, t) * this.scale
+    const dir = Vector.lerpAngle(src.dir, tgt.dir, t)
+    ctx.moveTo(sx, sy)
+    ctx.lineTo(sx + length * Math.cos(dir), sy + length * Math.sin(dir))
   }
-  
-  drawCurveMorph(ctx, t) {
-    const source = this.sourceShape
-    const target = this.targetShape
-    
-    // this.position is the shape's p1 (moved by physics)
-    const p1 = this.position
-    
-    // Calculate control and end points relative to p1 (scaled)
-    const sourceRelP2 = source.p2.subtract(source.p1).multiply(this.scale)
-    const sourceRelP3 = source.p3.subtract(source.p1).multiply(this.scale)
-    
-    const targetRelP2 = target.p2.subtract(target.p1).multiply(this.scale)
-    const targetRelP3 = target.p3.subtract(target.p1).multiply(this.scale)
-    
-    // Interpolate relative positions
-    const p2Rel = Vector.lerp(sourceRelP2, targetRelP2, t)
-    const p3Rel = Vector.lerp(sourceRelP3, targetRelP3, t)
-    
-    const p2 = p1.add(p2Rel)
-    const p3 = p1.add(p3Rel)
-    
-    ctx.beginPath()
-    ctx.moveTo(p1.x, p1.y)
-    ctx.quadraticCurveTo(p2.x, p2.y, p3.x, p3.y)
-    ctx.stroke()
+
+  _curveToCurve(ctx, t) {
+    const px = this.position.x, py = this.position.y
+    const src = this.sourceShape, tgt = this.targetShape
+    const sc = this.scale
+    const sR2x = (src.p2.x - src.p1.x) * sc, sR2y = (src.p2.y - src.p1.y) * sc
+    const sR3x = (src.p3.x - src.p1.x) * sc, sR3y = (src.p3.y - src.p1.y) * sc
+    const tR2x = (tgt.p2.x - tgt.p1.x) * sc, tR2y = (tgt.p2.y - tgt.p1.y) * sc
+    const tR3x = (tgt.p3.x - tgt.p1.x) * sc, tR3y = (tgt.p3.y - tgt.p1.y) * sc
+    ctx.moveTo(px, py)
+    ctx.quadraticCurveTo(
+      px + sR2x + (tR2x - sR2x) * t, py + sR2y + (tR2y - sR2y) * t,
+      px + sR3x + (tR3x - sR3x) * t, py + sR3y + (tR3y - sR3y) * t
+    )
   }
-  
-  // First half of Line → Curve: draw as Line, interpolate toward curve
-  drawLineTransitionFirstHalf(ctx, t) {
-    const source = this.sourceShape
-    const target = this.targetShape
-    
-    // this.position is the shape's start point (moved by physics)
-    const start = this.position
-    
-    // Interpolate end point direction (scaled)
-    const sourceEnd = Vector.fromAngle(source.dir, source.length * this.scale)
-    const targetEndRel = target.p3.subtract(target.p1).multiply(this.scale)
-    
-    const endRel = Vector.lerp(sourceEnd, targetEndRel, t)
-    const end = start.add(endRel)
-    
-    ctx.beginPath()
-    ctx.moveTo(start.x, start.y)
-    ctx.lineTo(end.x, end.y)
-    ctx.stroke()
+
+  _lineToCurveFirstHalf(ctx, t) {
+    const sx = this.position.x, sy = this.position.y
+    const src = this.sourceShape, tgt = this.targetShape
+    const sc = this.scale
+    const seLen = src.length * sc
+    const sex = seLen * Math.cos(src.dir), sey = seLen * Math.sin(src.dir)
+    const tex = (tgt.p3.x - tgt.p1.x) * sc, tey = (tgt.p3.y - tgt.p1.y) * sc
+    ctx.moveTo(sx, sy)
+    ctx.lineTo(sx + sex + (tex - sex) * t, sy + sey + (tey - sey) * t)
   }
-  
-  // Second half of Line → Curve: draw as Curve, interpolate from line to target curve
-  drawCurveTransitionSecondHalf(ctx, t) {
-    const target = this.targetShape
-    
-    // this.position is the shape's p1 (moved by physics, should be near target p1 by now)
-    const p1 = this.position
-    
-    // Target curve points relative to target p1 (scaled)
-    const targetRelP2 = target.p2.subtract(target.p1).multiply(this.scale)
-    const targetRelP3 = target.p3.subtract(target.p1).multiply(this.scale)
-    
-    // At t=0, curve should look like the line from end of first half
-    // First half ended with line pointing to targetRelP3
-    // For a straight line as curve: p2 at midpoint between p1 and p3
-    const lineMidRel = targetRelP3.multiply(animationConfig.transition.typeTransitionMidpoint)
-    const p2Rel = Vector.lerp(lineMidRel, targetRelP2, t)
-    // p3 is already at target position (first half moved it there)
-    const p3Rel = targetRelP3
-    
-    const p2 = p1.add(p2Rel)
-    const p3 = p1.add(p3Rel)
-    
-    ctx.beginPath()
-    ctx.moveTo(p1.x, p1.y)
-    ctx.quadraticCurveTo(p2.x, p2.y, p3.x, p3.y)
-    ctx.stroke()
+
+  _lineToCurveSecondHalf(ctx, t) {
+    const px = this.position.x, py = this.position.y
+    const tgt = this.targetShape
+    const sc = this.scale
+    const mid = animationConfig.transition.typeTransitionMidpoint
+    const tR2x = (tgt.p2.x - tgt.p1.x) * sc, tR2y = (tgt.p2.y - tgt.p1.y) * sc
+    const tR3x = (tgt.p3.x - tgt.p1.x) * sc, tR3y = (tgt.p3.y - tgt.p1.y) * sc
+    const lmx = tR3x * mid, lmy = tR3y * mid
+    ctx.moveTo(px, py)
+    ctx.quadraticCurveTo(
+      px + lmx + (tR2x - lmx) * t, py + lmy + (tR2y - lmy) * t,
+      px + tR3x, py + tR3y
+    )
   }
-  
-  // First half of Curve → Line: draw as Curve, interpolate toward line
-  drawCurveTransitionFirstHalf(ctx, t) {
-    const source = this.sourceShape
-    const target = this.targetShape
-    
-    // this.position is the shape's p1 (moved by physics)
-    const p1 = this.position
-    
-    // Calculate control and end points relative to p1 (scaled)
-    const sourceRelP2 = source.p2.subtract(source.p1).multiply(this.scale)
-    const sourceRelP3 = source.p3.subtract(source.p1).multiply(this.scale)
-    
-    // Target line end relative to target start (scaled)
-    const targetEnd = Vector.fromAngle(target.dir, target.length * this.scale)
-    
-    // Interpolate: curve morphs toward line
-    const p2Rel = Vector.lerp(sourceRelP2, targetEnd.multiply(animationConfig.transition.typeTransitionMidpoint), t)
-    const p3Rel = Vector.lerp(sourceRelP3, targetEnd, t)
-    
-    const p2 = p1.add(p2Rel)
-    const p3 = p1.add(p3Rel)
-    
-    ctx.beginPath()
-    ctx.moveTo(p1.x, p1.y)
-    ctx.quadraticCurveTo(p2.x, p2.y, p3.x, p3.y)
-    ctx.stroke()
+
+  _curveToLineFirstHalf(ctx, t) {
+    const px = this.position.x, py = this.position.y
+    const src = this.sourceShape, tgt = this.targetShape
+    const sc = this.scale
+    const mid = animationConfig.transition.typeTransitionMidpoint
+    const sR2x = (src.p2.x - src.p1.x) * sc, sR2y = (src.p2.y - src.p1.y) * sc
+    const sR3x = (src.p3.x - src.p1.x) * sc, sR3y = (src.p3.y - src.p1.y) * sc
+    const teLen = tgt.length * sc
+    const tex = teLen * Math.cos(tgt.dir), tey = teLen * Math.sin(tgt.dir)
+    ctx.moveTo(px, py)
+    ctx.quadraticCurveTo(
+      px + sR2x + (tex * mid - sR2x) * t, py + sR2y + (tey * mid - sR2y) * t,
+      px + sR3x + (tex - sR3x) * t, py + sR3y + (tey - sR3y) * t
+    )
   }
-  
-  // Second half of Curve → Line: draw as Line, interpolate from curve to target line
-  drawLineTransitionSecondHalf(ctx, t) {
-    const target = this.targetShape
-    
-    // this.position is the shape's start point (moved by physics, should be near target start by now)
-    const start = this.position
-    
-    // First half ended with curve looking like a line pointing to targetEnd
-    // So at t=0, we're already at targetEnd, and at t=1, still at targetEnd
-    // No interpolation needed - endpoint is already at target position
-    const targetEnd = Vector.fromAngle(target.dir, target.length * this.scale)
-    const end = start.add(targetEnd)
-    
-    ctx.beginPath()
-    ctx.moveTo(start.x, start.y)
-    ctx.lineTo(end.x, end.y)
-    ctx.stroke()
+
+  _curveToLineSecondHalf(ctx, t) {
+    const sx = this.position.x, sy = this.position.y
+    const tgt = this.targetShape
+    const sc = this.scale
+    const teLen = tgt.length * sc
+    ctx.moveTo(sx, sy)
+    ctx.lineTo(sx + teLen * Math.cos(tgt.dir), sy + teLen * Math.sin(tgt.dir))
   }
 }
 
@@ -430,7 +348,6 @@ class MorphingSystem {
     // Create shape mappings
     const mapping = createShapeMapping(sourceShapes, targetShapes)
     
-    // Create morph objects (with scaling)
     this.morphs = mapping.map(({ source, target }) => {
       return new ShapeMorph(
         source,
@@ -442,6 +359,10 @@ class MorphingSystem {
         scale
       )
     })
+
+    // Sort by color so the draw loop can batch all same-colored shapes
+    // into a single beginPath/stroke call
+    this.morphs.sort((a, b) => (a.color < b.color ? -1 : a.color > b.color ? 1 : 0))
   }
   
   update(currentTime, deltaTime) {
@@ -470,24 +391,33 @@ class MorphingSystem {
   }
   
   draw(ctx) {
-    // Draw all morphs (even after morphing completes, use progress = 1.0)
     const morphProgress = this.active ? this.progress : 1.0
-    
-    // Calculate eased progress once for all morphs (performance optimization)
     const easedProgress = easeInOutCubic(morphProgress)
-    
-    // Set line width from config, scaled by current scale
     ctx.lineWidth = animationConfig.canvas.lineWidth * this.scale
-    
-    this.morphs.forEach(morph => {
-      ctx.strokeStyle = morph.color
-      morph.draw(ctx, easedProgress)
-    })
+
+    // Morphs are sorted by color — batch into one beginPath/stroke per color
+    let currentColor = null
+    for (let i = 0; i < this.morphs.length; i++) {
+      const morph = this.morphs[i]
+      if (morph.color !== currentColor) {
+        if (currentColor !== null) ctx.stroke()
+        currentColor = morph.color
+        ctx.strokeStyle = currentColor
+        ctx.beginPath()
+      }
+      morph.addToPath(ctx, easedProgress)
+    }
+    if (currentColor !== null) ctx.stroke()
   }
   
   isSettled(threshold = 0.5) {
     if (this.active) return false
-    return this.morphs.every(m => m.velocity.magnitudeSquared() < threshold * threshold)
+    const threshSq = threshold * threshold
+    for (let i = 0; i < this.morphs.length; i++) {
+      const v = this.morphs[i].velocity
+      if (v.x * v.x + v.y * v.y >= threshSq) return false
+    }
+    return true
   }
 
   getCurrentWord() {

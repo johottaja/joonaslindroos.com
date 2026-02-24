@@ -3,6 +3,7 @@ import { getResponsiveScale } from './util'
 import { drawStaticWord } from './drawWord'
 
 const HEADER_PADDING = 40
+const FRAME_INTERVAL = 1000 / 60
 
 /**
  * Controls the morphing word animation: cycle scheduling, draw loop, and visibility.
@@ -93,11 +94,16 @@ export class MorphController {
     const draw = (currentTime) => {
       if (!this.isVisible) return
 
+      const elapsed = currentTime - this.lastTime
+      if (elapsed < FRAME_INTERVAL) {
+        this.animationFrameId = requestAnimationFrame(draw)
+        return
+      }
+
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-      const rawDelta = (currentTime - this.lastTime) / config.deltaTimeMultiplier
-      const deltaTime = Math.min(rawDelta, 0.1)
-      this.lastTime = currentTime
+      const deltaTime = Math.min(elapsed / config.deltaTimeMultiplier, 0.1)
+      this.lastTime = currentTime - (elapsed % FRAME_INTERVAL)
 
       morphingSystem.scale = responsiveScale
 
