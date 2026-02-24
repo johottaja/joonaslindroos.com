@@ -2,12 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { MorphController } from '@/textmorph/MorphController'
-import { animationConfig } from '@/textmorph/LetterAnimation.config'
+import { animationConfig } from '@/textmorph/LetterMorph.config'
 import TexturedText from '@/components/TexturedText.jsx'
 
 const initialWord = animationConfig.words[0]
 
-export default function LetterAnimationSection() {
+export default function LetterMorphSection() {
   const sectionRef = useRef(null)
   const canvasRef = useRef(null)
   const headerRef = useRef(null)
@@ -24,10 +24,12 @@ export default function LetterAnimationSection() {
           width: document.documentElement.clientWidth,
           height: window.innerHeight
         })
-        if (headerRef.current) {
-          const rect = headerRef.current.getBoundingClientRect()
-          setHeaderBottom(rect.bottom)
-          headerBottomRef.current = rect.bottom
+        if (headerRef.current && sectionRef.current) {
+          const headerRect = headerRef.current.getBoundingClientRect()
+          const sectionRect = sectionRef.current.getBoundingClientRect()
+          const relativeBottom = headerRect.bottom - sectionRect.top
+          setHeaderBottom(relativeBottom)
+          headerBottomRef.current = relativeBottom
         }
       }
     }

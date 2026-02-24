@@ -167,6 +167,7 @@ export class MorphController {
           if (entry.isIntersecting && !wasVisible) {
             this.lastTime = performance.now()
             draw(performance.now())
+            scheduleCycle()
           }
         },
         { threshold: 0 }

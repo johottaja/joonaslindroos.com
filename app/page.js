@@ -3,7 +3,7 @@ import Hero from '@/sections/Hero.jsx'
 import GroundDivider from '@/components/GroundDivider.jsx'
 
 const TechSection = dynamic(() => import('@/sections/TechSection.jsx'))
-const LetterAnimationSection = dynamic(() => import('@/sections/LetterAnimationSection.jsx'))
+const LetterMorphSection = dynamic(() => import('@/sections/LetterMorphSection.jsx'))
 const ProjectsSection = dynamic(() => import('@/sections/ProjectsSection.jsx'))
 const AgentSection = dynamic(() => import('@/sections/AgentSection.jsx'))
 const FooterSection = dynamic(() => import('@/sections/FooterSection.jsx'))
@@ -14,7 +14,7 @@ export default function Home() {
       <Hero />
       <GroundDivider /> 
       <TechSection />
-      <LetterAnimationSection />
+      <LetterMorphSection />
       <GroundDivider />
       <ProjectsSection />
       <GroundDivider />
