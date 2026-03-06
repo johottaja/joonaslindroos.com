@@ -29,6 +29,7 @@ export class MorphController {
     this.morphingSystem = null
     this.lastTime = 0
     this.morphingActive = false
+    this.awaitingSettle = false
     this.currentWordRef = initialWord
     this.animationFrameId = null
     this.cycleTimeoutId = null
@@ -116,10 +117,14 @@ export class MorphController {
         } else {
           if (this.morphingActive) {
             this.morphingActive = false
-            scheduleCycle()
+            this.awaitingSettle = true
           }
           this._syncWordAndMaybeStop()
           if (morphingSystem.isSettled()) {
+            if (this.awaitingSettle) {
+              this.awaitingSettle = false
+              scheduleCycle()
+            }
             this.animationFrameId = null
             return
           }
@@ -127,7 +132,6 @@ export class MorphController {
       } else {
         if (this.morphingActive) {
           this.morphingActive = false
-          scheduleCycle()
         }
         this._syncWordAndMaybeStop()
 

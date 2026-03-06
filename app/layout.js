@@ -35,7 +35,7 @@ export default function RootLayout({ children }) {
         <link rel="icon" href="/res/images/favicon.ico" />
         <link rel="preload" href="/fonts/New_Amsterdam/NewAmsterdam-Regular.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
       </head>
-      <body className="bg-neutral-950 text-white overscroll-none">
+      <body className="bg-neutral-950 text-white overscroll-none overflow-x-hidden">
         {children}
       </body>
     </html>

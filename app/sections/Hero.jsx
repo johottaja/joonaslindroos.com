@@ -41,6 +41,12 @@ export default function Hero() {
   const headerTextX = useTransform(springMouseX, [-1, 1], [-20, 20])
   const coldTextX = useTransform(springMouseX, [-1, 1], [-15, 15])
 
+  const arrowOpacity = useTransform(
+    scrollY,
+    [0, (debouncedHeight || 1)],
+    [1, 0]
+  )
+
   return (
     <header className="h-[200lvh] relative -z-30 w-full">
       <div className="sticky top-0 w-full h-[110lvh] -z-50 overflow-hidden">
@@ -93,6 +99,18 @@ export default function Hero() {
               Defined by resilience,<br /> driven by purpose.
             </h2>
           </motion.div>
+          <motion.a
+            href="#content"
+            className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-0 text-white/90 hover:text-white transition-colors"
+            aria-label="Scroll down"
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            style={{ opacity: arrowOpacity }}
+          >
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </motion.a>
         </div>
       </div>
     </header>

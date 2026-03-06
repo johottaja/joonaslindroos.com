@@ -100,6 +100,8 @@ export default function ProjectsSection() {
     const manRef = useRef(null)
     const mountainsRef = useRef(null)
     const bgFillRef = useRef(null)
+    const progressRef = useRef(null)
+    const progressWrapperRef = useRef(null)
     const mountainsTweenRef = useRef(null)
     const manTweenRef = useRef(null)
 
@@ -109,7 +111,7 @@ export default function ProjectsSection() {
     const DISAPPEAR_DURATION_VH = 0.6
     const CARD_TOTAL_DURATION_VH = APPEAR_DURATION_VH + DISAPPEAR_DURATION_VH
     const CARD_OVERLAP_VH = 0.5
-    const EXTRA_TAIL_SPACE_VH = 1.5
+    const EXTRA_TAIL_SPACE_VH = 1
 
     const sectionHeightVh =
         HEADING_DURATION_VH +
@@ -117,6 +119,7 @@ export default function ProjectsSection() {
         CARD_TOTAL_DURATION_VH +
         EXTRA_TAIL_SPACE_VH
     const sectionHeight = `calc(100vh * ${sectionHeightVh})`
+    const PROGRESS_BAR_MARGIN_VH = 1 // 60vh: fade in/out over first/last 60% of viewport
 
     useEffect(() => {
         const section = sectionRef.current
@@ -126,6 +129,8 @@ export default function ProjectsSection() {
         const man = manRef.current
         const mountains = mountainsRef.current
         const bgFill = bgFillRef.current
+        const progressBar = progressRef.current
+        const progressWrapper = progressWrapperRef.current
 
         if (!section || !container || !heading || cards.length === 0) return
 
@@ -162,6 +167,36 @@ export default function ProjectsSection() {
             ease: 'power2.inOut',
             duration: 0.5,
         })
+
+        // Section scroll progress bar
+        if (progressBar && progressWrapper) {
+            gsap.set(progressBar, { scaleX: 0, transformOrigin: 'left center' })
+            gsap.set(progressWrapper, { opacity: 0 })
+
+            const startProgress = PROGRESS_BAR_MARGIN_VH / sectionHeightVh
+            const endProgress = Math.max(startProgress, (sectionHeightVh - PROGRESS_BAR_MARGIN_VH) / sectionHeightVh)
+
+            ScrollTrigger.create({
+                trigger: section,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: true,
+                onUpdate: (self) => {
+                    const p = self.progress
+                    // Opacity: fade in over first 30vh, fade out over last 30vh
+                    let opacity = 1
+                    if (p <= startProgress) {
+                        opacity = startProgress > 0 ? p / startProgress : 1
+                    } else if (p >= endProgress) {
+                        opacity = endProgress < 1 ? (1 - p) / (1 - endProgress) : 1
+                    }
+                    progressWrapper.style.opacity = String(opacity)
+                    // Fill: 0–1 over the middle range only
+                    const fill = p <= startProgress ? 0 : p >= endProgress ? 1 : (p - startProgress) / (endProgress - startProgress)
+                    progressBar.style.transform = `scaleX(${fill})`
+                },
+            })
+        }
 
         // Subtle looping shake for background layers - start paused, resume when visible
         if (mountains) {
@@ -301,7 +336,19 @@ export default function ProjectsSection() {
                 className="!fixed object-cover -z-80 pointer-events-none select-none invisible"
                 style={{ z: 0, WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
             />
-            
+
+            {/* Scroll progress bar - outside transformed container so fixed centers in viewport */}
+            <div
+                ref={progressWrapperRef}
+                className="fixed top-6 left-1/2 -translate-x-1/2 w-11/12 max-w-4xl h-1.5 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm -z-70"
+            >
+                <div
+                    ref={progressRef}
+                    className="h-full bg-white rounded-full origin-left"
+                    style={{ transform: 'scaleX(0)' }}
+                />
+            </div>
+
             {/* Sticky container for cards */}
             <div 
                 ref={containerRef}
