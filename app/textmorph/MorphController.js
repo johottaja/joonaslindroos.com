@@ -64,8 +64,6 @@ export class MorphController {
     ctx.lineWidth = config.canvas.lineWidth * responsiveScale
 
     const spacing = config.spacing
-    const centerX = canvas.width / 2
-    const maxWidth = canvas.width * 0.9
 
     const scheduleCycle = () => {
       if (this.cycleTimeoutId) clearTimeout(this.cycleTimeoutId)
@@ -106,6 +104,9 @@ export class MorphController {
       const deltaTime = Math.min(elapsed / config.deltaTimeMultiplier, 0.1)
       this.lastTime = currentTime - (elapsed % FRAME_INTERVAL)
 
+      const centerX = this.canvas.width / 2
+      const maxWidth = this.canvas.width * 0.9
+      const responsiveScale = getResponsiveScale(this.canvas.width)
       morphingSystem.scale = responsiveScale
 
       if (morphingSystem.morphs && morphingSystem.morphs.length > 0) {
@@ -169,6 +170,15 @@ export class MorphController {
     draw(performance.now())
     scheduleCycle()
 
+    this._applyContextState = () => {
+      if (!this.ctx || !this.canvas) return
+      this.ctx.translate(config.canvasTranslateOffset, config.canvasTranslateOffset)
+      this.ctx.fillStyle = config.canvas.fillStyle
+      this.ctx.strokeStyle = config.canvas.strokeStyle
+      this.ctx.lineCap = config.canvas.lineCap
+      this.ctx.lineWidth = config.canvas.lineWidth * getResponsiveScale(this.canvas.width)
+    }
+
     if (this.sectionElement) {
       this.observer = new IntersectionObserver(
         ([entry]) => {
@@ -184,6 +194,18 @@ export class MorphController {
       )
       this.observer.observe(this.sectionElement)
     }
+  }
+
+  /**
+   * Update canvas dimensions without resetting the morph. Use when viewport size
+   * changes (e.g. mobile address bar). Re-applies context state; draw loop uses
+   * current this.canvas dimensions each frame.
+   */
+  resize(canvasWidth, canvasHeight) {
+    if (!this.canvas || canvasWidth === 0) return
+    this.canvas.width = canvasWidth
+    this.canvas.height = canvasHeight
+    if (this._applyContextState) this._applyContextState()
   }
 
   stop() {

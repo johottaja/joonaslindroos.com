@@ -313,9 +313,10 @@ export default function ProjectsSection() {
                 ref={manRef}
                 src="/images/sysiphus_projects/man_sat.png"
                 alt=""
-                fill
+                width={100}
+                height={200}
                 sizes="100vw"
-                className="!fixed object-cover bg-center bottom-0 left-0 w-full h-full -z-70 scale-110 pointer-events-none select-none invisible"
+                className="!fixed lg:object-cover object-contain bg-center bottom-0 left-0 w-full lg:h-full -z-70 scale-110 pointer-events-none select-none invisible "
                 style={{ willChange: 'transform', z: 0, WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
             />
             <Image 
@@ -324,7 +325,7 @@ export default function ProjectsSection() {
                 alt=""
                 fill
                 sizes="100vw"
-                className="!fixed object-cover -z-79 scale-110 translate-x-[5%] pointer-events-none select-none invisible"
+                className="!fixed object-cover -z-79 scale-120 pointer-events-none select-none invisible"
                 style={{ willChange: 'transform', z: 0, WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
             />
             <Image 

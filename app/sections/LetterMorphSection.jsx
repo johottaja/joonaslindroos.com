@@ -48,22 +48,30 @@ export default function LetterMorphSection() {
   }, [])
 
   useEffect(() => {
+    return () => {
+      if (controllerRef.current) {
+        controllerRef.current.stop()
+        controllerRef.current = null
+      }
+    }
+  }, [])
+
+  useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas || canvasSize.width === 0) return
 
-    const controller = new MorphController({
-      canvas,
-      sectionElement: sectionRef.current,
-      config: animationConfig,
-      getHeaderBottom: () => headerBottomRef.current,
-      initialWord
-    })
-    controllerRef.current = controller
-    controller.start(canvasSize.width, canvasSize.height, headerBottom)
-
-    return () => {
-      controller.stop()
-      controllerRef.current = null
+    if (!controllerRef.current) {
+      const controller = new MorphController({
+        canvas,
+        sectionElement: sectionRef.current,
+        config: animationConfig,
+        getHeaderBottom: () => headerBottomRef.current,
+        initialWord
+      })
+      controllerRef.current = controller
+      controller.start(canvasSize.width, canvasSize.height, headerBottom)
+    } else {
+      controllerRef.current.resize(canvasSize.width, canvasSize.height)
     }
   }, [canvasSize, headerBottom])
 

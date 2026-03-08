@@ -11,7 +11,7 @@ export const animationConfig = {
   ],
   
   // Display duration for each word before transitioning (milliseconds)
-  displayDuration: 1000,
+  displayDuration: 500,
   
   // Morphing animation duration (milliseconds)
   morphDuration: 2000,
