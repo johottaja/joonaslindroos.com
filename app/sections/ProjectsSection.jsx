@@ -118,7 +118,7 @@ export default function ProjectsSection() {
         (projects.length - 1) * (CARD_TOTAL_DURATION_VH - CARD_OVERLAP_VH) +
         CARD_TOTAL_DURATION_VH +
         EXTRA_TAIL_SPACE_VH
-    const sectionHeight = `calc(100vh * ${sectionHeightVh})`
+    const sectionHeight = `calc(100lvh * ${sectionHeightVh})`
     const PROGRESS_BAR_MARGIN_VH = 1 // 60vh: fade in/out over first/last 60% of viewport
 
     useEffect(() => {
@@ -316,7 +316,7 @@ export default function ProjectsSection() {
                 width={100}
                 height={200}
                 sizes="100vw"
-                className="!fixed lg:object-cover object-contain bg-center bottom-0 left-0 w-full lg:h-full -z-70 scale-110 pointer-events-none select-none invisible "
+                className="!fixed lg:object-cover object-contain bg-center bottom-0 left-0 w-full lg:h-lvh -z-70 scale-110 pointer-events-none select-none invisible "
                 style={{ willChange: 'transform', z: 0, WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
             />
             <Image 
@@ -325,7 +325,7 @@ export default function ProjectsSection() {
                 alt=""
                 fill
                 sizes="100vw"
-                className="!fixed object-cover -z-79 scale-120 pointer-events-none select-none invisible h-[100lvh]"
+                className="!fixed object-cover -z-79 scale-120 pointer-events-none select-none invisible h-lvh"
                 style={{ willChange: 'transform', z: 0, WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
             />
             <Image 

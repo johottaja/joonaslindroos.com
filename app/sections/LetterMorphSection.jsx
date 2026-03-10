@@ -76,7 +76,7 @@ export default function LetterMorphSection() {
   }, [canvasSize, headerBottom])
 
   return (
-    <div ref={sectionRef} className="flex flex-col justify-center items-center w-full bg-black relative h-screen translate-z-0.5 backface-hidden">
+    <div ref={sectionRef} className="flex flex-col justify-center items-center w-full bg-black relative h-lvh translate-z-0.5 backface-hidden">
       <svg
         className="absolute top-0 left-0 w-full z-50"
         height="34"
@@ -107,7 +107,7 @@ export default function LetterMorphSection() {
         className="block"
         style={{
           width: canvasSize.width > 0 ? `${canvasSize.width}px` : '100%',
-          height: canvasSize.height > 0 ? `${canvasSize.height}px` : '100vh',
+          height: canvasSize.height > 0 ? `${canvasSize.height}px` : '100lvh',
           transform: 'translateZ(0)'
         }}
       />
