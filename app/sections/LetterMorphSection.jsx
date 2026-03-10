@@ -23,7 +23,7 @@ export default function LetterMorphSection() {
     const updateCanvasSize = () => {
       if (typeof window === 'undefined') return
       const w = document.documentElement.clientWidth
-      const h = window.innerHeight
+      const h = sectionRef.current?.getBoundingClientRect().height ?? document.documentElement.clientHeight
       setCanvasSize(prev => (prev.width === w && prev.height === h) ? prev : { width: w, height: h })
       if (headerRef.current && sectionRef.current) {
         const headerRect = headerRef.current.getBoundingClientRect()

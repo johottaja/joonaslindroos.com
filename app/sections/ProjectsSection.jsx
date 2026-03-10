@@ -134,8 +134,8 @@ export default function ProjectsSection() {
 
         if (!section || !container || !heading || cards.length === 0) return
 
-        const viewportHeight = window.innerHeight
-        const viewportWidth = window.innerWidth
+        const viewportHeight = document.documentElement.clientHeight
+        const viewportWidth = document.documentElement.clientWidth
 
         const headingDuration = viewportHeight * HEADING_DURATION_VH
         const appearDuration = viewportHeight * APPEAR_DURATION_VH
@@ -284,8 +284,8 @@ export default function ProjectsSection() {
             const cardWidth = 384 // md:w-96 = 384px
             const cardHeight = 256 // md:h-64 = 256px
             // Card center target so right/bottom edges are ~100px from screen edges
-            const rightOffset = (window.innerWidth - cardWidth / 2) - ((viewportWidth > 640) ? (window.innerWidth / 2) : 0)
-            const bottomOffset = (window.innerHeight - 100 - cardHeight / 2) - (window.innerHeight / 2)
+            const rightOffset = (viewportWidth - cardWidth / 2) - ((viewportWidth > 640) ? (viewportWidth / 2) : 0)
+            const bottomOffset = (viewportHeight - 100 - cardHeight / 2) - (viewportHeight / 2)
 
             tl.to(card, {
                 x: rightOffset,
