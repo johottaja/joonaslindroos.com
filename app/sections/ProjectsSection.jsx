@@ -379,6 +379,7 @@ export default function ProjectsSection() {
                             <Link
                                 key={project.id}
                                 ref={el => cardRefs.current[index] = el}
+                                prefetch={false}
                                 {...cardProps}
                                 className="absolute inset-0 mx-auto w-72 md:w-96 h-48 md:h-64 rounded-xl overflow-hidden shadow-2xl cursor-pointer group pointer-events-auto"
                                 style={{ 
@@ -397,7 +398,6 @@ export default function ProjectsSection() {
                                     alt={project.title}
                                     fill
                                     sizes="(max-width: 768px) 288px, 384px"
-                                    loading="eager"
                                     className="object-cover transition-transform duration-300 group-hover:scale-110"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />

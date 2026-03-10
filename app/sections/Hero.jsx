@@ -52,23 +52,14 @@ export default function Hero() {
       <div className="sticky top-0 w-full h-[110lvh] -z-50 overflow-hidden">
         <motion.img src="/images/sysiphus/far_mountains_sat.webp" alt="Sysiphus Far Mountains"
           className="absolute inset-0 w-full h-full object-cover object-center translate-y-[10px] -z-40 scale-110 backface-hidden"
-          initial={{ opacity: 0, y: 100 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.5, ease: 'easeOut' }}
           style={{ y: mountainsY, x: mountainsX, z: 0, willChange: 'transform, filter', WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
         />
         <motion.img src="/images/sysiphus/parallax_2_sat.webp" alt="Sysiphus Parallax 2"
           className="absolute inset-0 w-full h-full object-contain object-bottom-right -z-30 translate-x-1/5 md:translate-x-0 translate-y-[50px] scale-110 backface-hidden"
-          initial={{ opacity: 0, x: 100 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1.5, ease: 'easeOut' }}
           style={{ y: parallax1Y, x: parallax1X, z: 0, willChange: 'transform, filter', WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
         />
         <motion.img src="/images/sysiphus/parallax_1_sat.webp" alt="Sysiphus Parallax 1"
           className="absolute inset-0 w-full h-full object-contain object-bottom-right -z-20 translate-x-1/5 md:translate-x-0 translate-y-[30px] scale-110 backface-hidden"
-          initial={{ opacity: 0, x: 100 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1.5, ease: 'easeOut' }}
           style={{ y: parallax2Y, x: parallax2X, z: 0, willChange: 'transform, filter', WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
         />
         <img src="/images/sysiphus/sky_sat.webp" alt="Sysiphus Sky"
