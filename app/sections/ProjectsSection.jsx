@@ -309,34 +309,39 @@ export default function ProjectsSection() {
 
     return (
         <section ref={sectionRef} className="w-full relative" style={{ height: sectionHeight }}>
+            <div className="fixed top-0 left-0 w-full h-lvh -z-70">
             <Image 
                 ref={manRef}
                 src="/images/sysiphus_projects/man_sat.png"
                 alt=""
-                width={100}
-                height={200}
+                fill
                 sizes="100vw"
-                className="!fixed lg:object-cover object-contain bg-center bottom-0 left-0 w-full lg:h-lvh -z-70 scale-110 pointer-events-none select-none invisible "
+                className="absolute object-contain object-bottom w-full -z-70 scale-110 pointer-events-none select-none invisible"
                 style={{ willChange: 'transform', z: 0, WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
             />
-            <Image 
+            </div>
+            <div className="fixed top-0 left-0 w-full h-lvh -z-79">
+            <Image
                 ref={mountainsRef}
                 src="/images/sysiphus_projects/mountains_sat.png"
                 alt=""
                 fill
                 sizes="100vw"
-                className="!fixed object-cover -z-79 scale-120 pointer-events-none select-none invisible h-lvh"
+                className="object-cover -z-79 scale-102 pointer-events-none select-none h-full"
                 style={{ willChange: 'transform', z: 0, WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
             />
+            </div>
+            <div className="fixed top-0 left-0 w-full h-lvh -z-80">
             <Image 
                 ref={bgFillRef}
                 src="/images/sysiphus_projects/sky_2_sat.webp"
                 alt=""
                 fill
                 sizes="100vw"
-                className="!fixed object-cover -z-80 pointer-events-none select-none invisible h-[100lvh]"
+                className="object-cover -z-80 pointer-events-none select-none invisible h-full"
                 style={{ z: 0, WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
             />
+            </div>
 
             {/* Scroll progress bar - outside transformed container so fixed centers in viewport */}
             <div
