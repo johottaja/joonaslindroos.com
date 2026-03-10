@@ -325,7 +325,7 @@ export default function ProjectsSection() {
                 alt=""
                 fill
                 sizes="100vw"
-                className="!fixed object-cover -z-79 scale-120 pointer-events-none select-none invisible"
+                className="!fixed object-cover -z-79 scale-120 pointer-events-none select-none invisible h-[100lvh]"
                 style={{ willChange: 'transform', z: 0, WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
             />
             <Image 
@@ -334,7 +334,7 @@ export default function ProjectsSection() {
                 alt=""
                 fill
                 sizes="100vw"
-                className="!fixed object-cover -z-80 pointer-events-none select-none invisible"
+                className="!fixed object-cover -z-80 pointer-events-none select-none invisible h-[100lvh]"
                 style={{ z: 0, WebkitTransform: 'translateZ(0)', WebkitBackfaceVisibility: 'hidden' }}
             />
 
