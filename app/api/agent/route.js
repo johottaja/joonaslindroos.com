@@ -3,7 +3,7 @@ import { Agent, run, tool } from '@openai/agents'
 import { z } from 'zod'
 
 const RATE_LIMIT_WINDOW_MS = 12 * 60 * 60 * 1000 // 12 hours
-const RATE_LIMIT_MAX_REQUESTS = 10 // max requests per window per IP
+const RATE_LIMIT_MAX_REQUESTS = 6 // max requests per window per IP
 
 /** @type {Map<string, number[]>} IP → array of request timestamps */
 const rateLimitMap = new Map()
