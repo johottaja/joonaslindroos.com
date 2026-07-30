@@ -12,8 +12,6 @@ Also a few other projects that are no longer included visibly on the website, bu
 
 # 📂 Projects
 
-#### Navigating the repo might be difficult. Here's a quick guide to help you out.
-
 ## 🐍🐍 Versus Snake Game
 
 - A two-player snake game where the players battle against each other.
