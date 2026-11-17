@@ -6,6 +6,7 @@ import Script from 'next/script'
 
 export default function SnakeComp() {
   const router = useRouter()
+  const [socketLoaded, setSocketLoaded] = useState(false)
   const [gameLoaded, setGameLoaded] = useState(false)
   const [texturesLoaded, setTexturesLoaded] = useState(false)
   const [gameState, setGameState] = useState('instructions') // instructions, countdown, playing, gameover, highscore
@@ -14,6 +15,10 @@ export default function SnakeComp() {
   const [finalScore, setFinalScore] = useState(0)
   const [showPodium, setShowPodium] = useState(false)
   const [formErrors, setFormErrors] = useState({ name: false, message: false })
+  const [submitError, setSubmitError] = useState('')
+  const [connectionError, setConnectionError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const submittingRef = useRef(false)
   const formRef = useRef(null)
 
   useEffect(() => {
@@ -30,13 +35,16 @@ export default function SnakeComp() {
       setShowPodium(gameOverData.podium)
       setGameState(gameOverData.podium ? 'highscore' : 'gameover')
     }
+    window.showSnakeError = (error) => setConnectionError(error)
 
     return () => {
+      window.stopSnakeGame?.()
       delete window.showInstructions
       delete window.showCountdown
       delete window.startGame
       delete window.updateScore
       delete window.showGameOver
+      delete window.showSnakeError
     }
   }, [])
 
@@ -49,38 +57,44 @@ export default function SnakeComp() {
   }
 
   const handleSubmitHighscore = async () => {
+    if (submittingRef.current) return
     const form = formRef.current
-    const name = form.elements.name.value
-    const messageText = form.elements.message.value
+    const name = form.elements.name.value.trim()
+    const messageText = form.elements.message.value.trim()
 
     const errors = {
-      name: name.length < 3,
-      message: messageText.length < 5
+      name: name.length < 3 || name.length > 30,
+      message: messageText.length < 5 || messageText.length > 150
     }
 
     setFormErrors(errors)
+    setSubmitError('')
 
     if (!errors.name && !errors.message) {
+      submittingRef.current = true
+      setSubmitting(true)
       try {
-        await fetch('/api/highscores', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, message: messageText, score: String(finalScore) })
-        })
+        if (!window.submitSnakeHighscore) throw new Error('Game connection unavailable. Please reload to start again.')
+        await window.submitSnakeHighscore({ name, message: messageText })
+        router.push('/snake/comp/leaderboard')
       } catch (err) {
-        console.error('Failed to submit highscore:', err)
+        setSubmitError(err.message || 'Could not save your score. Please try again.')
+      } finally {
+        submittingRef.current = false
+        setSubmitting(false)
       }
-      router.push('/snake/comp/leaderboard')
     }
   }
 
   return (
     <>
-      <Script src="/games/snake/comp/js/game.js" strategy="afterInteractive" onLoad={() => setGameLoaded(true)} />
-      {gameLoaded && <Script src="/games/snake/comp/js/textures.js" strategy="afterInteractive" onLoad={() => setTexturesLoaded(true)} />}
-      {texturesLoaded && <Script src="/games/snake/comp/js/sketch.js" strategy="afterInteractive" />}
+      <Script src="/snake/comp/socket/socket.io.js" strategy="afterInteractive" onReady={() => setSocketLoaded(true)} />
+      {socketLoaded && <Script src="/games/snake/comp/js/game.js" strategy="afterInteractive" onReady={() => setGameLoaded(true)} />}
+      {gameLoaded && <Script src="/games/snake/comp/js/textures.js" strategy="afterInteractive" onReady={() => setTexturesLoaded(true)} />}
+      {texturesLoaded && <Script src="/games/snake/comp/js/sketch.js" strategy="afterInteractive" onReady={() => window.startCompetitiveSnakeGame?.()} />}
       
       <div className="main">
+        {connectionError && <p role="alert">{connectionError}</p>}
         {/* Message Box Overlay */}
         {gameState !== 'playing' && (
           <div className="message-box" style={{ display: 'block' }}>
@@ -107,7 +121,8 @@ export default function SnakeComp() {
               <>
                 <p id="highscore-text">You hit a highscore!</p>
                 <p id="lower-highscore-text">Give us your name and a short message.</p>
-                <form ref={formRef} id="info-form">
+                <form ref={formRef} id="info-form" onSubmit={(event) => { event.preventDefault(); handleSubmitHighscore() }}>
+                  {submitError && <p role="alert">{submitError}</p>}
                   {formErrors.name && (
                     <p id="bad-name-text" style={{ color: 'red' }}>
                       Name must be at least 3 characters long.
@@ -140,9 +155,9 @@ export default function SnakeComp() {
 
                   <input 
                     className="submit-button" 
-                    type="button" 
-                    value="Submit" 
-                    onClick={handleSubmitHighscore}
+                    type="submit"
+                    value={submitting ? 'Saving…' : 'Submit'}
+                    disabled={submitting || Boolean(connectionError)}
                   />
                 </form>
               </>

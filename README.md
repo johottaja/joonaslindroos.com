@@ -42,13 +42,31 @@ Try it out [here](https://joonaslindroos.com/snake/pvp/)!
 #### ⚙️ Where to find the code?
 
 - Serverside code is located in `games/snake/comp/`
-- EJS templates are located in `views/snake/comp/`
-- Clientside code is located in `static/games/snake/comp/`
+- The game page is in `app/snake/comp/`.
+- Clientside rendering code is located in `public/games/snake/comp/`.
 - The config.js file can be found in `games/snake/config.js`
-- Routes found in `routes/compSnake.js`
+- The read-only leaderboard API is in `app/api/highscores/route.js`.
 - Functions related to handling the scoreboard are defined in `HighscoreService.js`
 
 Try it out [here](https://joonaslindroos.com/snake/comp/)!
+
+Singleplayer runs on the custom Node server started with `npm start` (or `npm run dev`).
+The browser only sends movement keys over `/snake/comp/socket/`; the server owns the
+board, timing, apples, and final score. Configure any reverse proxy to forward this
+path, including WebSocket upgrades, as well as the existing PvP socket path.
+Static hosting or running only `next start` does not provide the game server.
+
+A finished game can submit a name and message once, within five minutes. Direct
+score POSTs are disabled. Connections, packet sizes, input queues, request rates,
+and game lifetimes are bounded. Invalid legacy entries (including negative scores)
+are hidden; valid existing entries are preserved. The server cannot establish
+whether old positive scores were earned legitimately, and automated gameplay can
+still play by the rules.
+
+Leaderboard storage uses serialized, atomic writes. Run a single Node process
+with a persistent `data/` directory; multiple workers or replicas require shared
+transactional storage and distributed rate limits. Run `npm test` for the score
+validation, game lifecycle, replay prevention, and concurrent-save regression tests.
 
 ## 🧢❌ Fax or Cap
 - Allows users to make posts, which then other users will be able to rate as either a true or false.

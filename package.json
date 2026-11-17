@@ -4,6 +4,7 @@
   "description": "my website",
   "private": true,
   "scripts": {
+    "test": "node --test tests/*.test.js",
     "dev": "nodemon server.js",
     "build": "next build",
     "start": "NODE_ENV=production node server.js",
@@ -22,11 +23,14 @@
     "matter-js": "^0.20.0",
     "meshoptimizer": "^1.0.1",
     "motion": "^12.23.24",
-    "next": "^16.0.0",
+    "next": "16.4.6",
     "nodemailer": "^7.0.12",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-markdown": "^9.0.1",
+    "socket": {
+      "io": "^4.8.4"
+    },
     "socket.io": "^4.8.3",
     "three": "^0.182.0",
     "zod": "^4.3.6"

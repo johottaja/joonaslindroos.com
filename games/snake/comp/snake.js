@@ -79,6 +79,7 @@ module.exports = class Snake {
     }
 
     queueInput(x, y) {
+        if (this.velQueue.length >= 2) return;
         if (this.vel.x === 0 && this.vel.y === 0) {
             this.velQueue.push({ x: x, y: y });
             return;
